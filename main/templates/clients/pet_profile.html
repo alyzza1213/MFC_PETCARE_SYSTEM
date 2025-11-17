@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🐾 My Pets</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+    body {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #e0f7f5, #f9ffff);
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    header {
+        background: linear-gradient(90deg, #009999, #00b3b3);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 1.8rem;
+        letter-spacing: 1px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .container {
+        max-width: 1100px;
+        margin: 60px auto;
+        padding: 0 20px;
+    }
+
+    .pet-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 30px;
+        padding: 10px;
+    }
+
+    .pet-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 25px 20px;
+        text-align: center;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pet-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .pet-card img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 5px solid #00b3b3;
+        margin-bottom: 15px;
+        transition: transform 0.3s ease;
+    }
+
+    .pet-card:hover img {
+        transform: scale(1.1);
+    }
+
+    .pet-card h3 {
+        margin-top: 10px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #006666;
+    }
+
+    .add-btn {
+        display: inline-block;
+        margin: 30px auto 10px;
+        text-align: center;
+        background: linear-gradient(90deg, #00b3b3, #00cccc);
+        color: white;
+        padding: 14px 30px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.05rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 5px 15px rgba(0,179,179,0.3);
+    }
+
+    .add-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0,179,179,0.4);
+    }
+
+    .back-btn {
+        display: block;
+        width: 230px;
+        margin: 45px auto 0;
+        background: linear-gradient(90deg, #555, #777);
+        text-align: center;
+        color: #fff;
+        padding: 12px 0;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+
+    .back-btn:hover {
+        background: linear-gradient(90deg, #444, #666);
+        transform: translateY(-3px);
+    }
+
+    footer {
+        text-align: center;
+        padding: 25px;
+        font-size: 0.9rem;
+        color: #666;
+    }
+</style>
+</head>
+<body>
+    <header>🐾 My Pets</header>
+
+    <div class="container">
+        <a href="{% url 'add_pet' %}" class="add-btn">➕ Add New Pet</a>
+
+        <div class="pet-list">
+            {% for pet in pets %}
+                <!-- Entire card links to pet_detail -->
+                <a href="{% url 'pet_detail' pet_id=pet.id %}" class="pet-card">
+                    {% if pet.image %}
+                        <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                    {% else %}
+                        <img src="{% static 'images/default_pet.png' %}" alt="No image">
+                    {% endif %}
+                    <h3>{{ pet.name }}</h3>
+                </a>
+            {% empty %}
+                <p style="text-align:center; color:#555;">No pets added yet. 🐶🐱</p>
+            {% endfor %}
+        </div>
+
+        <a href="{% url 'homepage' %}" class="back-btn">⬅ Back to Home</a>
+    </div>
+
+    <footer>
+        © {{ year|default:2025 }} MFC Pet Life Veterinary Clinic | All Rights Reserved
+    </footer>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFC Pet Care System - Home</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Welcome to MFC Pet Care System</h1>
+        <nav>
+            <a href="{% url 'home' %}">Home</a> |
+            <a href="{% url 'register' %}">Register</a> |
+            <a href="{% url 'login' %}">Log In</a> |
+            <a href="{% url 'logout' %}">Log Out</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Hello, {{ user.username }}!</h2>
+        <p>You are successfully logged in.</p>
+
+        <section>
+            <h3>Features:</h3>
+            <ul>
+                <li>🐾 View Pet Profiles</li>
+                <li>💉 Track Vaccine Records</li>
+                <li>📅 Book Vet Appointments</li>
+                <li>👩‍⚕️ View Vet Availability</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 MFC Pet Life Veterinary Clinic</p>
+    </footer>
+</body>
+</html>

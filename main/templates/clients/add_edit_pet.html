@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ pet.name }} - Profile</title>
+<style>
+.profile-container {
+  width: 400px;
+  margin: 30px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  text-align: center;
+}
+.profile-container img {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+  object-fit: cover;
+  cursor: pointer;
+}
+.profile-container h2 {
+  margin: 10px 0;
+}
+input[type="file"] {
+  display: none;
+}
+</style>
+</head>
+<body>
+<div class="profile-container">
+  <h2>{{ pet.name }}</h2>
+  
+  <!-- Pet Image -->
+  <label for="petImageInput">
+    <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
+  </label>
+  <input type="file" id="petImageInput" accept="image/*">
+  
+  <p><strong>Species:</strong> {{ pet.species }}</p>
+  <p><strong>Breed:</strong> {{ pet.breed }}</p>
+  <p><strong>Gender:</strong> {{ pet.gender }}</p>
+  <p><strong>Birthday:</strong> {{ pet.birthday }}</p>
+  <p><strong>Owner Contact:</strong> {{ pet.owner.ownerprofile.contact }}</p>
+  <p><strong>Address:</strong> {{ pet.owner.ownerprofile.address }}</p>
+</div>
+
+<script>
+// Click image to select a new photo
+const imageInput = document.getElementById('imageInput');
+const imagePreview = document.getElementById('imagePreview');
+
+imagePreview.addEventListener('click', () => imageInput.click());
+
+// Preview selected image
+imageInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => imagePreview.src = e.target.result;
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+</body>
+</html>

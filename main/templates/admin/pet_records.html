@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pet Records | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            background: #f0f2f5;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #00695c, #004d40);
+            color: white;
+            position: fixed;
+            height: 100%;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+        }
+
+        .nav-links a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .logout-btn {
+            background-color: #d32f2f;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #b71c1c;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .header h1 {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .actions input[type="text"] {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            width: 300px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .actions input[type="text"]:focus {
+            border-color: #00695c;
+            box-shadow: 0 0 8px rgba(0,105,92,0.3);
+        }
+
+        .btn-add {
+            background-color: #00695c;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-add:hover {
+            background-color: #004d40;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 18px 15px;
+            text-align: left;
+        }
+
+        th {
+            background: #00695c;
+            color: white;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #e0f2f1;
+        }
+
+        /* Action buttons inside table */
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-edit {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #1976d2;
+        }
+
+        .btn-delete {
+            background-color: #e53935;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #b71c1c;
+        }
+
+        /* Empty table message */
+        .empty-message {
+            text-align: center;
+            color: #777;
+            padding: 25px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .actions input[type="text"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>🐾 Admin Panel</h2>
+        <div class="nav-links">
+            <a href="{% url 'admin_dashboard' %}">🏠 Dashboard</a>
+            <a href="{% url 'user_registry' %}" class="active">👥 User Registry</a>
+            <a href="{% url 'pet_records' %}" class="active">🐶 Pet Records</a>
+            <a href="#">💉 Vaccination Records</a>
+            <a href="#">📅 Appointment Hub</a>
+            <a href="#">🩺 Vet Availability</a>
+        </div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">🚪 Logout</button>
+        </form>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>🐶 Pet Records</h1>
+        </div>
+
+        <div class="actions">
+            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="🔍 Search pet...">
+            <a href="{% url 'add_pet' %}" class="btn-add">➕ Add New Pet</a>
+        </div>
+
+        <table id="petTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Pet Name</th>
+                    <th>Owner</th>
+                    <th>Type</th>
+                    <th>Breed</th>
+                    <th>Age</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pet in pets %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ pet.name }}</td>
+                    <td>{{ pet.owner.username }}</td>
+                    <td>{{ pet.type }}</td>
+                    <td>{{ pet.breed }}</td>
+                    <td>{{ pet.age }}</td>
+                    <td>
+                        <a href="{% url 'edit_pet' pet.id %}" class="btn btn-edit">Edit</a>
+                        <form action="{% url 'delete_pet' pet.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-delete">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty-message">No pets found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function filterTable() {
+            const searchValue = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll("#petTable tbody tr");
+            rows.forEach(row => {
+                const petName = row.cells[1].textContent.toLowerCase();
+                const owner = row.cells[2].textContent.toLowerCase();
+                row.style.display = (petName.includes(searchValue) || owner.includes(searchValue)) ? "" : "none";
+            });
+        }
+    </script>
+</body>
+</html>

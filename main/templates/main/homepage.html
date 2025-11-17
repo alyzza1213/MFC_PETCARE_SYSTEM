@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage | MFC Pet Life Clinic</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9fb;
+            color: #333;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 12px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: #ffeb3b;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70vh;
+            text-align: center;
+        }
+
+        section {
+            background: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #4CAF50;
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #555;
+        }
+
+        footer {
+            background-color: #333;
+            color: #eee;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+       
+        nav a:last-child {
+            background: #fff;
+            color: #4CAF50;
+            padding: 6px 14px;
+            border-radius: 8px;
+        }
+
+        nav a:last-child:hover {
+            background: #45a049;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🐾 Welcome to MFC Pet Life Veterinary Clinic</h1>
+        <nav>
+            <a href="{% url 'homepage' %}">Home</a>
+            <a href="{% url 'pet_profile' %}">View Pet Profile</a>
+            <a href="{% url 'vet_availability' %}">View Vet Availability</a>
+            <a href="{% url 'vaccine_records' %}">Vaccine Record</a>
+             <a href="{% url 'my_appointments' %}">My Appointment</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Hello, {{ user.username }}!</h2>
+            <p>Welcome back! Explore your pet’s health, appointments, and vaccination records with ease.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 MFC Pet Life Veterinary Clinic — All Rights Reserved</p>
+    </footer>
+</body>
+</html>

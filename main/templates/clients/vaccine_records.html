@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🐾 My Pets - Vaccines</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #e0f7f7, #f0f4f8);
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #008080;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 25px;
+            padding: 12px 20px;
+            background-color: #008080;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #006666;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px 20px;
+            max-width: 1000px;
+            margin: 30px auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #008080;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1rem;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        thead {
+            background-color: #008080;
+            color: #ffffff;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        tbody tr {
+            background: #f9f9f9;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #e0f7f7;
+            transform: translateY(-2px);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px 0;
+            color: #777;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="{% url 'homepage' %}" class="back-btn">← Back to Home</a>
+
+    <h2>My Pets - Vaccine Records</h2>
+
+    {% if pets %}
+        {% for pet in pets %}
+            <div class="card">
+                <h3>{{ pet.name }} ({{ pet.species }})</h3>
+
+                {% if pet.vaccines.exists %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date Given</th>
+                                <th>Next Due</th>
+                                <th>Weight</th>
+                                <th>Vaccine</th>
+                                <th>Manufacturer</th>
+                                <th>Veterinarian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for v in pet.vaccines.all %}
+                            <tr>
+                                <td>{{ v.date_given|date:"M d, Y" }}</td>
+                                <td>{{ v.next_due_date|date:"M d, Y" }}</td>
+                                <td>{{ v.weight }} kg</td>
+                                <td>{{ v.vaccine_name }}</td>
+                                <td>{{ v.manufacturer }}</td>
+                                <td>{{ v.veterinarian }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="no-data">
+                        <p>No vaccine records found for this pet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-data">
+            <p>No pets found. Please add your pet first.</p>
+        </div>
+    {% endif %}
+
+</body>
+</html>

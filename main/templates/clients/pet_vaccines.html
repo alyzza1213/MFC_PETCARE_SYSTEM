@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ pet.name }} - Vaccine Records</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <a href="{% url 'pet_profile' %}">← Back to Pets</a>
+    <h2>{{ pet.name }} - Vaccine Records</h2>
+
+    {% if records %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Vaccine</th>
+                    <th>Date Given</th>
+                    <th>Next Due</th>
+                    <th>Weight</th>
+                    <th>Manufacturer</th>
+                    <th>Veterinarian</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for rec in records %}
+                <tr>
+                    <td>{{ rec.vaccine_name }}</td>
+                    <td>{{ rec.date_given|date:"F d, Y" }}</td>
+                    <td>{{ rec.next_due_date|date:"F d, Y" }}</td>
+                    <td>{{ rec.weight|default:"-" }}</td>
+                    <td>{{ rec.manufacturer|default:"-" }}</td>
+                    <td>{{ rec.veterinarian|default:"-" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No vaccine records found for {{ pet.name }}.</p>
+    {% endif %}
+</body>
+</html>

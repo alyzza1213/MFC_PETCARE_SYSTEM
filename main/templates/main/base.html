@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MFC Pet Care System</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7fafc;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: #008080;
+            padding: 15px;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        hr {
+            border: none;
+            border-top: 2px solid #ccc;
+            margin: 0;
+        }
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'index' %}">Home</a>
+        {% if user.is_authenticated %}
+            | <a href="{% url 'pet_profile' %}">View Pet Profile</a>
+            | <a href="{% url 'vet_availability' %}">View Availability</a>
+            | <a href="{% url 'vaccine_record' %}">Vaccine Record</a>
+            | <a href="{% url 'book_appointment' %}">Book Appointment</a>
+            <a href="{% url 'my_appointments' %}">My Appointment</a>
+            | <a href="{% url 'logout' %}">Log Out</a>
+        {% else %}
+            | <a href="{% url 'register' %}">Register</a>
+            | <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </nav>
+    <hr>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
