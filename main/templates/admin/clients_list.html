@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ client.username }} | MFC Pet Life</title>
+</head>
+<body>
+    <h1>🐾 Pets of {{ client.username }}</h1>
+    
+    {% if pets %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Pet Name</th>
+                <th>Type</th>
+                <th>Breed</th>
+                <th>Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pet in pets %}
+            <tr>
+                <td>{{ pet.name }}</td>
+                <td>{{ pet.type }}</td>
+                <td>{{ pet.breed }}</td>
+                <td>{{ pet.age }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>This client has no pets.</p>
+    {% endif %}
+    
+    <a href="{% url 'clients_list' %}">← Back to Clients List</a>
+</body>
+</html>

@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Clients & Pets | MFC Pet Life</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+body { 
+    margin: 0; 
+    font-family: "Poppins", sans-serif; 
+    background: #f0f2f5; 
+}
+.main-content { 
+    padding: 40px; 
+    margin-left: 280px; 
+}
+h1, h2 { color: #333; }
+
+.client-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.client-card h2 { margin-bottom: 5px; }
+.client-card p { margin: 3px 0; }
+
+.pets-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.pet-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.pet-card:hover { background: #e0f2f1; }
+
+.pet-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #00695c;
+    text-decoration: none;
+}
+
+.pet-info { font-size: 14px; color: #333; }
+
+.pet-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 5px;
+}
+
+.pet-actions a {
+    text-decoration: none;
+    font-size: 13px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: white;
+    background-color: #00695c;
+    transition: 0.3s;
+}
+
+.pet-actions a:hover { background-color: #004d40; }
+
+.empty-message { color: #777; padding: 10px; }
+</style>
+</head>
+<body>
+<div class="main-content">
+    <h1>👥 Clients</h1>
+
+    {% if clients %}
+        {% for client in clients %}
+        <div class="client-card">
+            <h2>{{ client.username }}</h2>
+            <p><strong>Email:</strong> {{ client.email }}</p>
+            <p><strong>Date Joined:</strong> {{ client.date_joined|date:"M d, Y" }}</p>
+
+            <h3>🐶 Pets</h3>
+            {% if client.pet_set.all %}
+            <div class="pets-container">
+                {% for pet in client.pet_set.all %}
+                <div class="pet-card">
+                    <a href="{% url 'pet_detail_admin' pet.id %}" class="pet-name">{{ pet.name }}</a>
+                    <p class="pet-info">{{ pet.species }} - {{ pet.breed|default:"N/A" }}</p>
+                    <p class="pet-info">Age: {% if pet.birthday %}{{ pet.calculate_age }}{% else %}N/A{% endif %}</p>
+                    <div class="pet-actions">
+                        <a href="{% url 'edit_pet_admin' pet.id %}">✏ Edit</a>
+                        <a href="{% url 'delete_pet_admin' pet.id %}" onclick="return confirm('Delete this pet?')">🗑 Delete</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="empty-message">No pets registered for this client.</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+    <p class="empty-message">No clients found.</p>
+    {% endif %}
+</div>
+</body>
+</html>

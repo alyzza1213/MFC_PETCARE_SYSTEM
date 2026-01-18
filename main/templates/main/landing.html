@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MFC PetCare Veterinary Clinic</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* RESET */
+    * { margin:0; padding:0; box-sizing:border-box; font-family: 'Roboto', sans-serif; }
+
+    body {
+      background: #f7f9fc;
+      color: #333;
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* HEADER */
+    header {
+      padding: 40px 20px;
+    }
+
+    header img {
+      max-width: 200px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin: 20px 0 10px;
+      color: #2c3e50;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      color: #555;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-block;
+      padding: 12px 25px;
+      margin: 10px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .btn-login { background-color: #2ecc71; color: white; }
+    .btn-login:hover { background-color: #27ae60; }
+
+    .btn-book { background-color: #3498db; color: white; }
+    .btn-book:hover { background-color: #2980b9; }
+
+    .btn-about { background-color: #e67e22; color: white; }
+    .btn-about:hover { background-color: #d35400; }
+
+    .btn-contact { background-color: #9b59b6; color: white; }
+    .btn-contact:hover { background-color: #8e44ad; }
+
+    .btn-services { background-color: #f1c40f; color: white; }
+    .btn-services:hover { background-color: #d4ac0d; }
+
+    /* HERO IMAGE */
+    .hero {
+      margin-top: 30px;
+    }
+
+    .hero img {
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 50px;
+      padding: 20px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+
+    @media(max-width:768px){
+      header h1 { font-size: 2rem; }
+      header p { font-size: 1rem; }
+      .btn { width: 80%; margin: 10px 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="{% static 'images/mfc_logo.png' %}" alt="MFC PetCare Logo">
+      <h1>Welcome to MFC PetCare Veterinary Clinic</h1>
+      <p>Your trusted partner for pet health and happiness</p>
+    </header>
+
+    <div class="hero">
+      <img src="{% static 'images/clinic_hero.jpg' %}" alt="Happy Pets">
+    </div>
+
+    <div class="buttons">
+      <a href="{% url 'login' %}" class="btn btn-login">Login</a>
+      <a href="#" class="btn btn-book">Book Appointment</a>
+      <a href="#" class="btn btn-about">About Us</a>
+      <a href="#" class="btn btn-contact">Contact Us</a>
+      <a href="#" class="btn btn-services">Services</a>
+    </div>
+
+    <footer>
+      &copy; {{ year }} MFC PetCare Veterinary Clinic. All rights reserved.
+    </footer>
+  </div>
+</body>
+</html>

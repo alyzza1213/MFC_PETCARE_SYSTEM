@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>{{ pet.name }} - Profile</title>
+<title>{% if pet %}{{ pet.name }}{% else %}Add Pet{% endif %} - Profile</title>
 <style>
 .profile-container {
   width: 400px;
@@ -20,6 +20,10 @@
   border-radius: 10px;
   object-fit: cover;
   cursor: pointer;
+  transition: 0.3s all;
+}
+.profile-container img:hover {
+  transform: scale(1.05);
 }
 .profile-container h2 {
   margin: 10px 0;
@@ -30,39 +34,81 @@ input[type="file"] {
 </style>
 </head>
 <body>
+
 <div class="profile-container">
-  <h2>{{ pet.name }}</h2>
-  
+  <h2>{% if pet %}{{ pet.name }}{% else %}New Pet{% endif %}</h2>
+
   <!-- Pet Image -->
   <label for="petImageInput">
-    <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
+    {% if pet and pet.image %}
+      <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
+    {% else %}
+      <img id="petImage" src="{% static 'images/default_pet.png' %}" alt="Default Pet">
+    {% endif %}
   </label>
-  <input type="file" id="petImageInput" accept="image/*">
-  
-  <p><strong>Species:</strong> {{ pet.species }}</p>
-  <p><strong>Breed:</strong> {{ pet.breed }}</p>
-  <p><strong>Gender:</strong> {{ pet.gender }}</p>
-  <p><strong>Birthday:</strong> {{ pet.birthday }}</p>
-  <p><strong>Owner Contact:</strong> {{ pet.owner.ownerprofile.contact }}</p>
-  <p><strong>Address:</strong> {{ pet.owner.ownerprofile.address }}</p>
+  <input type="file" id="petImageInput" name="image" accept="image/*">
+
+  {% if pet %}
+    <p><strong>Species:</strong> {{ pet.species|default:"Not set" }}</p>
+    <p><strong>Breed:</strong> {{ pet.breed|default:"Not set" }}</p>
+    <p><strong>Gender:</strong> {{ pet.gender|default:"Not set" }}</p>
+    <p><strong>Birthday:</strong> {% if pet.birthday %}{{ pet.birthday|date:"F d, Y" }}{% else %}Not set{% endif %}</p>
+    <p><strong>Age:</strong> {% if pet.birthday %}{{ pet.calculate_age }}{% else %}{{ pet.age }}{% endif %}</p>
+    <p><strong>Weight (kg):</strong> {% if pet.weight %}{{ pet.weight }}{% else %}Not set{% endif %}</p>
+    <p><strong>Owner Contact:</strong> {% if pet.owner.ownerprofile %}{{ pet.owner.ownerprofile.contact|default:"Not set" }}{% else %}Not set{% endif %}</p>
+    <p><strong>Address:</strong> {% if pet.owner.ownerprofile %}{{ pet.owner.ownerprofile.address|default:"Not set" }}{% else %}Not set{% endif %}</p>
+  {% else %}
+    <!-- Add Pet Form -->
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <p><input type="text" name="name" placeholder="Pet Name" required></p>
+      <p><input type="text" name="species" placeholder="Species" required></p>
+      <p><input type="text" name="breed" placeholder="Breed"></p>
+      <p>
+        <select name="gender" required>
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </p>
+      <p><input type="date" name="birthday" required></p>
+      <p><input type="number" step="0.01" name="weight" placeholder="Weight (kg)"></p>
+      <p><input type="file" name="image" accept="image/*"></p>
+      <button type="submit">Add Pet</button>
+    </form>
+  {% endif %}
 </div>
 
+{% if pet %}
 <script>
-// Click image to select a new photo
-const imageInput = document.getElementById('imageInput');
-const imagePreview = document.getElementById('imagePreview');
+const petImageInput = document.getElementById('petImageInput');
+const petImage = document.getElementById('petImage');
 
-imagePreview.addEventListener('click', () => imageInput.click());
+petImage.addEventListener('click', () => petImageInput.click());
 
-// Preview selected image
-imageInput.addEventListener('change', (event) => {
+petImageInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = (e) => imagePreview.src = e.target.result;
+        reader.onload = (e) => petImage.src = e.target.result;
         reader.readAsDataURL(file);
+
+        const formData = new FormData();
+        formData.append("image", file);
+        fetch("{% url 'update_pet_image' pet.id %}", {
+            method: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === 'success') console.log("Image updated!");
+            else alert("Failed to update image.");
+        });
     }
 });
 </script>
+{% endif %}
+
 </body>
 </html>

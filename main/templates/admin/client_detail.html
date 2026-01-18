@@ -1,0 +1,136 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Client Detail | MFC Pet Life Admin</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<style>
+body {
+    font-family: Poppins, sans-serif;
+    margin: 0;
+    background: #f0f2f5;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: #00695c;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+.sidebar h2 { text-align: center; margin-bottom: 40px; }
+.sidebar a { color: white; text-decoration: none; padding: 15px 25px; display: block; transition: 0.3s; }
+.sidebar a:hover { background: #004d40; }
+
+/* Main content */
+.main-content { margin-left: 250px; padding: 40px; }
+
+/* Client Card */
+.client-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+.client-card h1 { margin-bottom: 15px; font-size: 28px; }
+.client-card p { font-size: 16px; margin: 5px 0; }
+
+/* Pets Section */
+.pets-section h2 { font-size: 22px; margin-bottom: 15px; }
+
+.pet-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    cursor: pointer;
+}
+.pet-card:hover { background: #e0f2f1; }
+
+.pet-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    color: #00695c;
+}
+
+.pet-details { color: #333; margin-bottom: 10px; }
+
+.pet-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+.pet-actions a {
+    text-decoration: none;
+    background: #00695c;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+.pet-actions a:hover { background: #004d40; }
+
+@media(max-width:768px){
+    .sidebar { width: 100%; height: auto; position: relative; }
+    .main-content { margin-left:0; padding:20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar Navigation -->
+<div class="sidebar">
+    <h2>MFC Pet Life</h2>
+    <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+    <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+    <a href="{% url 'appointment_list' %}">Appointments</a>
+    <a href="{% url 'vet_availability_admin' %}" class='active'>🩺 <span>Vet Availability</span></a>
+    <a href="{% url 'logout' %}">Logout</a>
+</div>
+
+<div class="main-content">
+
+    
+    <div class="client-card">
+        <h1>👤 {{ client.username|default:"No Name" }}</h1>
+        <p><strong>Email:</strong> {{ client.email|default:"-" }}</p>
+        <p><strong>Date Joined:</strong> {{ client.date_joined|date:"M d, Y"|default:"-" }}</p>
+    </div>
+
+    
+   <div class="pets-section">
+    <h2>🐶 Pets List</h2>
+
+      {% if pets %}
+            {% for pet in pets %}
+                <div class="pet-card" onclick="window.location.href='{% url 'pet_detail_admin' pet.id %}'">
+                    <p class="pet-name">{{ pet.name }} - {{ pet.species }}</p>
+                    <div class="pet-actions">
+                        <a href="{% url 'edit_pet_admin' pet.id %}" onclick="event.stopPropagation();">✏ Edit</a>
+                      <a href="{% url 'remove_pet_admin' pet.id %}" onclick="event.stopPropagation();">Remove</a>
+
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No pets found for this client.</p>
+        {% endif %}
+    </div>
+
+
+</div>
+
+</body>
+</html>

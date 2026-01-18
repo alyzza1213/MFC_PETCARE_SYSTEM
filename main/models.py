@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from datetime import date
+from datetime import date, timedelta
+
+
 
 # 👤 OWNER INFO
 class Owner(models.Model):
@@ -16,7 +18,7 @@ class Owner(models.Model):
 
 # 🐶 PET MODEL
 class Pet(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)  # or link to Owner if you prefer
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     species = models.CharField(max_length=50)
     breed = models.CharField(max_length=100, blank=True, null=True)
@@ -26,34 +28,64 @@ class Pet(models.Model):
     age = models.PositiveIntegerField(default=0)
     weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     image = models.ImageField(upload_to='pets/', blank=True, null=True)
+    is_active = models.BooleanField(default=True)  # Soft-delete flag
 
     def __str__(self):
         return self.name
 
-    @property
     def calculate_age(self):
-        """Automatically calculate age from birthday if available"""
         if self.birthday:
             today = date.today()
             years = today.year - self.birthday.year
-            if today.month < self.birthday.month or (today.month == self.birthday.month and today.day < self.birthday.day):
+            if (today.month, today.day) < (self.birthday.month, self.birthday.day):
                 years -= 1
             return years
         return self.age
 
-
 # 💉 VACCINE RECORD
-class VaccineRecord(models.Model):
-    pet = models.ForeignKey(Pet, on_delete=models.CASCADE)
-    vaccine_name = models.CharField(max_length=100)
+class Vaccination(models.Model):
+    pet = models.ForeignKey(
+        'Pet',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='vaccinations'
+    )
     date_given = models.DateField()
-    next_due_date = models.DateField(blank=True, null=True)
-    weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    remarks = models.TextField(blank=True, null=True)
+    next_due = models.DateField(null=True, blank=True)
+    weight = models.DecimalField(max_digits=5, decimal_places=2)
+    vaccine_name = models.CharField(max_length=100)
+    manufacturer = models.CharField(max_length=100)
+    veterinarian = models.CharField(max_length=100)
 
-    def __str__(self):
-        return f"{self.vaccine_name} - {self.pet.name}"
 
+class Vaccine(models.Model):
+    pet = models.ForeignKey(
+        Pet,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='vaccine_records'
+    )
+    date_given = models.DateField()
+    next_due = models.DateField(null=True, blank=True)
+    weight = models.FloatField()
+    vaccine_name = models.CharField(max_length=100)
+    manufacturer = models.CharField(max_length=100, blank=True)
+    veterinarian = models.CharField(max_length=100, blank=True)
+
+class VaccineRecord(models.Model):
+    pet = models.ForeignKey(
+        Pet,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    vaccine_name = models.CharField(max_length=100)
+    manufacturer = models.CharField(max_length=100)
+    date_given = models.DateField()
+    next_due = models.DateField()
+    veterinarian = models.CharField(max_length=100)
 
 # 🩺 VET AVAILABILITY
 class VetAvailability(models.Model):
@@ -82,8 +114,19 @@ class VetAvailability(models.Model):
             raise ValidationError("End time must be after start time.")
 
 
+class Service(models.Model):
+    name = models.CharField(max_length=100)  # "Vaccination", "Grooming", etc.
+    duration = models.DurationField()  # e.g., 15 mins, 1 hour
+    price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+
+ 
 # 📅 APPOINTMENT
 class Appointment(models.Model):
+    APPOINTMENT_TYPES = [
+        ('Vaccination', 'Vaccination'),
+        ('Grooming', 'Grooming'),
+        ('Check-up', 'Check-up'),
+    ]
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Approved', 'Approved'),
@@ -91,11 +134,54 @@ class Appointment(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    pet = models.ForeignKey(Pet, on_delete=models.CASCADE)
+
+    # FIX: appointments remain even if pet is deleted
+    pet = models.ForeignKey(
+    Pet,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name='appointments'
+)
+
     date = models.DateField()
     time = models.TimeField()
+    appointment_type = models.CharField(max_length=20, choices=APPOINTMENT_TYPES)
     notes = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
 
+    class Meta:
+        ordering = ['date', 'time']
+
+    @property
+    def duration(self):
+        return timedelta(minutes=60 if self.appointment_type == 'Grooming' else 30)
+
     def __str__(self):
-        return f"{self.pet.name} with {self.user.username} on {self.date} at {self.time}"
+        if self.pet:
+            return f"{self.pet.name} ({self.appointment_type}) with {self.user.username} on {self.date} at {self.time}"
+        else:
+            return f"Deleted Pet ({self.appointment_type}) with {self.user.username} on {self.date} at {self.time}"
+
+class WorkingDay(models.Model):
+    date = models.DateField(unique=True)
+    is_active = models.BooleanField(default=True)   # ✅ Make sure this exists
+    morning_open = models.BooleanField(default=True)
+    afternoon_open = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.date} ({'Active' if self.is_active else 'Inactive'})"
+
+
+class History(models.Model):
+    pet = models.ForeignKey(
+        Pet,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    description = models.TextField()
+    date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"History for {self.pet.name if self.pet else 'Deleted Pet'}"

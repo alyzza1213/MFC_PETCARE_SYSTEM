@@ -131,21 +131,21 @@
     <div class="container">
         <a href="{% url 'add_pet' %}" class="add-btn">➕ Add New Pet</a>
 
+
         <div class="pet-list">
-            {% for pet in pets %}
-                <!-- Entire card links to pet_detail -->
-                <a href="{% url 'pet_detail' pet_id=pet.id %}" class="pet-card">
-                    {% if pet.image %}
-                        <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
-                    {% else %}
-                        <img src="{% static 'images/default_pet.png' %}" alt="No image">
-                    {% endif %}
-                    <h3>{{ pet.name }}</h3>
-                </a>
-            {% empty %}
-                <p style="text-align:center; color:#555;">No pets added yet. 🐶🐱</p>
-            {% endfor %}
-        </div>
+    {% for pet in pets %}
+        <a href="{% url 'pet_detail' pet_id=pet.id %}" class="pet-card">
+            {% if pet.image %}
+                <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+            {% else %}
+                <img src="{% static 'images/default_pet.png' %}" alt="{{ pet.name }}">
+            {% endif %}
+            <h3>{{ pet.name }}</h3>
+        </a>
+    {% empty %}
+        <p style="text-align:center; color:#555;">No pets added yet. 🐶🐱</p>
+    {% endfor %}
+</div>
 
         <a href="{% url 'homepage' %}" class="back-btn">⬅ Back to Home</a>
     </div>

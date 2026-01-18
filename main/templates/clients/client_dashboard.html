@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage | MFC Pet Life Clinic</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9fb;
+            color: #333;
+            display: flex;
+        }
+
+        /* ------ SIDEBAR ------ */
+        .sidebar {
+            width: 240px;
+            background-color: #4CAF50;
+            height: 100vh;
+            padding: 20px;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            margin: 0 0 20px;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            margin: 8px 0;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #45a049;
+        }
+
+        /* ------ MAIN CONTENT ------ */
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+            width: calc(100% - 260px);
+            text-align: center;
+        }
+
+        section {
+            background: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+
+        h2 {
+            color: #4CAF50;
+        }
+
+        footer {
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>🐾 MFC Pet Life</h2>
+
+        <a href="{% url 'homepage' %}">Home</a>
+        <a href="{% url 'pet_profile' %}">View Pet Profile</a>
+        <a href="{% url 'vet_availability' %}">View Vet Availability</a>
+       
+        <a href="{% url 'my_appointments' %}">My Appointment</a>
+        <a href="{% url 'logout' %}">Log Out</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <section>
+            <h2>Hello, {{ user.username }}!</h2>
+            <p>Welcome back! Explore your pet’s health, appointments, and vaccination records with ease.</p>
+        </section>
+
+        <footer>
+            <p>&copy; 2025 MFC Pet Life Veterinary Clinic — All Rights Reserved</p>
+        </footer>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if pet %}Edit Pet{% else %}Add New Pet{% endif %}</title>
+    <link rel="stylesheet" href="{% static 'css/admin_styles.css' %}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f7f9fc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select,
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .current-image {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 2px solid #007bff;
+            border-radius: 12px;
+            background-color: #f0f8ff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .current-image img {
+            max-width: 180px;
+            border-radius: 12px;
+            border: 2px solid #007bff;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        em {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .notice {
+            background: #e7f3ff;
+            border-left: 6px solid #007bff;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .upload-section {
+            padding: 15px;
+            border: 2px dashed #007bff;
+            border-radius: 12px;
+            background-color: #f0f8ff;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        .upload-section input[type="file"] {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>{% if pet %}Edit Pet{% else %}Add New Pet{% endif %}</h1>
+
+    {% if pet and pet.image %}
+    <div class="current-image">
+        <label>Current Image:</label><br>
+        <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+    </div>
+    {% endif %}
+
+    {% if user.is_staff %}
+        <div class="notice">
+            Admin can view the uploaded image but <strong>cannot change it</strong>.
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" name="name" id="name" value="{{ pet.name|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="species">Species:</label>
+            <input type="text" name="species" id="species" value="{{ pet.species|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="breed">Breed:</label>
+            <input type="text" name="breed" id="breed" value="{{ pet.breed|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender:</label>
+            <select name="gender" id="gender">
+                <option value="Male" {% if pet.gender == 'Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if pet.gender == 'Female' %}selected{% endif %}>Female</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="color">Color:</label>
+            <input type="text" name="color" id="color" value="{{ pet.color|default:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="birthday">Birthday:</label>
+            <input type="date" name="birthday" id="birthday" value="{{ pet.birthday|date:'Y-m-d'|default:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="owner">Owner:</label>
+            <select name="owner" id="owner">
+                {% for user in owners %}
+                    <option value="{{ user.id }}" {% if pet and pet.owner.id == user.id %}selected{% endif %}>
+                        {{ user.username }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% if not user.is_staff %}
+        <div class="upload-section">
+            <p>Upload New Image (only you can change this):</p>
+            <input type="file" name="image" id="image">
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn">{% if pet %}Update{% else %}Add{% endif %}</button>
+    </form>
+</div>
+</body>
+</html>
