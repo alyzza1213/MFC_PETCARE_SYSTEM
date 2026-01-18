@@ -1,0 +1,82 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+}
+
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #4a7cff;
+    color: white;
+    padding: 20px;
+    position: fixed;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin: 12px 0;
+}
+
+.main-content {
+    margin-left: 240px;
+    padding: 30px;
+}
+
+table {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    border-collapse: collapse;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 14px;
+    text-align: left;
+}
+
+thead {
+    background: #eef2ff;
+}
+
+.status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status.pending { background: #fff3cd; }
+.status.approved { background: #d4edda; }
+.status.cancelled { background: #f8d7da; }
+
+.btn {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.approve { background: #28a745; color: white; }
+.cancel { background: #dc3545; color: white; }
+.resched { background: #ffc107; }
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+}
+
+.modal-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    margin: 15% auto;
+    text-align: center;
+}

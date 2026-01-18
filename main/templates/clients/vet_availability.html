@@ -60,9 +60,21 @@ h1 {
     transform: scale(1.05);
 }
 .day-card.non-working {
-    background-color: #f8f8f8;
-    color: #999;
+    background-color: #ffcdd2;
+    color: #c62828;
     cursor: not-allowed;
+}
+.day-card.past-day {
+    background-color: #eeeeee;
+    color: #aaa;
+}
+.day-card.past-day:hover {
+    transform: scale(1.05);
+}
+.empty-day {
+    background: transparent;
+    box-shadow: none;
+    cursor: default;
 }
 .status-badge {
     margin-top: 5px;
@@ -77,31 +89,55 @@ h1 {
 </style>
 </head>
 <body>
+
 <div class="container">
 
 <a href="{% url 'homepage' %}" class="back-btn">← Back to Home</a>
 <h1>{{ current_month|date:"F Y" }}</h1>
 
 <div class="calendar">
+
     <!-- Weekday headers -->
     <div class="day-header">Mon</div>
     <div class="day-header">Tue</div>
     <div class="day-header">Wed</div>
     <div class="day-header">Thu</div>
-    <div class="day-header">Fri</div>    
+    <div class="day-header">Fri</div>
     <div class="day-header">Sat</div>
     <div class="day-header">Sun</div>
 
-    <!-- Days -->
+    <!-- EMPTY DAYS BEFORE MONTH START -->
+    {% for _ in empty_days_start %}
+        <div class="day-card empty-day"></div>
+    {% endfor %}
+
+    <!-- ACTUAL DAYS -->
     {% for day_info in month_days %}
-        <div class="day-card {% if day_info.status == 'Closed' %}non-working{% endif %}"
-             {% if day_info.status != 'Closed' %}onclick="window.location.href='{% url 'book_appointment' %}?date={{ day_info.date }}'"{% endif %}>
+        {% if day_info.status != 'closed' %}
+            <div class="day-card {% if day_info.date < today %}past-day{% endif %}"
+                 onclick="window.location.href='{% url 'book_appointment' %}?date={{ day_info.date|date:'Y-m-d' }}'">
+        {% else %}
+            <div class="day-card non-working">
+        {% endif %}
+
             {{ day_info.date|date:"d M Y" }}
-            <span class="status-badge {% if day_info.status == 'Whole Day' %}whole{% elif day_info.status == 'Half Day' %}half{% else %}closed{% endif %}">
-                {{ day_info.status }}
+
+            <span class="status-badge
+                {% if day_info.status == 'whole' %}whole
+                {% elif day_info.status == 'half' %}half
+                {% else %}closed{% endif %}">
+                {% if day_info.status == 'whole' %}Whole Day
+                {% elif day_info.status == 'half' %}Half Day
+                {% else %}Closed{% endif %}
             </span>
         </div>
     {% endfor %}
+
+    <!-- EMPTY DAYS AFTER MONTH END -->
+    {% for _ in empty_days_end %}
+        <div class="day-card empty-day"></div>
+    {% endfor %}
+
 </div>
 
 </div>

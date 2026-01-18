@@ -5,271 +5,335 @@
 <meta charset="UTF-8">
 <title>{{ pet.name }} - Profile</title>
 <style>
-/* --- Profile Container --- */
-.profile-container {
-    width: 400px;
-    margin: 30px auto;
-    background: #fff;
-    padding: 25px 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    text-align: center;
+body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-.profile-container img {
-    width: 180px;
-    height: 180px;
-    border-radius: 12px;
-    object-fit: cover;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-.profile-container img:hover {
-    transform: scale(1.05);
-}
-.profile-container h2 {
-    margin: 12px 0;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px 0;
     color: #333;
 }
-.profile-container p {
-    margin: 6px 0;
-    color: #555;
-    font-size: 14px;
-}
-input[type="file"] {
-    display: none;
-}
-input[type="number"] {
-    width: 100px;
-    padding: 5px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    margin-top: 5px;
-}
-.btn-update {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 15px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-.btn-update:hover {
-    background-color: #0056b3;
-}
-.notice {
-    font-size: 13px;
-    color: #888;
-    margin-top: 10px;
+.container {
+    width: 95%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    gap: 25px;
 }
 
-/* --- Vaccine Records Grid --- */
-.vaccine-section {
-    width: 90%;
-    margin: 30px auto;
+.back-btn {
+    display: inline-block;
+    width: 10%;
+    margin-bottom: 20px;
+    padding: 10px 18px;
+    background-color: #00796b;
+    color: white;
+    text-decoration: none;
+    font-size: 120%;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.back-btn:hover {
+    background: #00796b;
+}
+
+/* Pet Profile Card */
+.card {
     background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+.card.flex {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+/* Image */
+.card img {
+    width: 250px;
+    height: 250px;
+    border-radius: 15px;
+    object-fit: cover;
+    border: 3px solid #004d40;
+}
+
+/* Info Section */
+.info-list {
+    flex: 2;
+    min-width: 250px;
+}
+.info-list h2 {
+    margin-bottom: 20px;
+    color: #004d40;
+    font-size: 28px;
+}
+.info-list p {
+    margin: 8px 0;
+    font-size: 15px;
+}
+.info-list strong {
+    color: #004d40;
+}
+
+/* Record Menu */
+.records-menu {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+.record-card {
+    flex: 1;
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-.vaccine-section h2 {
     text-align: center;
-    margin-bottom: 20px;
-    color: #333;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
-.vaccine-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+.record-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
-.vaccine-grid .grid-header,
-.vaccine-grid .grid-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 2fr 2fr 2fr 2fr; 
-    gap: 8px;
-    padding: 8px 10px;
-    align-items: center;
+.record-card.active {
+    border: 3px solid #004d40;
 }
-.grid-header {
-    font-weight: 700;
-    background: #00695c;
-    color: white;
-    border-radius: 8px;
-}
-.grid-row {
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-.grid-row:nth-child(even) {
-    background: #e0f2f1;
-}
-.grid-row input[type="text"],
-.grid-row input[type="date"] {
-    width: 100%;
-    padding: 4px 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-}
-.grid-row .btn-update {
-    padding: 6px 10px;
-    font-size: 13px;
-}
+.record-card.vaccine { background: #b2dfdb; color: #004d40; }
+.record-card.medical { background: #ffe082; color: #5d4037; }
+.record-card.grooming { background: #ffab91; color: #bf360c; }
 
-/* Add new vaccine form */
-.add-vaccine-form {
-    margin-top: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+/* Table Card */
+.table-card {
+    overflow-x: auto;
 }
-.add-vaccine-form input[type="text"],
-.add-vaccine-form input[type="date"] {
-    flex: 1 1 150px;
-    padding: 6px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+.table-card table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
 }
-.add-vaccine-form button {
+.table-card th, .table-card td {
+    padding: 10px 12px;
+    text-align: left;
+}
+.table-card th {
+    background: #00796b;
+    color: white;
+    font-weight: 600;
+}
+.table-card tr:nth-child(even) { background: #e0f2f1; }
+.table-card tr:hover { background: #b2dfdb; transition: 0.2s; }
+
+/* Buttons */
+.btn-update, .btn-delete {
     padding: 6px 12px;
     border-radius: 6px;
-    background-color: #28a745;
-    color: white;
     border: none;
     cursor: pointer;
-    transition: background 0.2s ease;
-}
-.add-vaccine-form button:hover {
-    background-color: #218838;
+    font-size: 13px;
+    margin: 2px 2px 0 0;
 }
 
-/* Responsive */
+.back-btn:active {
+    transform: translateX(-2px) scale(0.97);
+}
+
+.btn-update { background-color: #0288d1; color: white; }
+.btn-update:hover { background-color: #01579b; }
+.btn-delete { background-color: #d32f2f; color: white; }
+.btn-delete:hover { background-color: #9a0007; }
+
 @media (max-width: 768px) {
-    .vaccine-grid .grid-header,
-    .vaccine-grid .grid-row {
-        grid-template-columns: 1fr 1fr; 
-        row-gap: 6px;
-    }
-    .add-vaccine-form {
-        flex-direction: column;
-    }
-}
+    .card.flex { flex-direction: column; text-align: center; }
+    .info-list { text-align: center; }
 
+}
 </style>
 </head>
 <body>
 
-<div class="profile-container">
-  <h2>{{ pet.name }}</h2>
-  
-  {% if not user.is_staff %}
-  <label for="petImageInput">
-    {% if pet.image %}
-      <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
-    {% else %}
-      <img id="petImage" src="{% static 'images/default_pet.png' %}" alt="{{ pet.name }}">
-    {% endif %}
-  </label>
-  <input type="file" id="petImageInput" accept="image/*">
-  {% else %}
-    {% if pet.image %}
-      <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
-    {% else %}
-      <img src="{% static 'images/default_pet.png' %}" alt="{{ pet.name }}">
-    {% endif %}
-    <div class="notice">Admin cannot change user-uploaded image</div>
-  {% endif %}
+<div class="container">
+    <a href="{% url 'pet_profile' %}" class="back-btn">← Back</a>
 
-  <p><strong>Species:</strong> {{ pet.species }}</p>
-  <p><strong>Breed:</strong> {{ pet.breed }}</p>
-  <p><strong>Gender:</strong> {{ pet.gender }}</p>
-  <p><strong>Birthday:</strong> {{ pet.birthday }}</p>
-  <p><strong>Weight (kg):</strong> 
-    {% if user.is_staff %}
-      <form method="POST" action="{% url 'add_or_edit_pet_admin' pet.id %}" style="display:inline;">
-        {% csrf_token %}
-        <input type="number" step="0.01" name="weight" value="{{ pet.weight|default:'' }}">
-        <button type="submit" class="btn-update">Update</button>
-      </form>
-    {% else %}
-      {{ pet.weight|default:"Not set" }}
-    {% endif %}
-  </p>
+  <!-- Pet Profile Card -->
+  <div class="card flex">
 
-  <p><strong>Owner Contact:</strong> {{ pet.owner.ownerprofile.contact }}</p>
-  <p><strong>Address:</strong> {{ pet.owner.ownerprofile.address }}</p>
-</div>
-
-<!-- Vaccine Records Section -->
-<div class="vaccine-section">
-  <h2>💉 Vaccine Records</h2>
-  <div class="vaccine-grid">
-    <div class="grid-header">
-      <div>Date Given</div>
-      <div>Next Vaccination</div>
-      <div>Vaccine</div>
-      <div>Manufacturer</div>
-      <div>Veterinarian</div>
-      {% if user.is_staff %}<div>Action</div>{% endif %}
-    </div>
-
-    {% for vaccine in pet.vaccinerecord_set.all %}
-    <div class="grid-row">
-      {% if user.is_staff %}
-      <form method="POST" action="{% url 'edit_vaccine' vaccine.id %}">
-        {% csrf_token %}
-        <input type="date" name="date_given" value="{{ vaccine.date_given|date:'Y-m-d' }}">
-        <input type="date" name="next_due_date" value="{{ vaccine.next_due_date|date:'Y-m-d' }}">
-        <input type="text" name="vaccine_name" value="{{ vaccine.vaccine_name }}">
-        <input type="text" name="manufacturer" value="{{ vaccine.manufacturer }}">
-        <input type="text" name="veterinarian" value="{{ vaccine.veterinarian }}">
-        <button type="submit" class="btn-update">Update</button>
-      </form>
+    <!-- Image Left -->
+    <div style="flex:1; min-width:250px;">
+      {% if not user.is_staff %}
+        <label for="petImageInput" style="cursor:pointer;">
+          {% if pet.image %}
+            <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
+          {% else %}
+            <img id="petImage" src="{% static 'images/default_pet.png' %}" alt="{{ pet.name }}">
+          {% endif %}
+        </label>
+        <input type="file" id="petImageInput" accept="image/*" style="display:none;">
       {% else %}
-        <div>{{ vaccine.date_given|date:'M d, Y' }}</div>
-        <div>{{ vaccine.next_due_date|date:'M d, Y' }}</div>
-        <div>{{ vaccine.vaccine_name }}</div>
-        <div>{{ vaccine.manufacturer }}</div>
-        <div>{{ vaccine.veterinarian }}</div>
+        {% if pet.image %}
+          <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+        {% else %}
+          <img src="{% static 'images/default_pet.png' %}" alt="{{ pet.name }}">
+        {% endif %}
+        <p class="notice" style="margin-top:10px; font-size:13px; color:#555;">Admin cannot change user-uploaded image</p>
       {% endif %}
     </div>
-    {% empty %}
-      <p style="text-align:center; color:#888;">No vaccine records found.</p>
-    {% endfor %}
+
+    <!-- Info Right -->
+    <div class="info-list">
+      <h2>{{ pet.name }}</h2>
+      <p><strong>Species:</strong> {{ pet.species }}</p>
+      <p><strong>Breed:</strong> {{ pet.breed }}</p>
+      <p><strong>Gender:</strong> {{ pet.gender }}</p>
+      <p><strong>Birthday:</strong> {{ pet.birthday }}</p>
+      <p><strong>Weight:</strong>
+        {% if user.is_staff %}
+          <form method="POST" action="{% url 'add_or_edit_pet_admin' pet.id %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="number" step="0.01" name="weight" value="{{ pet.weight|default:'' }}" style="padding:5px; width:80px; border-radius:5px; border:1px solid #ccc;">
+            <button type="submit" class="btn-update" style="margin-left:5px;">Update</button>
+          </form>
+        {% else %}
+          {{ pet.weight|default:"Not set" }}
+        {% endif %}
+      </p>
+      <p><strong>Owner Contact:</strong> {{ pet.owner.ownerprofile.contact }}</p>
+      <p><strong>Address:</strong> {{ pet.owner.ownerprofile.address }}</p>
+    </div>
+
   </div>
 
-  {% if user.is_staff %}
-  <div class="add-vaccine-form">
-    <form method="POST" action="{% url 'add_vaccine' %}">
-      {% csrf_token %}
-      <input type="hidden" name="pet_id" value="{{ pet.id }}">
-      <input type="date" name="date_given" required>
-      <input type="date" name="next_due_date" required>
-      <input type="text" name="vaccine_name" placeholder="Vaccine Name" required>
-      <input type="text" name="manufacturer" placeholder="Manufacturer" required>
-      <input type="text" name="veterinarian" placeholder="Veterinarian" required>
-      <button type="submit">Add Vaccine</button>
-    </form>
+  <!-- Records Menu -->
+  <div class="records-menu">
+    <div class="record-card vaccine active" data-target="vaccine-section">💉 Vaccine Records</div>
+    <div class="record-card medical" data-target="medical-section">🩺 Medical Records</div>
+    <div class="record-card grooming" data-target="grooming-section">✂️ Grooming Records</div>
   </div>
-  {% endif %}
+
+  <!-- Display Card -->
+  <div class="card" id="records-display">
+
+    <!-- Vaccine Section -->
+    <div id="vaccine-section" class="record-section">
+      <div class="table-card">
+        {% if vaccines %}
+        <table>
+          <tr>
+            <th>Date Given</th><th>Next Due</th><th>Vaccine</th><th>Manufacturer</th><th>Veterinarian</th>
+            {% if user.is_staff %}<th>Action</th>{% endif %}
+          </tr>
+          {% for record in vaccines %}
+          <tr>
+            <td>{{ record.date_given|date:"Y-m-d" }}</td>
+            <td>{{ record.next_due|date:"Y-m-d" }}</td>
+            <td>{{ record.vaccine_name }}</td>
+            <td>{{ record.manufacturer }}</td>
+            <td>{{ record.veterinarian }}</td>
+            {% if user.is_staff %}
+            <td>
+              <form method="POST" action="{% url 'update_vaccine' record.id %}" style="display:inline;">{% csrf_token %}
+                <button class="btn-update">Update</button>
+              </form>
+              <form method="POST" action="{% url 'delete_vaccine' record.id %}" style="display:inline;">{% csrf_token %}
+                <button class="btn-delete" onclick="return confirm('Delete this record?')">Delete</button>
+              </form>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </table>
+        {% else %}<p>No vaccine records found.</p>{% endif %}
+      </div>
+    </div>
+
+    <!-- Medical Section -->
+    <div id="medical-section" class="record-section">
+  <div class="table-card">
+
+    {% if medical_records %}
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Concern / Notes</th>
+          <th>Vet</th>
+          {% if user.is_staff %}
+          <th>Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in medical_records %}
+        <tr>
+          <td>{{ record.date|date:"M d, Y" }}</td>
+          <td>{{ record.record_type }}</td>
+          <td>
+            {{ record.concern|default:"N/A" }}
+            {% if record.notes %}
+              <br><small>{{ record.notes }}</small>
+            {% endif %}
+          </td>
+          <td>
+            {% if record.vet %}
+              {{ record.vet.get_full_name|default:record.vet.username }}
+            {% else %}
+              —
+            {% endif %}
+          </td>
+          {% if user.is_staff %}
+          <td>
+            <a href="{% url 'update_medical_record' record.id %}" class="btn-update">Update</a>
+            <a href="{% url 'delete_medical_record' record.id %}" class="btn-delete" onclick="return confirm('Delete this record?')">Delete</a>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p>No medical records found.</p>
+    {% endif %}
+
+  </div>
 </div>
 
-{% if not user.is_staff %}
+
+    <!-- Grooming Section -->
+    <div id="grooming-section" class="record-section" style="display:none;">
+      <div class="table-card">
+        {% if grooming_records %}
+        <table>
+          <tr><th>Date</th><th>Type</th><th>Notes</th><th>Groomer</th></tr>
+          {% for record in grooming_records %}
+          <tr>
+            <td>{{ record.date }}</td>
+            <td>{{ record.groom_type }}</td>
+            <td>{{ record.notes }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% else %}<p>No grooming records found.</p>{% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <script>
+// Image upload preview
+{% if not user.is_staff %}
 document.getElementById("petImageInput").addEventListener("change", function(){
     const file = this.files[0];
-    if (file){
+    if(file){
         const reader = new FileReader();
-        reader.onload = function(e){
-            document.getElementById("petImage").src = e.target.result;
-        }
+        reader.onload = function(e){ document.getElementById("petImage").src = e.target.result; }
         reader.readAsDataURL(file);
-
-        // Auto upload image to server
         const formData = new FormData();
         formData.append("image", file);
         fetch("{% url 'update_pet_image' pet.id %}", {
@@ -277,14 +341,25 @@ document.getElementById("petImageInput").addEventListener("change", function(){
             headers: { "X-CSRFToken": "{{ csrf_token }}" },
             body: formData
         }).then(res => res.json())
-          .then(data => {
-            if(data.status === 'success') console.log("Image updated!");
-            else alert("Failed to update image.");
-        });
+          .then(data => { if(data.status !== 'success') alert("Failed to update image."); });
     }
 });
-</script>
 {% endif %}
+
+// Records menu switching
+const cards = document.querySelectorAll(".record-card");
+const sections = document.querySelectorAll(".record-section");
+
+cards.forEach(card => {
+  card.addEventListener("click", () => {
+    const target = card.getAttribute("data-target");
+    sections.forEach(section => section.style.display = (section.id === target) ? "block" : "none");
+
+    cards.forEach(c => c.classList.remove("active"));
+    card.classList.add("active");
+  });
+});
+</script>
 
 </body>
 </html>

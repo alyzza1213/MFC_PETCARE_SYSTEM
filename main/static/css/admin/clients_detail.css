@@ -1,0 +1,143 @@
+/* --- Body --- */
+body {
+    font-family: Poppins, sans-serif;
+    margin: 0;
+    background: #f0f2f5;
+    color: #333;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: #00695c;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 24px;
+    font-weight: 700;
+}
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 15px 25px;
+    display: block;
+    transition: 0.3s;
+}
+.sidebar a:hover,
+.sidebar a.active {
+    background: #004d40;
+}
+
+/* --- Main content --- */
+.main-content {
+    margin-left: 250px;
+    padding: 40px;
+}
+
+/* --- Client Card --- */
+.client-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+.client-card h1 {
+    margin-bottom: 15px;
+    font-size: 28px;
+}
+.client-card p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+/* --- Pets Section --- */
+.pets-section {
+    margin-top: 30px;
+}
+.pets-section h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #00695c;
+}
+
+/* Grid layout for pet cards */
+.pets-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+/* Pet Card */
+.profile-container {
+    width: 150px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    border: 1px solid #ddd; /* subtle card border */
+}
+
+.profile-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Pet Image */
+.profile-container img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;              /* circle */
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 3px solid #00695c;       /* colored frame */
+    padding: 2px;                     /* inner spacing for frame */
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.profile-container:hover img {
+    transform: scale(1.05);
+    border-color: #004d40;           /* highlight frame on hover */
+}
+
+/* Pet Name & Species */
+.profile-container h2 {
+    font-size: 16px;
+    margin: 5px 0 2px 0;
+    color: #333;
+}
+
+.profile-container p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+/* --- Responsive --- */
+@media(max-width:768px){
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
+    }
+    .pets-grid {
+        justify-content: center;
+    }
+}

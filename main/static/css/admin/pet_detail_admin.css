@@ -1,0 +1,150 @@
+/* --- Global --- */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background: #e6f0f0;
+    color: #333;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;
+    height: 100%;
+    background: #00796b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 30px 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    transition: width 0.3s;
+}
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 50px;
+    font-weight: 700;
+    font-size: 1.8em;
+}
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 15px 30px;
+    display: block;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border-radius: 8px;
+    margin: 5px 15px;
+}
+.sidebar a:hover {
+    background: #004d40;
+    transform: translateX(5px);
+}
+
+/* --- Main Content --- */
+.main-content {
+    margin-left: 260px;
+    padding: 40px;
+    transition: margin-left 0.3s;
+}
+
+/* --- Pet Info Card --- */
+.pet-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 30px 25px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    margin-bottom: 35px;
+    transition: transform 0.3s;
+}
+.pet-card:hover {
+    transform: translateY(-3px);
+}
+.pet-card h1 {
+    margin-bottom: 12px;
+    font-size: 2em;
+    color: #00796b;
+}
+.pet-card p {
+    margin: 6px 0;
+    font-size: 16px;
+}
+
+/* --- Records Section --- */
+.records-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+}
+.record-box {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    flex: 1 1 400px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.record-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+.record-box h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    color: #00796b;
+    font-size: 1.4em;
+}
+
+/* --- Tables --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+th, td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+th {
+    background: #00796b;
+    color: white;
+    font-weight: 600;
+}
+tr:nth-child(even) {
+    background: #f3f7f7;
+}
+
+/* --- Buttons --- */
+button, .btn {
+    background: #00796b;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+button:hover, .btn:hover {
+    background: #004d40;
+    transform: translateY(-2px);
+}
+
+/* --- Responsive --- */
+@media(max-width:768px){
+    .sidebar { 
+        width: 100%; 
+        height: auto; 
+        position: relative; 
+        padding: 20px 0;
+    }
+    .main-content { 
+        margin-left:0; 
+        padding:20px; 
+    }
+    .records-section {
+        flex-direction: column;
+    }
+}

@@ -15,7 +15,7 @@ class VetAvailabilityForm(ModelForm):
             'end_time': TimeInput(format='%H:%M', attrs={'type': 'time'}),
         }
 
-@admin.register(VetAvailability)
+
 class VetAvailabilityAdmin(admin.ModelAdmin):
     form = VetAvailabilityForm
     list_display = ('doctor', 'date', 'start_time', 'end_time', 'available')
@@ -27,7 +27,7 @@ class VetAvailabilityAdmin(admin.ModelAdmin):
 # -------------------------------
 # Pet Admin
 # -------------------------------
-@admin.register(Pet)
+
 class PetAdmin(admin.ModelAdmin):
     list_display = ('name', 'species', 'breed', 'owner', 'age', 'gender', 'color', 'weight')
     list_filter = ('species', 'gender')
@@ -38,7 +38,7 @@ class PetAdmin(admin.ModelAdmin):
 # -------------------------------
 # Vaccination Admin
 # -------------------------------
-@admin.register(Vaccination)
+
 class VaccinationAdmin(admin.ModelAdmin):
     list_display = ('pet', 'vaccine_name', 'date_given', 'next_due', 'weight', 'manufacturer', 'veterinarian')
     search_fields = ('pet__name', 'vaccine_name', 'manufacturer', 'veterinarian')
@@ -48,10 +48,18 @@ class VaccinationAdmin(admin.ModelAdmin):
 # Appointment Admin
 # -------------------------------
 
-@admin.register(Appointment)
+
 class AppointmentAdmin(admin.ModelAdmin):
     list_display = ('pet', 'user', 'appointment_type', 'date', 'time', 'status', 'notes')
     list_filter = ('date', 'status', 'appointment_type')
     search_fields = ('pet__name', 'user__username')
     ordering = ('-date', 'time')
     readonly_fields = ('date', 'time')
+
+class WorkingDayAdmin(admin.ModelAdmin):
+    list_display = ("date", "morning_open", "afternoon_open", "is_active")
+    list_filter = ("morning_open", "afternoon_open", "is_active")
+    ordering = ("date",)
+
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ("name", "duration", "price")

@@ -1,0 +1,172 @@
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background: #4a7cff;
+    color: #fff;
+    height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h2 {
+    margin-bottom: 40px;
+    font-size: 22px;
+}
+
+.sidebar a {
+    color: #fff;
+    text-decoration: none;
+    margin-bottom: 15px;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.sidebar a.active, .sidebar a:hover {
+    background: #3b68e0;
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.main-content h1.title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Totals */
+.totals {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.total-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    flex: 1;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.total-card h2 {
+    font-size: 28px;
+    color: #4a7cff;
+    margin: 0;
+}
+
+.total-card p {
+    margin-top: 6px;
+    font-weight: 500;
+    color: #555;
+}
+
+/* Client List */
+.client-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.client-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.client-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.client-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.client-info-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.client-number {
+    font-weight: 600;
+    color: #4a7cff;
+    font-size: 18px;
+}
+
+.client-name {
+    font-weight: 500;
+    font-size: 16px;
+    color: #333;
+}
+
+.client-meta .btn {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+}
+
+.btn-client {
+    background: #4a7cff;
+    color: #fff;
+}
+
+.btn-client:hover {
+    background: #3b68e0;
+}
+
+.btn-pet {
+    background: #28a745;
+    color: #fff;
+}
+
+.btn-pet:hover {
+    background: #1e7e34;
+}
+
+/* Pet List */
+.pet-list {
+    margin-top: 10px;
+    padding-left: 20px;
+    border-left: 2px solid #f0f3ff;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.pet-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 8px;
+}

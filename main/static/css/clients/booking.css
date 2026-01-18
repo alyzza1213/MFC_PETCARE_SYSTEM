@@ -1,0 +1,96 @@
+
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: #f0f4f8; 
+    margin: 0; 
+    padding: 0; 
+}
+header { 
+    background-color: #008080; 
+    color: white; 
+    padding: 15px 0; 
+    text-align: center; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+header nav a { 
+    color: white; 
+    text-decoration: none; 
+    margin: 0 15px; 
+    font-weight: 600;
+}
+header nav a:hover { 
+    text-decoration: underline;
+}
+.appointment-section { 
+    max-width: 700px; 
+    margin: 80px auto; 
+    background: linear-gradient(145deg, #ffffff, #f9fcfc); 
+    padding: 35px; 
+    border-radius: 20px; 
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); 
+    animation: fadeIn 0.6s ease-in;
+}
+.appointment-section h2 { 
+    text-align: center; 
+    color: #006666; 
+    margin-bottom: 25px; 
+    font-size: 1.8rem;
+}
+form label { 
+    display: block; 
+    margin: 15px 0 5px; 
+    font-weight: 600; 
+    color: #333;
+}
+form input, form select, form textarea { 
+    width: 100%; 
+    padding: 12px; 
+    border-radius: 10px; 
+    border: 1px solid #ccc; 
+    margin-bottom: 15px; 
+    font-size: 1rem;
+}
+form textarea { 
+    resize: vertical; 
+    min-height: 80px;
+}
+button { 
+    background: linear-gradient(90deg, #008080, #00b3b3); 
+    color: white; 
+    border: none; 
+    padding: 14px; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    width: 100%; 
+    font-size: 16px; 
+    font-weight: 600; 
+    transition: transform 0.2s, background 0.3s;
+}
+button:hover { 
+    transform: scale(1.03); 
+    background: linear-gradient(90deg, #006666, #009999);
+}
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+@media (max-width: 600px) { 
+    .appointment-section { margin: 50px 15px; padding: 25px; } 
+    .pet-service-row { flex-direction: column; align-items: flex-start; }
+}
+.pet-service-row { 
+    margin-bottom: 25px; 
+    padding: 15px; 
+    border: 1px solid #e0e0e0; 
+    border-radius: 15px; 
+    background-color: #f9f9f9; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    gap: 15px;
+}
+.pet-info { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+}

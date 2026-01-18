@@ -6,30 +6,53 @@
     <title>Register | MFC Pet Care</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
+        /* --- Base --- */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #9ad0ec, #a1c4fd);
             height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             margin: 0;
+            padding: 20px;
         }
 
+        /* --- Container --- */
         .register-container {
             background: #fff;
-            padding: 40px;
-            width: 400px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 400px;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             text-align: center;
         }
 
-        h2 {
-            margin-bottom: 20px;
+        .register-container h1 {
+            font-size: 1.8rem;
             color: #333;
+            margin-bottom: 10px;
         }
 
+        .register-container h2 {
+            font-size: 1.3rem;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        /* --- Messages --- */
+        .message {
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        /* --- Form --- */
         form {
             display: flex;
             flex-direction: column;
@@ -43,57 +66,62 @@
         }
 
         input {
-            padding: 10px;
+            padding: 12px 15px;
             border-radius: 8px;
             border: 1px solid #ccc;
-            outline: none;
-            transition: 0.3s;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
 
         input:focus {
-            border-color: #5aa9e6;
-            box-shadow: 0 0 5px rgba(90,169,230,0.3);
+            border-color: #4a90e2;
+            box-shadow: 0 0 5px rgba(74,144,226,0.3);
+            outline: none;
         }
 
         button {
-            padding: 10px;
-            background-color: #5aa9e6;
+            padding: 12px;
+            background-color: #4a90e2;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
+            font-size: 1rem;
+            transition: background 0.3s ease;
         }
 
         button:hover {
-            background-color: #468ec7;
+            background-color: #357ab8;
         }
 
-        .message {
-            color: #e74c3c;
-            font-size: 0.9em;
-            margin-bottom: 10px;
-        }
-
+        /* --- Login link --- */
         .login-link {
-            margin-top: 10px;
+            margin-top: 15px;
             font-size: 0.9em;
         }
 
         .login-link a {
-            color: #5aa9e6;
+            color: #4a90e2;
             text-decoration: none;
+            font-weight: 500;
         }
 
         .login-link a:hover {
             text-decoration: underline;
         }
+
+        /* --- Responsive --- */
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 30px 20px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="register-container">
-        <h1>MFC PETCARE CLINIC </h1>
+        <h1>MFC PETCARE CLINIC</h1>
         <h2>Create Your Account</h2>
 
         {% if messages %}
@@ -104,6 +132,7 @@
 
         <form method="POST">
             {% csrf_token %}
+            
             <label>Username</label>
             <input type="text" name="username" placeholder="Enter your username" required>
 
@@ -113,6 +142,12 @@
             <label>Password</label>
             <input type="password" name="password" placeholder="Create a password" required>
 
+            <label>Contact Number</label>
+            <input type="text" name="contact" placeholder="Enter your contact number" required>
+
+            <label>Address</label>
+            <input type="text" name="address" placeholder="Enter your address" required>
+
             <button type="submit">Register</button>
         </form>
 
@@ -121,4 +156,5 @@
         </div>
     </div>
 </body>
+
 </html>

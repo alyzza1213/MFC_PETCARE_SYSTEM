@@ -4,92 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Pet Detail | MFC Pet Life Admin</title>
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-<style>
-body {
-    font-family: Poppins, sans-serif;
-    margin: 0;
-    background: #f0f2f5;
-}
-
-/* Sidebar */
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 250px;
-    height: 100%;
-    background: #00695c;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
-}
-.sidebar h2 { text-align: center; margin-bottom: 40px; }
-.sidebar a { color: white; text-decoration: none; padding: 15px 25px; display: block; transition: 0.3s; }
-.sidebar a:hover { background: #004d40; }
-
-/* Main content */
-.main-content { margin-left: 250px; padding: 40px; }
-
-/* Pet Info */
-.pet-card {
-    background: white;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-}
-.pet-card h1 { margin-bottom: 10px; }
-.pet-card p { margin: 5px 0; font-size: 16px; }
-
-/* Flexbox for Vaccination & History */
-.records-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-.record-box {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    flex: 1 1 400px;
-}
-.record-box h2 { margin-top: 0; margin-bottom: 15px; color: #00695c; }
-
-/* Tables */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-th, td {
-    text-align: left;
-    padding: 10px;
-}
-th {
-    background: #00695c;
-    color: white;
-}
-tr:nth-child(even) { background: #f8f9fa; }
-
-/* Buttons */
-button, .btn {
-    background: #00695c;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-button:hover, .btn:hover { background: #004d40; }
-
-@media(max-width:768px){
-    .sidebar { width: 100%; height: auto; position: relative; }
-    .main-content { margin-left:0; padding:20px; }
-}
-</style>
+<link rel="stylesheet" href="{% static 'css/admin/pet_detail_admin.css' %}">
 </head>
 <body>
 
@@ -98,12 +13,12 @@ button:hover, .btn:hover { background: #004d40; }
     <h2>MFC Pet Life</h2>
     <a href="{% url 'admin_dashboard' %}">Dashboard</a>
     <a href="{% url 'clients_pets' %}">Clients & Pets</a>
-    <a href="{% url 'vaccine_records_admin' %}">Vaccinations</a>
     <a href="{% url 'appointment_list' %}">Appointments</a>
     <a href="{% url 'logout' %}">Logout</a>
 </div>
 
 <div class="main-content">
+
     <!-- Pet Info -->
     <div class="pet-card">
         <h1>🐾 {{ pet.name|default:"No Name" }}</h1>
@@ -113,35 +28,88 @@ button:hover, .btn:hover { background: #004d40; }
         <p><strong>Age:</strong> {{ pet.calculate_age|default:"-" }}</p>
     </div>
 
-    <div class="record-box">
-    <h2>💉 Vaccination Records</h2>
+    <div class="records-section">
 
-    {% if vaccinations %}
-    <div class="vaccination-list">
-        {% for v in vaccinations %}
-        <div class="vaccination-card">
-            <p><strong>Date:</strong> {{ v.date|date:"M d, Y" }}</p>
-            <p><strong>Next Vaccination:</strong> {{ v.next_date|date:"M d, Y" }}</p>
-            <p><strong>Vaccine:</strong> {{ v.vaccine_name }}</p>
-            <p><strong>Manufacturer:</strong> {{ v.manufacturer }}</p>
-            <p><strong>Administered By:</strong> {{ v.vet.username }}</p>
+        <!-- 🟩 Vaccination Records -->
+        <div class="record-box">
+            <h2>💉 Vaccination Records</h2>
+
+            <!-- REMOVE OLD CARD DISPLAY (FIX FOR YOU) -->
+            <p style="color:#777;">Click below to view full vaccination records.</p>
+
+            <a href="{% url 'vaccine_records_admin' pet.id %}" class="btn">View Vaccine Records</a>
+        </div>
+
+
+   <!-- 🩺👨‍⚕️ Medical History -->
+<div class="record-box">
+    <h2>🩺👨‍⚕️ Medical History</h2>
+
+    {% if checkups or consultations %}
+
+        {% for c in checkups %}
+        <div class="record-card">
+            <p><strong>Date:</strong> {{ c.date|date:"M d, Y" }}</p>
+            <p><strong>Weight:</strong> {{ c.weight|default:"N/A" }} kg</p>
+            <p><strong>Findings:</strong> {{ c.findings|default:"No notes" }}</p>
+            <p><strong>Vet:</strong> {{ c.vet.username|default:"N/A" }}</p>
+
             <div class="record-actions">
-                <a href="{% url 'edit_vaccine' v.id %}" class="btn">✏ Edit</a>
-                <a href="{% url 'delete_vaccine' v.id %}" class="btn" onclick="return confirm('Delete this record?');">🗑 Delete</a>
+                <a href="#" class="btn btn-view">🔍 View Details</a>
             </div>
         </div>
         {% endfor %}
-    </div>
+
+        {% for con in consultations %}
+        <div class="record-card">
+            <p><strong>Date:</strong> {{ con.date|date:"M d, Y" }}</p>
+            <p><strong>Concern:</strong> {{ con.concern|default:"N/A" }}</p>
+            <p><strong>Notes:</strong> {{ con.notes|default:"No notes" }}</p>
+            <p><strong>Vet:</strong> {{ con.vet.username|default:"N/A" }}</p>
+
+            <div class="record-actions">
+                <a href="#" class="btn btn-view">🔍 View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+
     {% else %}
-    <p>No vaccination records found.</p>
+        <p>No medical history found.</p>
     {% endif %}
 
-    <a href="{% url 'add_vaccine' pet.id %}" class="btn"> View Vaccination Records</a>
+     <a href="{% url 'medical_history' pet.id %}" class="btn">View Medical History</a>
+
 </div>
 
-        <!-- History / Consultations -->
-       
-    
+
+        <!-- ✂️ Grooming History -->
+        <div class="record-box">
+            <h2>✂️ Grooming History</h2>
+
+            {% if grooming %}
+                {% for g in grooming %}
+                <div class="record-card">
+                    <p><strong>Date:</strong> {{ g.date|date:"M d, Y" }}</p>
+                    <p><strong>Service:</strong> {{ g.service_type }}</p>
+                    <p><strong>Notes:</strong> {{ g.notes|default:"No notes" }}</p>
+                    <p><strong>Groomer:</strong> {{ g.staff.username }}</p>
+
+                    <div class="record-actions">
+                        <a href="{% url 'edit_grooming' g.id %}" class="btn">✏ Edit</a>
+                        <a href="{% url 'delete_grooming' g.id %}" class="btn" onclick="return confirm('Delete this grooming record?');">🗑 Delete</a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No grooming history found.</p>
+            {% endif %}
+
+            <a href="{% url 'view_grooming' pet.id %}" class="btn">View Grooming History</a>
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>

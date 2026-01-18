@@ -1,0 +1,152 @@
+:root {
+    --primary: #00897b;
+    --secondary: #26a69a;
+    --dark: #00695c;
+    --light: #f4f6f9;
+    --white: #fff;
+    --danger: #e53935;
+}
+
+/* Global Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--light);
+    color: #333;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 25px 20px;
+    background: linear-gradient(180deg, var(--dark), var(--primary));
+    color: var(--white);
+    box-shadow: 2px 0 15px rgba(0,0,0,0.2);
+}
+
+.sidebar h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+}
+
+/* Navigation */
+.nav-links a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    color: var(--white);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.nav-links a span {
+    margin-left: 10px;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background: var(--secondary);
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Logout Button */
+.logout-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: var(--danger);
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.logout-btn:hover {
+    background: #b71c1c;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 280px;
+    padding: 40px;
+}
+
+.dashboard-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 25px;
+}
+
+/* Cards */
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: var(--white);
+    padding: 30px;
+    text-align: center;
+    border-radius: 30px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.card h2 {
+    font-size: 2.2rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.card p {
+    color: #777;
+    font-size: 1rem;
+}
+
+/* Chart Section */
+.chart-container {
+    margin-top: 50px;
+    padding: 30px;
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.chart-container h2 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 20px;
+}
+
+/* Clickable Card Wrapper */
+.link-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
