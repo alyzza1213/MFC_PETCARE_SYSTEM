@@ -31,6 +31,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "mfc-petcare-system-1.onrender.com",
     ".onrender.com",
+    "127.0.0.1",
 ]
 
 
@@ -144,8 +145,8 @@ LOGIN_REDIRECT_URL = '/'
 
 if ENVIRONMENT == 'production':
     CSRF_TRUSTED_ORIGINS = [
-        'https://mfc-petcare.onrender.com',  # 🔴 CHANGE to your real Render URL
-    ]
+    'https://mfc-petcare-system-1.onrender.com',
+]
 
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
