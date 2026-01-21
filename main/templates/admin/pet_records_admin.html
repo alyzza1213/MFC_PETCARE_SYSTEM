@@ -4,153 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Pet Records | MFC Pet Life</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <style>
-        body {
-            margin: 0;
-            font-family: "Poppins", sans-serif;
-            background: #f0f2f5;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            background: linear-gradient(180deg, #00695c, #004d40);
-            color: white;
-            position: fixed;
-            height: 100%;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 4px 0 12px rgba(0,0,0,0.1);
-        }
-
-        .sidebar h2 {
-            text-align: center;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-bottom: 40px;
-        }
-
-        .nav-links a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 14px 18px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            background-color: rgba(255, 255, 255, 0.15);
-        }
-
-        /* Logout */
-        .logout-btn {
-            background-color: #d32f2f;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            width: 100%;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 20px;
-        }
-        .logout-btn:hover {
-            background-color: #b71c1c;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            padding: 40px;
-        }
-
-        .header h1 {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 30px;
-        }
-
-        /* Actions */
-        .actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .actions input[type="text"] {
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            width: 300px;
-            font-size: 14px;
-        }
-
-        .btn-add {
-            background-color: #00695c;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .btn-add:hover {
-            background-color: #004d40;
-        }
-
-        /* Table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-        }
-
-        th, td {
-            padding: 18px 15px;
-            text-align: left;
-        }
-
-        th {
-            background: #00695c;
-            color: white;
-            text-transform: uppercase;
-            font-size: 14px;
-        }
-
-        tr:nth-child(even) { background: #f8f9fa; }
-        tr:hover { background: #e0f2f1; }
-
-        .btn {
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/admin/pet_records.css' %}">
+   
 </head>
 
 <body>
 
-<!-- Sidebar -->
+
 <div class="sidebar">
     <h2>🐾 Admin Panel</h2>
     <div class="nav-links">
@@ -167,7 +27,7 @@
     </form>
 </div>
 
-<!-- Main Content -->
+
 <div class="main-content">
     <div class="header">
         <h1>🐶 Pet Records</h1>

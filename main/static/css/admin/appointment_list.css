@@ -7,7 +7,7 @@ body {
 .sidebar {
     width: 220px;
     height: 100vh;
-    background: #4a7cff;
+    background: rgb(135, 179, 135);
     color: white;
     padding: 20px;
     position: fixed;
@@ -61,7 +61,7 @@ thead {
     cursor: pointer;
 }
 
-.approve { background: #28a745; color: white; }
+.approve { background: #61abc1; color: white; }
 .cancel { background: #dc3545; color: white; }
 .resched { background: #ffc107; }
 

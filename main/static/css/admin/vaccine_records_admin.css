@@ -1,28 +1,133 @@
+    body { 
+        font-family: 'Poppins', 
+        sans-serif; margin: 0; 
+        background: #f4f6f8; 
+        color: #333; }
 
-/* === Reset & Body === */
-body { font-family: 'Poppins', sans-serif; margin: 0; background: #f4f6f8; color: #333; }
-/* === Sidebar === */
-.sidebar { position: fixed; left: 0; top: 0; width: 250px; height: 100%; background: linear-gradient(180deg, #00796b, #004d40); color: white; padding: 25px 0; box-shadow: 2px 0 12px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
-.sidebar h2 { text-align: center; margin-bottom: 40px; font-size: 24px; }
-.sidebar a { color: white; text-decoration: none; padding: 14px 25px; margin: 6px 12px; border-radius: 8px; transition: 0.3s; }
-.sidebar a:hover { background: rgba(255,255,255,0.2); padding-left: 30px; }
-/* === Main Content === */
-.main-content { margin-left: 250px; padding: 40px 60px; }
-.main-content h1 { text-align: center; color: #00796b; }
-.pet-name { text-align: center; margin-bottom: 25px; color: #004d40; }
-/* === Table === */
-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
-table th, table td { padding: 12px 16px; font-size: 14px; text-align: center; }
-table th { background: #00796b; color: white; }
-table tr:nth-child(even) { background: #f9f9f9; }
-table tr:hover { background: #e0f2f1; }
-/* === Inputs === */
-input[type="text"], input[type="number"], input[type="date"] { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-input:focus { border-color: #00796b; box-shadow: 0 0 6px rgba(0,121,107,0.3); }
-/* === Buttons === */
-.btn-save { background: #43a047; color: white; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; }
-.btn-save:hover { background: #2e7d32; }
-.btn-update { background: #0288d1; color: white; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; }
-.btn-update:hover { background: #01579b; }
-.btn-delete { background: #e53935; color: white; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; }
-.btn-delete:hover { background: #b71c1c; }
+    .sidebar { 
+        position: fixed; 
+        left: 0;
+         top: 0; 
+         width: 250px; 
+         height: 100%; 
+         background: linear-gradient(180deg, #00796b, #004d40);
+          color: white;
+           padding: 25px 0;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.2); 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+    .sidebar h2 { 
+        text-align: center; 
+        margin-bottom: 40px; 
+        font-size: 24px; 
+    }
+
+    .sidebar a { 
+        color: white;
+         text-decoration: none;
+          padding: 14px 25px; 
+          margin: 6px 12px; 
+          border-radius: 8px; 
+          transition: 0.3s; 
+        }
+
+    .sidebar a:hover { 
+        background: rgba(255,255,255,0.2);
+         padding-left: 30px; 
+        }
+
+    .main-content {
+         margin-left: 250px; 
+         padding: 40px 60px; 
+        }
+
+    .main-content h1 { 
+        text-align: center; 
+        color: #00796b; 
+    }
+    .pet-name { text-align: center; 
+        margin-bottom: 25px; 
+        color: #004d40; 
+    }
+
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        background: #fff; 
+        border-radius: 12px; 
+        overflow: hidden; 
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08); 
+    }
+
+    table th, table td { 
+        padding: 12px 16px; 
+        font-size: 14px; 
+        text-align: center; 
+    }
+
+    table th { 
+        background: #00796b; 
+        color: white; 
+    }
+    table tr:nth-child(even) {
+         background: #f9f9f9; 
+        }
+
+    table tr:hover { 
+        background: #e0f2f1; 
+    }
+
+    input[type="text"], input[type="number"], input[type="date"] { 
+        width: 100%; 
+        padding: 8px 10px; 
+        border: 1px solid #ccc; 
+        border-radius: 6px; 
+        font-size: 14px; 
+        box-sizing: border-box; 
+    }
+
+    input:focus { 
+        border-color: #00796b; 
+        box-shadow: 0 0 6px rgba(0,121,107,0.3); 
+    }
+
+    .btn-save { 
+        background: #43a047; 
+        color: white; 
+        padding: 6px 10px; 
+        border-radius: 6px; 
+        border: none; 
+        cursor: pointer; 
+    }
+
+    .btn-save:hover { 
+        background: #2e7d32; 
+    }
+
+    .btn-update { 
+        background: #0288d1; 
+        color: white; 
+        padding: 6px 10px; 
+        border-radius: 6px; 
+        border: none; 
+        cursor: pointer; 
+    }
+
+    .btn-update:hover { 
+        background: #01579b; 
+    }
+
+    .btn-delete { 
+        background: #e53935; 
+        color: white; 
+        padding: 6px 10px; 
+        border-radius: 6px; 
+        border: none; 
+        cursor: pointer; 
+    }
+
+    .btn-delete:hover { 
+        background: #b71c1c; 
+    }

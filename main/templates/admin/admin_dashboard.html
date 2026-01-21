@@ -8,13 +8,12 @@
     <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- FULLCALENDAR -->
+   
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
 
-<!-- Sidebar -->
 <div class="sidebar">
     <div>
         <h2>🐾 Admin Panel</h2>
@@ -32,13 +31,13 @@
     </form>
 </div>
 
-<!-- Main Content -->
+
 <div class="main-content">
     <div class="dashboard-header">
         <h1>Admin Dashboard</h1>
     </div>
 
-    <!-- CARDS -->
+
     <div class="card-container">
          <a href="{% url 'clients_pets' %}?show=clients" class="card link-card">
         <h2>{{ total_users }}</h2>
@@ -66,14 +65,14 @@
         </a>
     </div>
 
-    <!-- SYSTEM OVERVIEW = CALENDAR -->
+ 
     <div class="chart-container">
         <h2></h2>
         <div id="calendar"></div>
     </div>
 </div>
 
-<!-- CALENDAR SCRIPT -->
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');

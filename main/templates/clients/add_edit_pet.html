@@ -4,105 +4,14 @@
 <head>
 <meta charset="UTF-8">
 <title>{% if pet %}{{ pet.name }}{% else %}Add Pet{% endif %} - Profile</title>
-<style>
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-}
-
-.profile-container {
-    width: 100%;
-    max-width: 450px;
-    background: #fff;
-    padding: 30px 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    text-align: center;
-}
-
-.profile-container h2 {
-    margin-bottom: 20px;
-    font-size: 1.8rem;
-    color: #333;
-}
-
-.profile-container img {
-    width: 220px;
-    height: 220px;
-    border-radius: 15px;
-    object-fit: cover;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.profile-container img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-}
-
-.profile-container p {
-    text-align: left;
-    margin: 10px 0;
-    font-size: 0.95rem;
-    color: #555;
-}
-
-.profile-container strong {
-    color: #333;
-}
-
-input[type="file"] {
-    display: none;
-}
-
-/* Form Styles */
-form input, form select {
-    width: 100%;
-    padding: 12px 15px;
-    margin: 8px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 0.95rem;
-    box-sizing: border-box;
-}
-
-form input:focus, form select:focus {
-    outline: none;
-    border-color: #4a90e2;
-    box-shadow: 0 0 5px rgba(74,144,226,0.5);
-}
-
-form button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 8px;
-    background: #4a90e2;
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-form button:hover {
-    background: #357ab8;
-}
-</style>
+ <link rel="stylesheet" href="{% static 'css/clients/add_edit_pet.css' %}">
 </head>
 <body>
 
 <div class="profile-container">
   <h2>{% if pet %}{{ pet.name }}{% else %}New Pet{% endif %}</h2>
 
-  <!-- Pet Image -->
+
   <label for="petImageInput">
     {% if pet and pet.image %}
       <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
@@ -113,16 +22,47 @@ form button:hover {
   <input type="file" id="petImageInput" name="image" accept="image/*">
 
   {% if pet %}
-    <p><strong>Species:</strong> {{ pet.species|default:"Not set" }}</p>
-    <p><strong>Breed:</strong> {{ pet.breed|default:"Not set" }}</p>
-    <p><strong>Gender:</strong> {{ pet.gender|default:"Not set" }}</p>
-    <p><strong>Birthday:</strong> {% if pet.birthday %}{{ pet.birthday|date:"F d, Y" }}{% else %}Not set{% endif %}</p>
-    <p><strong>Age:</strong> {% if pet.birthday %}{{ pet.calculate_age }}{% else %}{{ pet.age }}{% endif %}</p>
-    <p><strong>Weight (kg):</strong> {% if pet.weight %}{{ pet.weight }}{% else %}Not set{% endif %}</p>
-    <p><strong>Owner Contact:</strong> {% if pet.owner.ownerprofile %}{{ pet.owner.ownerprofile.contact|default:"Not set" }}{% else %}Not set{% endif %}</p>
-    <p><strong>Address:</strong> {% if pet.owner.ownerprofile %}{{ pet.owner.ownerprofile.address|default:"Not set" }}{% else %}Not set{% endif %}</p>
+    <p><strong>Species:</strong> 
+        {{ pet.species|default:"Not set" }}
+    </p>
+
+    <p><strong>Breed:</strong> 
+        {{ pet.breed|default:"Not set" }}
+    </p>
+
+    <p><strong>Gender:</strong> 
+        {{ pet.gender|default:"Not set" }}
+    </p>
+
+    <p><strong>Birthday:</strong> 
+        {% if pet.birthday %}{{ pet.birthday|date:"F d, Y" }}
+        {% else %}Not set{% endif %}
+    </p>
+
+    <p><strong>Age:</strong> 
+        {% if pet.birthday %}{{ pet.calculate_age }}
+        {% else %}{{ pet.age }}{% endif %}
+    </p>
+
+    <p><strong>Weight (kg):</strong> 
+        {% if pet.weight %}{{ pet.weight }}
+        {% else %}Not set{% endif %}
+    </p>
+
+    <p><strong>Owner Contact:</strong> 
+        {% if pet.owner.ownerprofile %}
+        {{ pet.owner.ownerprofile.contact|default:"Not set" }}
+        {% else %}Not set{% endif %}
+    </p>
+
+    <p><strong>Address:</strong> 
+        {% if pet.owner.ownerprofile %}
+        {{ pet.owner.ownerprofile.address|default:"Not set" }}
+        {% else %}Not set{% endif %}
+    </p>
+
   {% else %}
-    <!-- Add Pet Form -->
+   
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       <input type="text" name="name" placeholder="Pet Name" required>
@@ -136,7 +76,7 @@ form button:hover {
       <input type="date" name="birthday" required>
 
       {% if user.is_staff %}
-        <!-- Only admin can set weight -->
+       
         <input type="number" step="0.01" name="weight" placeholder="Weight (kg)">
       {% endif %}
 

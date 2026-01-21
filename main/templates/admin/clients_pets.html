@@ -2,130 +2,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Clients & Pets | MFC Pet Life</title>
-<link rel="stylesheet" href="{% static 'css/admin/clients_pets.css' %}">
+    <meta charset="UTF-8">
+    <title>Clients & Pets | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/admin/clients_pets.css' %}">
 
 <style>
-    body {
-        background: #f4f6f9;
-    }
-
-    .main-content {
-        padding: 30px;
-    }
-
-    .title {
-        margin-bottom: 20px;
-    }
-
-    /* SUMMARY CARDS */
     .summary {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 30px;
-    }
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
 
-    .summary a {
-        flex: 1;
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        text-decoration: none;
-        color: #333;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
+.summary a {
+    flex: 1;
+    display: block;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-align: center;
+}
 
-    .summary a:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
+.summary a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
 
-    .summary a span {
-        display: block;
-        font-size: 14px;
-        color: #777;
-        margin-bottom: 5px;
-    }
+.summary a span {
+    display: block;
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 6px;
+}
 
-    .summary a strong {
-        font-size: 26px;
-        color: #4CAF50;
-    }
-
-    /* CLIENT / PET LIST */
-    .client-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .client-card {
-        background: white;
-        padding: 18px 22px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-decoration: none;
-        color: inherit;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        transition: transform 0.15s, box-shadow 0.15s;
-    }
-
-    .client-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
-
-    .client-info-left {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .client-number {
-        background: #4CAF50;
-        color: white;
-        font-weight: bold;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-    }
-
-    .client-name {
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .client-info-right {
-        text-align: right;
-        font-size: 14px;
-        color: #666;
-    }
-
-    .client-meta .tag {
-        display: inline-block;
-        margin-top: 6px;
-        padding: 4px 10px;
-        background: #e8f5e9;
-        color: #4CAF50;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    /* PET VIEW */
-    .pet-icon {
-        font-size: 22px;
-        margin-right: 8px;
-    }
-
+.summary a strong {
+    font-size: 26px;
+    font-weight: 700;
+    color: #4CAF50;
+}
 </style>
 </head>
 <body>
@@ -142,68 +59,70 @@
 <div class="main-content">
     <h1 class="title">👥 Clients & Pets</h1>
 
+    <!-- SEARCH BAR -->
+    <div class="search-container">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search client or pet name..."
+        >
+    </div>
+
     <!-- SUMMARY -->
     <div class="summary">
         <a href="?show=clients">
             <span>Total Clients</span>
             <strong>{{ clients|length }}</strong>
         </a>
-
         <a href="?show=pets">
             <span>Total Pets</span>
             <strong>{{ total_pets }}</strong>
         </a>
     </div>
 
-    <!-- CLIENTS VIEW -->
+    <!-- CLIENTS -->
     {% if show == "clients" %}
-        {% if clients %}
-            <div class="client-list">
-                {% for client in clients %}
-                    <a href="{% url 'client_detail' client.id %}" class="client-card">
-                        <div class="client-info-left">
-                            <div class="client-number">{{ forloop.counter }}</div>
-                            <div class="client-name">{{ client.username|default:"No Name" }}</div>
-                        </div>
-                        <div class="client-info-right">
-                            <div>Joined {{ client.date_joined|date:"M d, Y"|default:"-" }}</div>
-                            <div class="client-meta">
-                                <span class="tag">View Profile</span>
-                            </div>
-                        </div>
-                    </a>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>No clients found.</p>
-        {% endif %}
-    {% endif %}
-
-{% if show == "pets" %}
     <div class="client-list">
-        {% for pet in pets %}
-            <div class="client-card pet-card"
-                 onclick="window.location.href='{% url 'pet_detail_admin' pet.id %}'"
-                 style="cursor:pointer;">
-                 
-                <div class="client-info-left">
-                    <span class="pet-icon">🐾</span>
-                    <div class="client-name">{{ pet.name }}</div>
-                </div>
-
-                <div class="client-info-right">
-                    Owner: {{ pet.owner.username }}
+        {% for client in clients %}
+        <a href="{% url 'client_detail' client.id %}" class="client-card searchable">
+            <div class="client-info-left">
+                <div class="client-number">{{ forloop.counter }}</div>
+                <div class="client-name">{{ client.username }}</div>
+            </div>
+            <div class="client-info-right">
+                Joined {{ client.date_joined|date:"M d, Y" }}
+                <div class="client-meta">
+                    <span class="tag">View Profile</span>
                 </div>
             </div>
+        </a>
         {% empty %}
-            <p>No pets found.</p>
+        <p>No clients found.</p>
         {% endfor %}
     </div>
-{% endif %}
+    {% endif %}
 
-
-
+    <!-- PETS -->
+    {% if show == "pets" %}
+    <div class="client-list">
+        {% for pet in pets %}
+        <div class="client-card searchable"
+             onclick="window.location.href='{% url 'pet_detail_admin' pet.id %}'">
+            <div class="client-info-left">
+                <span class="pet-icon">🐾</span>
+                <div class="client-name">{{ pet.name }}</div>
+            </div>
+            <div class="client-info-right">
+                Owner: {{ pet.owner.username }}
+            </div>
+        </div>
+        {% empty %}
+        <p>No pets found.</p>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 
+<script src="{% static 'js/admin/clients_pets.js' %}"></script>
 </body>
 </html>

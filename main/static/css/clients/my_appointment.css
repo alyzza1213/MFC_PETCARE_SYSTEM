@@ -1,0 +1,109 @@
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eef2f7;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+     
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 18px;
+            background-color: #008080;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #006666;
+            transform: translateY(-2px);
+        }
+
+        h2 {
+            text-align: center;
+            color: #008080;
+            margin-top: 60px; 
+            margin-bottom: 30px;
+        }
+
+        .table-container {
+            max-width: 900px;
+            margin: 0 auto 40px auto;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 14px 20px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #008080;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f7f9fa;
+        }
+
+        tr:hover {
+            background-color: #d9f0f0;
+            transition: 0.3s;
+        }
+
+   
+        .status-Pending {
+            background-color: #fff3e0;
+            color: #ff9800;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        .status-Approved {
+            background-color: #e8f5e9;
+            color: #4caf50;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        .status-Rejected {
+            background-color: #ffebee;
+            color: #f44336;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        p {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 600px) {
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+   

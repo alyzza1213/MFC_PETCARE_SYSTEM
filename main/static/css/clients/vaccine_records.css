@@ -1,0 +1,97 @@
+          body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #e0f7f7, #f0f4f8);
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #008080;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 25px;
+            padding: 12px 20px;
+            background-color: #008080;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #006666;
+            transform: translateY(-2px);
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px 20px;
+            max-width: 1000px;
+            margin: 30px auto;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #008080;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1rem;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        thead {
+            background-color: #008080;
+            color: #ffffff;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+        }
+
+        tbody tr {
+            background: #f9f9f9;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #e0f7f7;
+            transform: translateY(-2px);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px 0;
+            color: #777;
+            font-style: italic;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    

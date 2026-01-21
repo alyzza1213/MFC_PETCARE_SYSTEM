@@ -21,7 +21,7 @@
 </head>
 <body>
 
-<!-- SIDEBAR -->
+
 <div class="sidebar">
     <div>
         <h2>🐾 Admin Panel</h2>
@@ -39,16 +39,16 @@
     </form>
 </div>
 
-<!-- MAIN CONTENT -->
+
 <div class="main-content">
 
-    <!-- HEADER -->
+ 
     <div class="dashboard-header">
         <h1>📋 Appointment Requests</h1>
         <p>Manage and review client appointments</p>
     </div>
 
-    <!-- STATS CARDS -->
+
     <div class="card-container">
         <div class="card">
             <h2>{{ total_users }}</h2>
@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <!-- APPOINTMENT TABLE -->
+  
     <div class="table-container">
         <h2>📅 Appointment List</h2>
 
@@ -89,7 +89,7 @@
                         <small>{{ a.user.username }}</small>
                     </td>
                     <td>{{ a.pet.name }}</td>
-                    <td>{{ a.appointment_type }}</td>  {# FIXED: was service #}
+                    <td>{{ a.appointment_type }}</td>  
                     <td>{{ a.date|date:"M d, Y" }}</td>
                     <td>{{ a.time|time:"h:i a" }}</td>
                     <td>
@@ -130,7 +130,7 @@
 
 </div>
 
-<!-- CONFIRM MODAL -->
+
 <div id="confirmModal" class="modal">
     <div class="modal-box">
         <p id="modalText"></p>

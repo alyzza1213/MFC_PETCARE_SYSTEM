@@ -4,89 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Vet Availability | MFC Pet Life</title>
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-<style>
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #f0f2f5;
-    margin: 0;
-}
-.container {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-h1 {
-    text-align: center;
-    color: #00796b;
-}
-.back-btn {
-    display: inline-block;
-    margin-bottom: 20px;
-    padding: 10px 18px;
-    background-color: #00796b;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 600;
-}
-.calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-}
-.day-header {
-    font-weight: 700;
-    text-align: center;
-    padding: 5px 0;
-    color: #555;
-    border-bottom: 2px solid #ccc;
-}
-.day-card {
-    background: white;
-    border-radius: 10px;
-    padding: 10px;
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-    text-align: center;
-}
-.day-card:hover {
-    transform: scale(1.05);
-}
-.day-card.non-working {
-    background-color: #ffcdd2;
-    color: #c62828;
-    cursor: not-allowed;
-}
-.day-card.past-day {
-    background-color: #eeeeee;
-    color: #aaa;
-}
-.day-card.past-day:hover {
-    transform: scale(1.05);
-}
-.empty-day {
-    background: transparent;
-    box-shadow: none;
-    cursor: default;
-}
-.status-badge {
-    margin-top: 5px;
-    padding: 3px 8px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: 600;
-}
-.whole { background-color: #c8e6c9; color: #2e7d32; }
-.half { background-color: #fff9c4; color: #f9a825; }
-.closed { background-color: #ffcdd2; color: #c62828; }
-</style>
+<link rel="stylesheet" href="{% static 'css/clients/vet_availability.css' %}">
+
 </head>
 <body>
 
@@ -97,7 +16,7 @@ h1 {
 
 <div class="calendar">
 
-    <!-- Weekday headers -->
+    
     <div class="day-header">Mon</div>
     <div class="day-header">Tue</div>
     <div class="day-header">Wed</div>
@@ -106,12 +25,12 @@ h1 {
     <div class="day-header">Sat</div>
     <div class="day-header">Sun</div>
 
-    <!-- EMPTY DAYS BEFORE MONTH START -->
+    
     {% for _ in empty_days_start %}
         <div class="day-card empty-day"></div>
     {% endfor %}
 
-    <!-- ACTUAL DAYS -->
+   
     {% for day_info in month_days %}
         {% if day_info.status != 'closed' %}
             <div class="day-card {% if day_info.date < today %}past-day{% endif %}"
@@ -133,7 +52,7 @@ h1 {
         </div>
     {% endfor %}
 
-    <!-- EMPTY DAYS AFTER MONTH END -->
+   
     {% for _ in empty_days_end %}
         <div class="day-card empty-day"></div>
     {% endfor %}

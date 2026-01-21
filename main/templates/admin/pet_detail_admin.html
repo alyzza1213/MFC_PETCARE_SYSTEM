@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<!-- Sidebar -->
+
 <div class="sidebar">
     <h2>MFC Pet Life</h2>
     <a href="{% url 'admin_dashboard' %}">Dashboard</a>
@@ -19,7 +19,7 @@
 
 <div class="main-content">
 
-    <!-- Pet Info -->
+
     <div class="pet-card">
         <h1>🐾 {{ pet.name|default:"No Name" }}</h1>
         <p><strong>Species:</strong> {{ pet.species|default:"-" }}</p>
@@ -30,18 +30,18 @@
 
     <div class="records-section">
 
-        <!-- 🟩 Vaccination Records -->
+       
         <div class="record-box">
             <h2>💉 Vaccination Records</h2>
 
-            <!-- REMOVE OLD CARD DISPLAY (FIX FOR YOU) -->
+           
             <p style="color:#777;">Click below to view full vaccination records.</p>
 
             <a href="{% url 'vaccine_records_admin' pet.id %}" class="btn">View Vaccine Records</a>
         </div>
 
 
-   <!-- 🩺👨‍⚕️ Medical History -->
+   
 <div class="record-box">
     <h2>🩺👨‍⚕️ Medical History</h2>
 
@@ -82,7 +82,7 @@
 </div>
 
 
-        <!-- ✂️ Grooming History -->
+        
         <div class="record-box">
             <h2>✂️ Grooming History</h2>
 

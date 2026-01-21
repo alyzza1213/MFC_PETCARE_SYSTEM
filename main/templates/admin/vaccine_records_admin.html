@@ -37,7 +37,7 @@
         {% for record in pet.vaccine_records.all %}
             <tr>
                 {% if user.is_staff %}
-                <!-- UPDATE form -->
+               
                 <form method="post" action="{% url 'update_vaccine' record.id %}">
                     {% csrf_token %}
                     <td><input type="date" name="date_given" value="{{ record.date_given|date:'Y-m-d' }}" required></td>
@@ -51,7 +51,7 @@
                     </td>
                 </form>
 
-                <!-- DELETE form -->
+             
                 <form method="post" action="{% url 'delete_vaccine' record.id %}" style="display:inline;">
                     {% csrf_token %}
                     <td>
@@ -67,7 +67,7 @@
         {% endfor %}
 
         {% if user.is_staff %}
-        <!-- Add NEW record -->
+        
         <tr>
             <form method="post" action="{% url 'add_vaccine' pet.id %}">
                 {% csrf_token %}
