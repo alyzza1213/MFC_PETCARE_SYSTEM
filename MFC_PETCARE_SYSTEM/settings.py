@@ -28,7 +28,10 @@ SECRET_KEY = 'django-insecure-ggiae=#*0e66$gzg@r20%h0-&!8^8bns2pfx2i!xe+=z_6lq9i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "mfc-petcare-system-1.onrender.com",
+    ".onrender.com",
+]
 
 
 # Application definition
