@@ -152,7 +152,10 @@ if ENVIRONMENT == 'production':
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 else:
-    CSRF_TRUSTED_ORIGINS = ["https://127.0.0.1:8000", "https://localhost:8000"]
+    CSRF_TRUSTED_ORIGINS = ["https://127.0.0.1:8000"]
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+
 
 # =========================
 # EMAIL CONFIGURATION
