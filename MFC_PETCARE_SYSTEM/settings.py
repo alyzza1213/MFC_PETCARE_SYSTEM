@@ -145,17 +145,18 @@ LOGOUT_REDIRECT_URL = '/login/'
 # CSRF + HTTPS FIX (VERY IMPORTANT)
 # =========================
 
-if ENVIRONMENT != 'production':
-    CSRF_TRUSTED_ORIGINS = [
-    'https://mfc-petcare-system-1.onrender.com',
-]
-
+if ENVIRONMENT == 'production':
+    # Production / Render.com
+    CSRF_TRUSTED_ORIGINS = ['https://mfc-petcare-system-1.onrender.com']
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 else:
+    # Local development
     CSRF_TRUSTED_ORIGINS = []
-    
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+
     
 
 

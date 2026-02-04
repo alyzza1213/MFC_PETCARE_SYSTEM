@@ -28,34 +28,36 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 
 from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 
 
     #---------------BOTH ADMIN AND USER VIEWS NI SIYA HA TAS SA LOGIN/REGISTER-------------
 
 # LANDING PAGE
 def landing_page(request):
-    # If already logged in, send to homepage
     if request.user.is_authenticated:
         return redirect('homepage')
     return render(request, 'main/landing.html')
 
 
-# HOMEPAGE
+# HOMEPAGE - only accessible if logged in
+@login_required(login_url='login')
 def homepage(request):
     return render(request, 'main/homepage.html')
 
-# INDEX 
-def index(request):
-     return render(request, 'main/index.html')
 
-# RESISTER
+# INDEX
+def index(request):
+    return render(request, 'main/index.html')
+
+
+# REGISTER
 def register(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # Gmail only
         if not email.endswith('@gmail.com'):
             messages.error(request, 'Gmail account lang ang pwede gamiton.')
             return render(request, 'main/register.html')
@@ -63,62 +65,50 @@ def register(request):
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists!')
         else:
-            user = User.objects.create_user(
-                username=username,
-                email=email,
-                password=password
-            )
+            user = User.objects.create_user(username=username, email=email, password=password)
 
-            # ✅ SEND EMAIL NOTIFICATION
+            # Send welcome email
             email_subject = "Welcome to MFC Pet Life 🐾"
             email_body = f"""
             Hi {username},
 
             Your account has been successfully created!
-
             You can now log in using your username and password.
 
             Thank you,
             MFC Pet Life Team
             """
-
-            email_message = EmailMessage(
-                email_subject,
-                email_body,
-                to=[email]
-            )
-            email_message.send()
+            EmailMessage(email_subject, email_body, to=[email]).send()
 
             messages.success(request, 'Account created successfully! Check your email.')
             return redirect('login')
 
     return render(request, 'main/register.html')
 
-     # LOGIN VIEW
+
+# LOGIN
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
-
         if user:
             login(request, user)
-            # Safe access to is_staff
             if user.is_staff:
                 return redirect('admin_dashboard')
             else:
                 return redirect('homepage')
         else:
-            # Invalid login
             messages.error(request, 'Invalid username or password')
-           
+
     return render(request, 'main/login.html')
 
 
+# LOGOUT
 def logout_view(request):
-            logout(request)
-            return redirect('login')
+    logout(request)
+    return redirect('login')
 
 
 
