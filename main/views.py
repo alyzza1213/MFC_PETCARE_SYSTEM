@@ -34,7 +34,7 @@ from django.db.models import Count
 
 # LANDING PAGE
 def landing_page(request):
-    return render(request, 'main/homepage.html') 
+    return render(request, 'main/landing.html') 
 
 # HOMEPAGE
 def homepage(request):

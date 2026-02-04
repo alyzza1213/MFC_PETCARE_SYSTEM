@@ -143,13 +143,16 @@ LOGIN_REDIRECT_URL = '/'
 # CSRF + HTTPS FIX (VERY IMPORTANT)
 # =========================
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.onrender.com",
+if ENVIRONMENT == 'production':
+    CSRF_TRUSTED_ORIGINS = [
+    'https://mfc-petcare-system-1.onrender.com',
 ]
 
-CSRF_COOKIE_SECURE = ENVIRONMENT == 'production'
-SESSION_COOKIE_SECURE = ENVIRONMENT == 'production'
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+else:
+    CSRF_TRUSTED_ORIGINS = []
 
 # =========================
 # EMAIL CONFIGURATION

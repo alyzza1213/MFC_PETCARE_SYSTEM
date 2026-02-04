@@ -11,8 +11,7 @@ urlpatterns = [
         #LANDING PAGE
             path('', views.landing_page, name='landing'),
 
-        #HOMEPAGE
-            path('', views.homepage, name='homepage'),
+        
 
         #--------------
             path('index/', views.index, name='index'),
@@ -22,7 +21,9 @@ urlpatterns = [
             path('register/', views.register, name='register'),
             path('login/', views.login_view, name='login'),
             path('logout/', views.logout_view, name='logout'),
-
+            
+        #HOMEPAGE
+                    path('homepage/', views.homepage, name='homepage'),
 
         # PASSWORD RESET
             path('password_reset/', auth_views.PasswordResetView.as_view(
