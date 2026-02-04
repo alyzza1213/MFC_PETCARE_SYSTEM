@@ -102,7 +102,7 @@ def login_view(request):
 
         user = authenticate(request, username=username, password=password)
 
-        if user is not None:
+        if user:
             login(request, user)
             # Safe access to is_staff
             if user.is_staff:
@@ -112,9 +112,7 @@ def login_view(request):
         else:
             # Invalid login
             messages.error(request, 'Invalid username or password')
-            return render(request, 'main/login.html')
-
-    # GET request
+           
     return render(request, 'main/login.html')
 
 
