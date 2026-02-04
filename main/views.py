@@ -34,9 +34,11 @@ from django.db.models import Count
 
 # LANDING PAGE
 def landing_page(request):
+    # If already logged in, send to homepage
     if request.user.is_authenticated:
         return redirect('homepage')
-    return render(request, 'main/landing.html') 
+    return render(request, 'main/landing.html')
+
 
 # HOMEPAGE
 def homepage(request):
