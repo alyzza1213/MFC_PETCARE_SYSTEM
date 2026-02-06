@@ -137,7 +137,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 LOGIN_REDIRECT_URL = '/homepage/'  
 LOGOUT_REDIRECT_URL = '/login/'   
 
@@ -146,17 +145,15 @@ LOGOUT_REDIRECT_URL = '/login/'
 # =========================
 
 if ENVIRONMENT == 'production':
-    # Production / Render.com
-    CSRF_TRUSTED_ORIGINS = ['https://mfc-petcare-system-1.onrender.com']
+    CSRF_TRUSTED_ORIGINS = [
+    'https://mfc-petcare-system-1.onrender.com',
+]
+
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 else:
-    # Local development
     CSRF_TRUSTED_ORIGINS = []
-    CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SECURE = False
-
     
 
 
