@@ -124,7 +124,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "main", "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -144,17 +143,15 @@ LOGOUT_REDIRECT_URL = '/login/'
 # CSRF + HTTPS FIX (VERY IMPORTANT)
 # =========================
 
-if ENVIRONMENT == 'production':
-    CSRF_TRUSTED_ORIGINS = [
+
+CSRF_TRUSTED_ORIGINS = [
     'https://mfc-petcare-system-1.onrender.com',
 ]
 
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-else:
-    CSRF_TRUSTED_ORIGINS = []
-    
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 
 # =========================
