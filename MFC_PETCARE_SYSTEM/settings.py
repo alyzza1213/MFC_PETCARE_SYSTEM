@@ -107,30 +107,30 @@ TIME_ZONE = 'Asia/Manila'
 USE_I18N = True
 USE_TZ = True
 
-# ------------------------
-# Static & Media
-# ------------------------
+# -------------------------------
+# STATIC & MEDIA
+# -------------------------------
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "main", "static")]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [BASE_DIR / "main" / "static"]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ------------------------
-# Login / Logout
-# ------------------------
+# -------------------------------
+# LOGIN/LOGOUT REDIRECT
+# -------------------------------
 LOGIN_REDIRECT_URL = '/homepage/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-# ------------------------
-# CSRF + HTTPS for production
-# ------------------------
+# -------------------------------
+# CSRF & HTTPS CONFIG
+# -------------------------------
 if ENVIRONMENT == 'production':
     CSRF_TRUSTED_ORIGINS = [
-        'https://mfc-petcare-system-1.onrender.com',  # include full scheme
+        'https://mfc-petcare-system-1.onrender.com',
     ]
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
@@ -142,9 +142,9 @@ else:
     SESSION_COOKIE_SECURE = False
     SECURE_SSL_REDIRECT = False
 
-# ------------------------
-# Email
-# ------------------------
+# -------------------------------
+# EMAIL CONFIGURATION
+# -------------------------------
 if ENVIRONMENT == 'production':
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
