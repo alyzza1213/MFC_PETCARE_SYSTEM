@@ -10,32 +10,35 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+"""
+Django settings for MFC_PETCARE_SYSTEM project.
+"""
+
 from pathlib import Path
 import os
+
+# Detect environment
 ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-ggiae=#*0e66$gzg@r20%h0-&!8^8bns2pfx2i!xe+=z_6lq9i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = ENVIRONMENT != "production"
+DEBUG = ENVIRONMENT == 'development'
+
 ALLOWED_HOSTS = [
     "mfc-petcare-system-1.onrender.com",
     ".onrender.com",
     "127.0.0.1",
+    "localhost",
 ]
 
-
+# ------------------------
 # Application definition
-
+# ------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -61,8 +64,8 @@ ROOT_URLCONF = 'MFC_PETCARE_SYSTEM.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'main' / 'templates'],  # optional global templates folder
-        'APP_DIRS': True,  # this must be True
+        'DIRS': [BASE_DIR / 'main' / 'templates'],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -76,10 +79,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MFC_PETCARE_SYSTEM.wsgi.application'
 
-
+# ------------------------
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# ------------------------
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -87,88 +89,69 @@ DATABASES = {
     }
 }
 
-
+# ------------------------
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
+# ------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-
+# ------------------------
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
+# ------------------------
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Asia/Manila'
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
+# ------------------------
+# Static & Media
+# ------------------------
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "main", "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_REDIRECT_URL = '/homepage/'  
-LOGOUT_REDIRECT_URL = '/login/'   
 
-# =========================
-# CSRF + HTTPS FIX (VERY IMPORTANT)
-# =========================
+# ------------------------
+# Login / Logout
+# ------------------------
+LOGIN_REDIRECT_URL = '/homepage/'
+LOGOUT_REDIRECT_URL = '/login/'
 
+# ------------------------
+# CSRF + HTTPS for production
+# ------------------------
+if ENVIRONMENT == 'production':
+    CSRF_TRUSTED_ORIGINS = [
+        'https://mfc-petcare-system-1.onrender.com',  # include full scheme
+    ]
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+else:
+    CSRF_TRUSTED_ORIGINS = []
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    SECURE_SSL_REDIRECT = False
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://mfc-petcare-system-1.onrender.com',
-]
-
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-USE_X_FORWARDED_HOST = True
-SECURE_SSL_REDIRECT = True
-
-# =========================
-# EMAIL CONFIGURATION
-# =========================
-
+# ------------------------
+# Email
+# ------------------------
 if ENVIRONMENT == 'production':
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-
     DEFAULT_FROM_EMAIL = f"MFC Pet Life <{EMAIL_HOST_USER}>"
-
 else:
-    # LOCAL DEVELOPMENT
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

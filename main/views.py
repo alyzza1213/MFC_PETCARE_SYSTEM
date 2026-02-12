@@ -33,6 +33,9 @@ from django.contrib.auth.decorators import login_required
 
     #---------------BOTH ADMIN AND USER VIEWS NI SIYA HA TAS SA LOGIN/REGISTER-------------
 
+def index(request):
+    return render(request, 'main/index.html')
+
 # ---------------------------
 # LANDING PAGE
 # ---------------------------
