@@ -26,8 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ggiae=#*0e66$gzg@r20%h0-&!8^8bns2pfx2i!xe+=z_6lq9i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True 
-
+DEBUG = ENVIRONMENT != "production"
 ALLOWED_HOSTS = [
     "mfc-petcare-system-1.onrender.com",
     ".onrender.com",
@@ -152,7 +151,8 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-
+USE_X_FORWARDED_HOST = True
+SECURE_SSL_REDIRECT = True
 
 # =========================
 # EMAIL CONFIGURATION
