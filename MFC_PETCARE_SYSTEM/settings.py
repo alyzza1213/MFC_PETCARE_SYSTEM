@@ -122,14 +122,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # -------------------------------
 # LOGIN/LOGOUT REDIRECT
 # -------------------------------
-LOGIN_URL = '/login/'  # required for @login_required redirect
-LOGIN_REDIRECT_URL = '/homepage/'  # after login
-LOGOUT_REDIRECT_URL = '/login/'    # after logout
+LOGIN_URL = '/login/'  
+LOGIN_REDIRECT_URL = '/homepage/'  
+LOGOUT_REDIRECT_URL = '/login/'   
 
 # -------------------------------
 # CSRF & HTTPS CONFIG
 # -------------------------------
-# CSRF & SESSION fix for Render free-tier
 if ENVIRONMENT == 'production':
     CSRF_TRUSTED_ORIGINS = ["https://mfc-petcare-system-1.onrender.com"]
     SESSION_COOKIE_SECURE = False
