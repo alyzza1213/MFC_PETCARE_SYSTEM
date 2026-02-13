@@ -36,8 +36,9 @@ from django.contrib.auth.decorators import login_required
 
 # LANDING PAGE
 def landing_page(request):
-    return render(request, 'main/homepage.html') 
-    return render(request, 'main/landing.html') 
+    if request.user.is_authenticated:
+        return redirect('homepage')
+    return render(request, 'main/landing.html')
 
 # HOMEPAGE
 def homepage(request):
