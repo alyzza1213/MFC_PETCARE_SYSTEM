@@ -129,23 +129,15 @@ LOGOUT_REDIRECT_URL = '/login/'    # after logout
 # -------------------------------
 # CSRF & HTTPS CONFIG
 # -------------------------------
+# CSRF & SESSION fix for Render free-tier
 if ENVIRONMENT == 'production':
-    CSRF_TRUSTED_ORIGINS = [
-        "https://mfc-petcare-system-1.onrender.com",
-    ]
-    
-    # ⚠️ Fix for Render free-tier
-    CSRF_COOKIE_SECURE = False         # free-tier proxy issue
-    SESSION_COOKIE_SECURE = False      # free-tier proxy issue
-    SECURE_SSL_REDIRECT = False        # free-tier proxy issue
-    CSRF_COOKIE_SAMESITE = 'Lax'
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-else:
-    CSRF_TRUSTED_ORIGINS = []
-    CSRF_COOKIE_SECURE = False
+    CSRF_TRUSTED_ORIGINS = ["https://mfc-petcare-system-1.onrender.com"]
     SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = 'Lax'
     SECURE_SSL_REDIRECT = False
-    
+
 # -------------------------------
 # EMAIL CONFIGURATION
 # -------------------------------

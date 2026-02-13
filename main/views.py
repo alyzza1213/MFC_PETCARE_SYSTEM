@@ -43,7 +43,7 @@ def landing_page(request):
     # If user is logged in, redirect based on role
     if request.user.is_authenticated:
         if request.user.is_staff:
-            return redirect('admin_dashboard')  # make sure this URL exists
+            return redirect('/admin/')  # send staff/superuser to Django admin
         else:
             return redirect('homepage')
     return render(request, 'main/landing.html')
@@ -56,7 +56,7 @@ def landing_page(request):
 def homepage(request):
     # Only non-admin users can access
     if request.user.is_staff:
-        return redirect('admin_dashboard')
+        return redirect('/admin/')  # staff go to Django admin
     return render(request, 'main/homepage.html')
 
 
@@ -93,7 +93,7 @@ def login_view(request):
     # Already logged in?
     if request.user.is_authenticated:
         if request.user.is_staff:
-            return redirect('admin_dashboard')
+            return redirect('/admin/')
         else:
             return redirect('homepage')
 
@@ -104,9 +104,8 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            # Redirect based on role
             if user.is_staff:
-                return redirect('admin_dashboard')
+                return redirect('/admin/')
             else:
                 return redirect('homepage')
         else:
@@ -123,7 +122,6 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
-
 
 
 
