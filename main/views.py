@@ -33,37 +33,21 @@ from django.contrib.auth.decorators import login_required
 
     #---------------BOTH ADMIN AND USER VIEWS NI SIYA HA TAS SA LOGIN/REGISTER-------------
 
-def index(request):
-    return render(request, 'main/index.html')
 
-# ---------------------------
 # LANDING PAGE
-# ---------------------------
 def landing_page(request):
-    # If user is logged in, redirect based on role
-    if request.user.is_authenticated:
-        if request.user.is_staff:
-            return redirect('/admin/')  # send staff/superuser to Django admin
-        else:
-            return redirect('homepage')
-    return render(request, 'main/landing.html')
+    return render(request, 'main/homepage.html') 
+    return render(request, 'main/landing.html') 
 
-
-# ---------------------------
-# HOMEPAGE (CLIENT)
-# ---------------------------
-@login_required(login_url='/login/')
+# HOMEPAGE
 def homepage(request):
-    # Only non-admin users can access
-    if request.user.is_staff:
-        return redirect('/admin/')  # staff go to Django admin
     return render(request, 'main/homepage.html')
 
+# INDEX 
+def index(request):
+     return render(request, 'main/index.html')
 
-
-# ---------------------------
-# REGISTER
-# ---------------------------
+# RESISTER
 def register(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -77,52 +61,65 @@ def register(request):
 
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists!')
-            return render(request, 'main/register.html')
+        else:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password
+            )
 
-        user = User.objects.create_user(username=username, email=email, password=password)
-        messages.success(request, 'Account created successfully! You can now log in.')
-        return redirect('login')
+            # ✅ SEND EMAIL NOTIFICATION
+            email_subject = "Welcome to MFC Pet Life 🐾"
+            email_body = f"""
+            Hi {username},
+
+            Your account has been successfully created!
+
+            You can now log in using your username and password.
+
+            Thank you,
+            MFC Pet Life Team
+            """
+
+            email_message = EmailMessage(
+                email_subject,
+                email_body,
+                to=[email]
+            )
+            email_message.send()
+
+            messages.success(request, 'Account created successfully! Check your email.')
+            return redirect('login')
 
     return render(request, 'main/register.html')
 
-
-# ---------------------------
-# LOGIN
-# ---------------------------
+     # LOGIN VIEW
 def login_view(request):
-    # Already logged in?
-    if request.user.is_authenticated:
-        if request.user.is_staff:
-            return redirect('/admin/')
-        else:
-            return redirect('homepage')
-
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
-        if user:
+
+        if user is not None:
             login(request, user)
+            # Safe access to is_staff
             if user.is_staff:
-                return redirect('/admin/')
+                return redirect('admin_dashboard')
             else:
                 return redirect('homepage')
         else:
+            # Invalid login
             messages.error(request, 'Invalid username or password')
+            return render(request, 'main/login.html')
 
+    # GET request
     return render(request, 'main/login.html')
 
 
-
-# ---------------------------
-# LOGOUT
-# ---------------------------
-@login_required(login_url='/login/')
 def logout_view(request):
-    logout(request)
-    return redirect('login')
-
+            logout(request)
+            return redirect('login')
 
 
 
