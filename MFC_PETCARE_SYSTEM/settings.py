@@ -133,19 +133,19 @@ if ENVIRONMENT == 'production':
     CSRF_TRUSTED_ORIGINS = [
         "https://mfc-petcare-system-1.onrender.com",
     ]
-    # ⚠️ Temporarily disable Secure cookies to fix redirect loop
-    CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SECURE = False
-    SECURE_SSL_REDIRECT = False
+    
+    # ⚠️ Fix for Render free-tier
+    CSRF_COOKIE_SECURE = False         # free-tier proxy issue
+    SESSION_COOKIE_SECURE = False      # free-tier proxy issue
+    SECURE_SSL_REDIRECT = False        # free-tier proxy issue
+    CSRF_COOKIE_SAMESITE = 'Lax'
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    CSRF_COOKIE_SAMESITE = 'Lax'  # safer default
 else:
     CSRF_TRUSTED_ORIGINS = []
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
     SECURE_SSL_REDIRECT = False
-
-
+    
 # -------------------------------
 # EMAIL CONFIGURATION
 # -------------------------------

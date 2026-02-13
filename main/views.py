@@ -54,10 +54,11 @@ def landing_page(request):
 # ---------------------------
 @login_required(login_url='/login/')
 def homepage(request):
-    # Only allow non-admin users here
+    # Only non-admin users can access
     if request.user.is_staff:
         return redirect('admin_dashboard')
     return render(request, 'main/homepage.html')
+
 
 
 # ---------------------------
@@ -89,7 +90,7 @@ def register(request):
 # LOGIN
 # ---------------------------
 def login_view(request):
-    # First check: already logged in
+    # Already logged in?
     if request.user.is_authenticated:
         if request.user.is_staff:
             return redirect('admin_dashboard')
