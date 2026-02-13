@@ -12,7 +12,7 @@ urlpatterns = [
        path('', views.landing_page, name='landing'),
 
         #HOMEPAGE
-            path('', views.homepage, name='homepage'),
+            path('homepage/', views.homepage, name='homepage'),
         
 
         #--------------
