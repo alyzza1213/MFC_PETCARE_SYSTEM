@@ -89,6 +89,13 @@ def register(request):
 # LOGIN
 # ---------------------------
 def login_view(request):
+    # First check: already logged in
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            return redirect('admin_dashboard')
+        else:
+            return redirect('homepage')
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -104,14 +111,8 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password')
 
-    # If already logged in, redirect based on role
-    if request.user.is_authenticated:
-        if request.user.is_staff:
-            return redirect('admin_dashboard')
-        else:
-            return redirect('homepage')
-
     return render(request, 'main/login.html')
+
 
 
 # ---------------------------
