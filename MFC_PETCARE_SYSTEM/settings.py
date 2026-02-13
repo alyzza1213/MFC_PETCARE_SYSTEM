@@ -128,24 +128,15 @@ LOGOUT_REDIRECT_URL = '/login/'
 # -------------------------------
 # CSRF & HTTPS CONFIG
 # -------------------------------
-if ENVIRONMENT == 'production':
-    CSRF_TRUSTED_ORIGINS = [
-        'https://mfc-petcare-system-1.onrender.com',
-        'https://www.mfc-petcare-system-1.onrender.com',  # optional
-    ]
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    
-    
-    CSRF_COOKIE_SAMESITE = 'None'
-else:
-    # Local development
-    CSRF_TRUSTED_ORIGINS = []
-    CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SECURE = False
-    SECURE_SSL_REDIRECT = False
+CSRF_TRUSTED_ORIGINS = [
+    "https://mfc-petcare-system-1.onrender.com",
+]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 # -------------------------------
 # EMAIL CONFIGURATION
