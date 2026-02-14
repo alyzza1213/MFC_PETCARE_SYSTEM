@@ -103,27 +103,23 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
-            # Safe access to is_staff
             if user.is_staff:
                 return redirect('admin_dashboard')
             else:
                 return redirect('homepage')
         else:
-            # Invalid login
             messages.error(request, 'Invalid username or password')
             return render(request, 'main/login.html')
 
-    # GET request
     return render(request, 'main/login.html')
 
 
 def logout_view(request):
-    logout(request)  # logs the user out
+    logout(request)
     return redirect('landing')
 
 

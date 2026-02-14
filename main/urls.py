@@ -9,14 +9,12 @@ urlpatterns = [
     #----------BOTH ADMIN AND USER VIEWS NI SIYA HA TAS SA LOGIN/REGISTER------------------
 
         #LANDING PAGE
-       path('', views.landing_page, name='landing'),
-
+        path('', views.landing_page, name='landing'),
         #HOMEPAGE
             path('homepage/', views.homepage, name='homepage'),
         
-
         #--------------
-            path('index/', views.index, name='index'),
+              path('index/', views.index, name='index'),
 
             path('register/', views.register, name='register'),
             path('login/', views.login_view, name='login'),
