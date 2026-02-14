@@ -37,13 +37,14 @@ from django.contrib.auth.decorators import login_required
 # LANDING PAGE
 def landing_page(request):
     if request.user.is_authenticated:
-        # If logged in, go to homepage/dashboard
+        # Logged-in users go to homepage
         return redirect('homepage')
-    # If not logged in, show a login page instead
-    return render(request, 'main/login.html')
+    # Anonymous users see login page
+    return render(request, 'main/login.html') 
 
 # HOMEPAGE
-@login_required(login_url='login')
+
+@login_required(login_url='landing')
 def homepage(request):
     return render(request, 'main/homepage.html')
 
@@ -122,8 +123,8 @@ def login_view(request):
 
 
 def logout_view(request):
-            logout(request)
-            return redirect('login')
+    logout(request)  # logs the user out
+    return redirect('landing')
 
 
 
