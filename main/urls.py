@@ -104,10 +104,7 @@ urlpatterns = [
             
              # MY APPOINTMENT
                     path('my-appointments/', views.my_appointments, name='my_appointments'),
-        
-             # APPOINTMENT LIST
-                    path('appointment-list/', views.appointment_list, name='appointment_list'),
-            
+                         
              # APPOINTMENT STATUS
                     path('appointment/<int:appointment_id>/update-status/', views.appointment_update_status, name='appointment_update_status'),
    
@@ -237,7 +234,7 @@ urlpatterns = [
          #----------------------APPOINTMENT HUB--------------------------------------------
 
              # APPOINMENT LIST
-                    path('appointment-list/', views.appointment_list, name='appointment_list'),
+                    path('appointment-requests/', views.appointment_requests, name='appointment_requests'),
 
 
          #------------------------WORKING DAYS---------------------------------------------------------

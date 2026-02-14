@@ -395,19 +395,22 @@ def get_available_slots(target_date, service_type="Check-up"):
     return slots
 
 
+@login_required(login_url='login')
 def book_appointment(request):
-    user = request.user
+    user = request.user  # guaranteed to be a real User object
+
+    # Get all pets for this user
     pets = Pet.objects.filter(owner=user)
     qr_code_url = None
 
-    # Get target date
+    # Get target date from GET params
     target_date_str = request.GET.get("date")
     try:
         target_date = datetime.strptime(target_date_str, "%Y-%m-%d").date() if target_date_str else date.today()
     except ValueError:
         target_date = date.today()
 
-    # Determine service type
+    # Available slots
     service_type = request.POST.get("service_1", "Check-up")
     available_slots = get_available_slots(target_date, service_type)
 
@@ -419,19 +422,21 @@ def book_appointment(request):
         if slot_str and selected_pets:
             slot_time = datetime.strptime(slot_str, "%H:%M").time()
             for pet_id in selected_pets:
-                pet = Pet.objects.get(id=pet_id)
-                service_type = request.POST.get(f"service_{pet_id}", "Check-up")
+                try:
+                    pet = Pet.objects.get(id=pet_id, owner=user)
+                    service_type = request.POST.get(f"service_{pet_id}", "Check-up")
 
-                # Save appointment (duration handled in model property)
-                Appointment.objects.create(
-                    user=user,
-                    pet=pet,
-                    date=target_date,
-                    time=slot_time,
-                    appointment_type=service_type,
-                    notes=notes,
-                    status="Pending"
-                )
+                    Appointment.objects.create(
+                        user=user,
+                        pet=pet,
+                        date=target_date,
+                        time=slot_time,
+                        appointment_type=service_type,
+                        notes=notes,
+                        status="Pending"
+                    )
+                except Pet.DoesNotExist:
+                    messages.error(request, f"Pet with ID {pet_id} not found.")
 
             qr_code_url = "/path/to/gcash_qr.png"
             messages.success(request, "Your appointment has been successfully booked! Please complete the payment below.")
@@ -948,6 +953,7 @@ def send_payment_email(appointment):
     email.send()
 
 
+@login_required(login_url='login')
 def book_appointment(request):
     pets = Pet.objects.filter(owner=request.user)
     target_date = timezone.now().date()  # Or let client choose date
@@ -1002,7 +1008,7 @@ def book_appointment(request):
     # GET request
     default_service = "Check-up"
     available_slots = get_available_slots(target_date, default_service)
-    return render(request, 'booking.html', {
+    return render(request, 'clients/book_appointment.html', {
         'pets': pets,
         'available_slots': available_slots
     })
@@ -1073,7 +1079,7 @@ def book_multi_pet_appointment(request):
 
             return render(request, 'booking_page.html', {'pets': user_pets})
 
-def appointment_list(request):
+def appointment_requests(request):
     # Select related foreign keys
     appointments = Appointment.objects.select_related('user', 'pet').all().order_by('-date', 'time')
 
@@ -1088,7 +1094,7 @@ def appointment_list(request):
         'total_appointments': total_appointments
     }
 
-    return render(request, 'admin/appointment_list.html', context)
+    return render(request, 'admin/appointment_requests.html', context)
 
 #-------WORKING DAY-------------
 
