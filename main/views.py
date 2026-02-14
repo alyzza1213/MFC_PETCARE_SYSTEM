@@ -95,17 +95,23 @@ def register(request):
 
     return render(request, 'main/register.html')
 
-     # LOGIN VIEW
 def login_view(request):
+    # If user is already logged in, go straight to homepage
+    if request.user.is_authenticated:
+        return redirect('homepage')
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('homepage')
+            return redirect('homepage')  # Go to homepage after login
         else:
             messages.error(request, 'Invalid username or password')
+            return redirect('login')  # Stay on login page if failed
+
+    # GET request → show login form
     return render(request, 'main/login.html')
 
 
