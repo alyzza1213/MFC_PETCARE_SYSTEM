@@ -35,9 +35,9 @@ from django.contrib.auth.decorators import login_required
 
 
 # LANDING PAGE
-def landing_page(request):
+def landingpage(request):
     # Simply show the landing page
-    return render(request, 'main/landing.html')
+    return render(request, 'main/landingpage.html')
 
 # HOMEPAGE
 
