@@ -36,11 +36,8 @@ from django.contrib.auth.decorators import login_required
 
 # LANDING PAGE
 def landing_page(request):
-    if request.user.is_authenticated:
-        # Logged-in users go to homepage
-        return redirect('homepage')
-    # Anonymous users see login page
-    return render(request, 'main/login.html') 
+    # Simply show the landing page
+    return render(request, 'main/landing.html')
 
 # HOMEPAGE
 
@@ -104,18 +101,13 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
-
         if user is not None:
             login(request, user)
-            if user.is_staff:
-                return redirect('admin_dashboard')
-            else:
-                return redirect('homepage')
+            return redirect('homepage')
         else:
             messages.error(request, 'Invalid username or password')
-            return render(request, 'main/login.html')
-
     return render(request, 'main/login.html')
+
 
 
 def logout_view(request):
