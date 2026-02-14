@@ -41,7 +41,7 @@ def landing_page(request):
 
 # HOMEPAGE
 
-@login_required(login_url='landing')
+@login_required(login_url='login')
 def homepage(request):
     return render(request, 'main/homepage.html')
 
