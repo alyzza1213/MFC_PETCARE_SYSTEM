@@ -98,14 +98,28 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
+        if not username or not password:
+            messages.error(request, "Please enter both username and password.")
+            return redirect('login')
+
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
+            if not user.is_active:
+                messages.error(request, "This account is inactive.")
+                return redirect('login')
+
             login(request, user)
+
+            # Admin redirect
             if user.is_staff:
-                return redirect('admin_dashboard')  # admin
-            return redirect('homepage')  # regular user
+                return redirect('admin_dashboard')
+            # Regular user redirect
+            return redirect('homepage')
+
         else:
             messages.error(request, 'Invalid username or password')
+            return redirect('login')
 
     return render(request, 'main/login.html')
 
