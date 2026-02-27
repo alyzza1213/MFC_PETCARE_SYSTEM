@@ -35,11 +35,8 @@ from django.contrib.auth.decorators import login_required
 
 
 # LANDING PAGE
-def landingpage(request):
-    # Simply show the landing page
-    return render(request, 'main/landingpage.html')
-
-# HOMEPAGE
+def landing_page(request):
+    return render(request, 'main/landing_page.html')
 
 @login_required(login_url='login')
 def homepage(request):
@@ -95,30 +92,28 @@ def register(request):
 
     return render(request, 'main/register.html')
 
+     # LOGIN VIEW
 def login_view(request):
-    # If user is already logged in, go straight to homepage
-    if request.user.is_authenticated:
-        return redirect('homepage')
-
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('homepage')  # Go to homepage after login
+            if user.is_staff:
+                return redirect('admin_dashboard')  # admin
+            return redirect('homepage')  # regular user
         else:
             messages.error(request, 'Invalid username or password')
-            return redirect('login')  # Stay on login page if failed
 
-    # GET request → show login form
     return render(request, 'main/login.html')
-
 
 
 def logout_view(request):
     logout(request)
-    return redirect('landing')
+    return redirect('landing_page')
+
 
 
 

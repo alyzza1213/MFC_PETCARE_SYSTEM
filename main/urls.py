@@ -9,17 +9,17 @@ urlpatterns = [
     #----------BOTH ADMIN AND USER VIEWS NI SIYA HA TAS SA LOGIN/REGISTER------------------
 
         #LANDING PAGE
-        path('', views.landingpage, name='landingpage'),
+        path('', views.landing_page, name='landing_page'),
         #HOMEPAGE
             path('homepage/', views.homepage, name='homepage'),
         
         #--------------
               path('index/', views.index, name='index'),
 
-            path('register/', views.register, name='register'),
+            
             path('login/', views.login_view, name='login'),
             path('logout/', views.logout_view, name='logout'),
-
+            path('register/', views.register, name='register'),
 
         # PASSWORD RESET
             path('password_reset/', auth_views.PasswordResetView.as_view(
