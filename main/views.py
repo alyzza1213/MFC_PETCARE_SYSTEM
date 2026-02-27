@@ -99,12 +99,18 @@ def login_view(request):
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
-        if user is not None:
-            if user.is_active:  # ensure account is active
-                login(request, user)
+
+        if user:
+            if user.is_active:
+                login(request, user)  # Save session
+
+                # Debug: check if session is working
+                print("Session key:", request.session.session_key)
+                print("User logged in:", request.user.username)
+
                 if user.is_staff:
-                    return redirect('admin_dashboard')  # admin
-                return redirect('homepage')  # regular user
+                    return redirect('admin_dashboard')
+                return redirect('homepage')
             else:
                 messages.error(request, 'Your account is inactive.')
         else:
