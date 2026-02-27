@@ -154,7 +154,10 @@ if ENVIRONMENT == 'production':
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-else:
+
+    SESSION_COOKIE_DOMAIN = ".onrender.com"
+    CSRF_COOKIE_DOMAIN = ".onrender.com"
+else:   
     CSRF_TRUSTED_ORIGINS = []
 
 # -------------------------------
