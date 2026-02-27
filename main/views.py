@@ -60,37 +60,31 @@ def register(request):
 
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists!')
-        else:
-            user = User.objects.create_user(
-                username=username,
-                email=email,
-                password=password
-            )
+            return render(request, 'main/register.html')
 
-            # ✅ SEND EMAIL NOTIFICATION
-            email_subject = "Welcome to MFC Pet Life 🐾"
-            email_body = f"""
-            Hi {username},
+        # Create user
+        user = User.objects.create_user(username=username, email=email, password=password)
 
-            Your account has been successfully created!
+        # Send welcome email
+        email_subject = "Welcome to MFC Pet Life 🐾"
+        email_body = f"""
+        Hi {username},
 
-            You can now log in using your username and password.
+        Your account has been successfully created!
 
-            Thank you,
-            MFC Pet Life Team
-            """
+        You can now log in using your username and password.
 
-            email_message = EmailMessage(
-                email_subject,
-                email_body,
-                to=[email]
-            )
-            email_message.send()
+        Thank you,
+        MFC Pet Life Team
+        """
+        email_message = EmailMessage(email_subject, email_body, to=[email])
+        email_message.send()
 
-            messages.success(request, 'Account created successfully! Check your email.')
-            return redirect('login')
+        messages.success(request, 'Account created successfully! Check your email.')
+        return redirect('login')
 
     return render(request, 'main/register.html')
+
 
      # LOGIN VIEW
 def login_view(request):
@@ -99,22 +93,16 @@ def login_view(request):
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
-
-        if user:
+        if user is not None:
             if user.is_active:
-                login(request, user)  # Save session
-
-                # Debug: check if session is working
-                print("Session key:", request.session.session_key)
-                print("User logged in:", request.user.username)
-
+                login(request, user)  # ✅ store session
                 if user.is_staff:
                     return redirect('admin_dashboard')
                 return redirect('homepage')
             else:
                 messages.error(request, 'Your account is inactive.')
         else:
-            messages.error(request, 'Invalid username or password')
+            messages.error(request, 'Invalid username or password.')
 
     return render(request, 'main/login.html')
 
