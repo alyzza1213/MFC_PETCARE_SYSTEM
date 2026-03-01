@@ -1,87 +1,235 @@
-    body {
-        background: #f4f6f9;
-    }
+:root {
+    --primary: #2e716c;       /* main brand color */
+    --secondary: #1f6f6a;     /* accent color */
+    --dark: #1f6f6a;          /* dark shade */
+    --light: #f4f6f9;         /* background */
+    --white: #fff;             /* true white */
+    --text-dark: #333;        /* main text color */
+    --text-muted: #777;       /* secondary text */
+    --card-shadow: rgba(0,0,0,0.08);  /* card shadows */
+    --danger: #e53935;        /* error / danger color */
+}
 
-   
-    .main-content {
-        padding: 30px;
-    }
+/* Global Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
 
-    .title {
-        margin-bottom: 10px;
-    }
+body {
+    background: var(--light);
+    color: var(--text-dark);
+}
 
-    .search-container {
-        margin-bottom: 20px;
-    }
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    height: 100vh;
+    background: linear-gradient(180deg, var(--primary), var(--secondary));
+    display: flex;
+    flex-direction: column;
+    padding: 25px 15px;
+    color: var(--white);
+    box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.sidebar a {
+    display: block;
+    padding: 12px 15px;
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+.sidebar a:hover,
+.sidebar a.active {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(5px);
+}
 
-    .search-container input {
+/* Logout Button */
+.logout-btn {
+    margin-top: auto;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: var(--danger);
+    color: var(--white);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.logout-btn:hover {
+    background: #b71c1c;
+    transform: translateY(-2px);
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 240px;
+    padding: 40px 30px;
+    transition: all 0.3s ease;
+}
+h1.title {
+    font-size: 2.2rem;
+    margin-bottom: 30px;
+    text-align: center;
+    color: var(--dark);
+}
+
+/* Search Bar */
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+.search-container input {
+    width: 100%;
+    max-width: 500px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+.search-container input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(46,113,108,0.2);
+}
+
+/* Summary Cards */
+.summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+.summary a {
+    flex: 1 1 220px;
+    display: block;
+    background: var(--white);
+    padding: 25px;
+    border-radius: 15px;
+    text-decoration: none;
+    color: var(--text-dark);
+    box-shadow: 0 8px 20px var(--card-shadow);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+.summary a:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+.summary a span {
+    display: block;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+.summary a strong {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* Client & Pet Cards */
+.client-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.client-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white);
+    padding: 18px 22px;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px var(--card-shadow);
+    text-decoration: none;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.client-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+.client-info-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.client-number {
+    font-weight: 700;
+    color: var(--primary);
+}
+.pet-icon {
+    font-size: 1.8rem;
+}
+.client-name {
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+.client-info-right {
+    text-align: right;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+.client-meta .tag {
+    background: var(--primary);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
         width: 100%;
-        max-width: 350px;
-        padding: 10px 14px;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        font-size: 14px;
-    }
-
-   
-    .client-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .client-card {
-        background: white;
-        padding: 18px 22px;
-        border-radius: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .client-info-left {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .client-number {
-        background: #4CAF50;
-        color: white;
-        font-weight: bold;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
+        height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 15px;
         justify-content: center;
     }
-
-    .client-name {
-        font-weight: 600;
+    .sidebar h2 {
+        flex-basis: 100%;
+        text-align: center;
+        margin-bottom: 10px;
     }
-
-    .client-info-right {
-        font-size: 14px;
-        color: #666;
-        text-align: right;
+    .sidebar a {
+        flex: 1 1 45%;
+        text-align: center;
+        margin-bottom: 8px;
     }
-
-    .client-meta .tag {
-        display: inline-block;
-        margin-top: 6px;
-        padding: 4px 10px;
-        background: #e8f5e9;
-        color: #4CAF50;
-        border-radius: 20px;
-        font-size: 12px;
+    .main-content {
+        margin-left: 0;
+        padding: 20px;
     }
-
- 
-    .pet-icon {
-        font-size: 22px;
-        margin-right: 8px;
+    .summary {
+        flex-direction: column;
+        align-items: center;
     }
+    .summary a {
+        width: 100%;
+        max-width: 400px;
+    }
+}

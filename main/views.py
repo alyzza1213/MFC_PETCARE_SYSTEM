@@ -10,7 +10,7 @@ from .models import (
     Pet, Owner, Service,
     WorkingDay, Appointment, VetAvailability,
     History, Vaccination, VaccineRecord,
-    Vaccine, Grooming,MedicalRecord
+    Vaccine, Grooming, MedicalRecord, Service, ServiceImage
 )
 from .notifications import (
     send_registration_email,
@@ -95,16 +95,18 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             if user.is_active:
-                login(request, user)  # ✅ store session
+                login(request, user)
                 if user.is_staff:
                     return redirect('admin_dashboard')
-                return redirect('homepage')
+                else:
+                    return redirect('homepage')  # ← redirect regular users here
             else:
                 messages.error(request, 'Your account is inactive.')
         else:
             messages.error(request, 'Invalid username or password.')
 
     return render(request, 'main/login.html')
+
 
 
 def logout_view(request):
@@ -1444,7 +1446,54 @@ def view_grooming(request, pet_id):
 
 
 
+def vet_service_list(request):
+    services = Service.objects.all()
+
+    if request.method == "POST":
+        # Update existing services
+        for service in services:
+            name = request.POST.get(f"name_{service.id}")
+            description = request.POST.get(f"description_{service.id}")
+            price = request.POST.get(f"price_{service.id}")
+            if name and price:
+                service.name = name
+                service.description = description
+                service.price = price
+                service.save()
+        messages.success(request, "Services updated successfully!")
+        return redirect("service_list")
+
+    return render(request, "admin/service_list.html", {"services": services})
 
 
+def add_service(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        description = request.POST.get("description", "")
+        price = request.POST.get("price")
+        if name and price:
+            Service.objects.create(name=name, description=description, price=price)
+            messages.success(request, "Service added successfully!")
+        else:
+            messages.error(request, "Please provide a name and price.")
+    return redirect("service_list")
+
+
+def add_service_with_images(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        description = request.POST.get("description")
+        price = request.POST.get("price")
+        images = request.FILES.getlist("images")
+
+        service = Service.objects.create(name=name, description=description, price=price)
+
+        for img in images:
+            ServiceImage.objects.create(service=service, image=img)
+
+        messages.success(request, "Service and images added successfully!")
+        return redirect("service_list")
+
+    return render(request, "admin/add_service.html")
 
 #-------------NOTIFICATIONS-----------------------

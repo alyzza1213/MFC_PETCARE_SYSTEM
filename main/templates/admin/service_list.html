@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Veterinary Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    /* Base */
+    * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+    body { margin: 0; background-color: #f4f6f8; color: #2c3e50; }
+
+    /* Sidebar */
+    .sidebar {
+        position: fixed;
+        top: 0; left: 0;
+        width: 220px; height: 100%;
+        background: #34495e; padding: 20px;
+        display: flex; flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.3s;
+    }
+    .sidebar h2 { color: #ecf0f1; margin-bottom: 30px; font-weight: 700; font-size: 22px; text-align: center; }
+    .nav-links a {
+        display: block; padding: 10px 15px;
+        color: #ecf0f1; text-decoration: none;
+        border-radius: 6px; margin-bottom: 10px;
+        transition: 0.3s;
+    }
+    .nav-links a:hover, .nav-links a.active { background: #1abc9c; color: #fff; }
+    .logout-btn {
+        width: 100%; padding: 10px;
+        background: #e74c3c; border: none;
+        color: #fff; font-weight: bold;
+        border-radius: 5px; cursor: pointer; transition: 0.3s;
+    }
+    .logout-btn:hover { background: #c0392b; }
+
+    /* Main content */
+    .main { margin-left: 240px; padding: 30px; transition: all 0.3s; }
+    h1 { text-align: center; margin-bottom: 30px; font-weight: 700; }
+    .container {
+        background: #fff; padding: 25px 20px;
+        border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        overflow-x: auto;
+    }
+
+    /* Messages */
+    .messages { margin-bottom: 20px; }
+    .success-msg {
+        background-color: #d4edda; color: #155724;
+        padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; font-weight: 500;
+    }
+
+    /* Add Service Form */
+    .add-form { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
+    .add-form input, .add-form button {
+        flex: 1 1 200px; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
+    }
+    .add-form input:focus { border-color: #3498db; outline: none; }
+    .add-form button {
+        background: #27ae60; color: #fff; font-weight: 700; border: none; cursor: pointer;
+    }
+    .add-form button:hover { background: #1e8449; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; border-radius: 10px; min-width: 600px; }
+    th, td { padding: 12px 15px; text-align: left; }
+    th { background-color: #3498db; color: #fff; cursor: pointer; user-select: none; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    tr:hover { background: #e1f0ff; transition: 0.2s; }
+    input[type=text], input[type=number], input[type=file] {
+        width: 100%; padding: 6px 8px; border-radius: 6px; border: 1px solid #ccc;
+    }
+
+    /* Update Button */
+    .container form button { background: #2980b9; margin-top: 20px; }
+    .container form button:hover { background: #1f6391; }
+
+    /* Responsive */
+    @media (max-width: 992px) { .sidebar { width: 180px; } .main { margin-left: 200px; padding: 20px; } }
+    @media (max-width: 768px) {
+        .sidebar { position: relative; width: 100%; height: auto; flex-direction: row; flex-wrap: wrap; padding: 10px; }
+        .sidebar h2 { flex-basis: 100%; text-align: center; margin-bottom: 10px; }
+        .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; }
+        .nav-links a { flex: 1 1 45%; text-align: center; }
+        .main { margin-left: 0; padding: 15px; }
+        .add-form { flex-direction: column; }
+        .add-form input, .add-form button { flex: 1 1 100%; }
+        table { min-width: 100%; display: block; overflow-x: auto; }
+        th, td { font-size: 14px; }
+    }
+    @media (max-width: 480px) {
+        .add-form input, .add-form button { font-size: 14px; padding: 8px; }
+        th, td { padding: 8px 10px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div>
+        <h2>🐾 Admin Panel</h2>
+        <div class="nav-links">
+            <a href="{% url 'admin_dashboard' %}" class="active">🏠 Dashboard</a>
+            <a href="{% url 'clients_pets' %}" class="active">👥 Clients & Pets</a>
+            <a href="{% url 'vet_availability_admin' %}" class="active">🩺 Vet Availability</a>
+            <a href="{% url 'appointment_requests' %}" class="active">📅 Appointment Requests</a>
+            <a href="{% url 'service_list' %}" class="active">Service List</a>
+        </div>
+    </div>
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">Log Out</button>
+    </form>
+</div>
+
+<div class="main">
+    <h1>Admin - Veterinary Services</h1>
+    <div class="container">
+        <!-- Messages -->
+        <div class="messages">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="success-msg">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Add New Service -->
+        <form method="POST" action="{% url 'add_service' %}" enctype="multipart/form-data" class="add-form">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Service Name" required>
+            <input type="text" name="description" placeholder="Description">
+            <input type="number" step="0.01" min="0" name="price" placeholder="Price" required>
+            <input type="file" name="images" multiple>
+            <button type="submit">Add Service</button>
+        </form>
+
+        <!-- Existing Services -->
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table id="serviceTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Service Name ▲▼</th>
+                        <th onclick="sortTable(1)">Description ▲▼</th>
+                        <th onclick="sortTable(2)">Price ▲▼</th>
+                        <th>Images</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                    <tr>
+                        <td><input type="text" name="name_{{ service.id }}" value="{{ service.name }}"></td>
+                        <td><input type="text" name="description_{{ service.id }}" value="{{ service.description }}"></td>
+                        <td><input type="number" step="0.01" min="0" name="price_{{ service.id }}" value="{{ service.price }}"></td>
+                        <td>
+                            <input type="file" name="images_{{ service.id }}" multiple>
+                            {% if service.images.all %}
+                                <div style="margin-top:5px;">
+                                    {% for img in service.images.all %}
+                                        <img src="{{ img.url }}" style="width:50px;height:50px;margin:2px;border-radius:5px;">
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Update Services</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function sortTable(n) {
+    const table = document.getElementById("serviceTable");
+    let switching = true, dir = "asc", switchcount = 0;
+    while (switching) {
+        switching = false;
+        let rows = table.rows;
+        for (let i = 1; i < rows.length - 1; i++) {
+            let shouldSwitch = false;
+            let x = rows[i].getElementsByTagName("TD")[n].firstElementChild.value.toLowerCase();
+            let y = rows[i+1].getElementsByTagName("TD")[n].firstElementChild.value.toLowerCase();
+            if ((dir === "asc" && x > y) || (dir === "desc" && x < y)) { shouldSwitch = true; break; }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i+1], rows[i]);
+            switching = true; switchcount++;
+        } else if (switchcount === 0 && dir === "asc") { dir = "desc"; switching = true; }
+    }
+}
+</script>
+
+</body>
+</html>

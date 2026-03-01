@@ -10,13 +10,14 @@ urlpatterns = [
 
         #LANDING PAGE
         path('', views.landing_page, name='landing_page'),
+
         #HOMEPAGE
             path('homepage/', views.homepage, name='homepage'),
         
         #--------------
               path('index/', views.index, name='index'),
 
-            
+         #LOGIN/REGISTER/LOGOUT   
             path('login/', views.login_view, name='login'),
             path('logout/', views.logout_view, name='logout'),
             path('register/', views.register, name='register'),
@@ -249,6 +250,9 @@ urlpatterns = [
              #VET AVAILABILITY
                  path('vet-availability-admin/', views.vet_availability_admin, name='vet_availability_admin'),
                   path('vet-availability-admin/edit/<date>/', views.edit_working_day, name='edit_working_day'),
+
+path('vet-service-list/', views.vet_service_list, name='service_list'),
+ path("add-service/", views.add_service, name="add_service"), 
 
 
 

@@ -1,10 +1,10 @@
 :root {
-    --primary: #00897b;
-    --secondary: #26a69a;
-    --dark: #00695c;
+    --primary: #2e716c;
+    --secondary: #70c4bb;
+    --dark: #1f6f6a;
     --light: #f4f6f9;
     --white: #fff;
-    --danger: #e53935;
+    --danger: #e5383500;
 }
 
 /* Global Reset */

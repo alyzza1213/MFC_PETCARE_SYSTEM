@@ -243,3 +243,13 @@ class Grooming(models.Model):
 
     def __str__(self):
         return f"{self.pet.name if self.pet else 'Deleted Pet'} - {self.service_type} on {self.date}"
+
+
+class Service(models.Model):
+    name = models.CharField(max_length=225)
+    description = models.TextField(blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+class ServiceImage(models.Model):
+    service = models.ForeignKey(Service, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='service_images/')

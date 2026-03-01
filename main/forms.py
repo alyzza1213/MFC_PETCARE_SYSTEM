@@ -1,5 +1,5 @@
 from django import forms
-from .models import Vaccination, Pet
+from .models import Vaccination, Pet, Service, ServiceImage
 
 
 
@@ -33,3 +33,13 @@ class VaccineForm(forms.ModelForm):
             'date_given': forms.DateInput(attrs={'type': 'date'}),
             'next_due': forms.DateInput(attrs={'type': 'date'}),
         }
+
+class ServiceForm(forms.ModelForm):   # renamed form
+    class Meta:
+        model = Service               # ✅ use existing model
+        fields = ["name", "description", "price"]
+
+class ServiceImageForm(forms.ModelForm):
+    class Meta:
+        model = ServiceImage
+        fields = ["image"]
