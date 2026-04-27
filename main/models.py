@@ -113,12 +113,6 @@ class VetAvailability(models.Model):
         if self.end_time <= self.start_time:
             raise ValidationError("End time must be after start time.")
 
-
-class Service(models.Model):
-    name = models.CharField(max_length=100)  # "Vaccination", "Grooming", etc.
-    duration = models.DurationField()  # e.g., 15 mins, 1 hour
-    price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-
  
 # 📅 APPOINTMENT
 class Appointment(models.Model):
@@ -246,10 +240,14 @@ class Grooming(models.Model):
 
 
 class Service(models.Model):
-    name = models.CharField(max_length=225)
-    description = models.TextField(blank=True)
+    name = models.CharField(max_length=225)  # e.g. Grooming, Vaccination
+    description = models.TextField(blank=True, null=True)
+    duration = models.DurationField()  # e.g. 30 mins, 1 hour
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def __str__(self):
+        return self.name
+    
 class ServiceImage(models.Model):
     service = models.ForeignKey(Service, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='service_images/')

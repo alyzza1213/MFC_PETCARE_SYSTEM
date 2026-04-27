@@ -10,7 +10,7 @@ from .models import (
     Pet, Owner, Service,
     WorkingDay, Appointment, VetAvailability,
     History, Vaccination, VaccineRecord,
-    Vaccine, Grooming, MedicalRecord, Service, ServiceImage
+    Vaccine, Grooming, MedicalRecord, ServiceImage
 )
 from .notifications import (
     send_registration_email,
@@ -38,13 +38,10 @@ from django.contrib.auth.decorators import login_required
 def landing_page(request):
     return render(request, 'main/landing_page.html')
 
-@login_required(login_url='login')
 def homepage(request):
+    print("USER:", request.user)
+    print("AUTH:", request.user.is_authenticated)
     return render(request, 'main/homepage.html')
-
-# INDEX 
-def index(request):
-     return render(request, 'main/index.html')
 
 # RESISTER
 def register(request):
@@ -93,15 +90,17 @@ def login_view(request):
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
-            if user.is_active:
-                login(request, user)
-                if user.is_staff:
-                    return redirect('admin_dashboard')
-                else:
-                    return redirect('homepage')  # ← redirect regular users here
+            login(request, user)
+
+            print("LOGIN:", request.user.is_authenticated)
+
+            if user.is_staff:
+                return redirect('admin_dashboard')
             else:
-                messages.error(request, 'Your account is inactive.')
+                return redirect('client_dashboard')  # IMPORTANT FIX
+
         else:
             messages.error(request, 'Invalid username or password.')
 
@@ -123,6 +122,11 @@ def logout_view(request):
 
 
 #----------------USER PET VIEWS SA CLIENT SIDE NI------------------
+
+def client_dashboard(request):
+    return render(request, 'clients/client_dashboard.html')
+
+
 
      # PET PROFILE
 def pet_profile(request):
@@ -261,6 +265,10 @@ def vaccine_detail(request, pet_id):
 
 
 #-----------------------BOOKING APPOINTMENT NI SIYA SA CLIENT SIDE LANG NI----------------------- 
+
+@login_required(login_url='login')
+def client_dashboard(request):
+    return render(request, 'clients/client_dashboard.html')
 
 def my_appointments(request):
     appointments = Appointment.objects.filter(user=request.user).order_by('date', 'time')

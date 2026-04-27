@@ -108,6 +108,7 @@
             <a href="{% url 'service_list' %}" class="active">Service List</a>
         </div>
     </div>
+    
     <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
         <button type="submit" class="logout-btn">Log Out</button>

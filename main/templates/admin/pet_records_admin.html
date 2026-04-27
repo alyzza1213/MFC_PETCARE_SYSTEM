@@ -20,7 +20,9 @@
         <a href="{% url 'vaccine_records_admin' %}">💉 Vaccination Records</a>
         <a href="{% url 'appointment_hub' %}">📅 Appointment Hub</a>
         <a href="{% url 'vet_availability_admin' %}">🩺 Vet Availability</a>
+        <a href="{% url 'service_list' %}">Service List</a>
     </div>
+    
     <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
         <button class="logout-btn">🚪 Logout</button>

@@ -13,9 +13,6 @@ urlpatterns = [
 
         #HOMEPAGE
             path('homepage/', views.homepage, name='homepage'),
-        
-        #--------------
-              path('index/', views.index, name='index'),
 
          #LOGIN/REGISTER/LOGOUT   
             path('login/', views.login_view, name='login'),
@@ -68,7 +65,9 @@ urlpatterns = [
                     path('pet/<int:pet_id>/update-image/', views.update_pet_image, name='update_pet_image'),
 
               #------------------------------      
-                    path('', views.homepage, name='homepage'),
+                    path('homepage/', views.homepage, name='homepage'),
+                    path('client-dashboard/', views.client_dashboard, name='client_dashboard'),
+                    
              
              # BACK BUTTON
                     path('pet/<int:pet_id>/', views.pet_detail, name='pet_detail'),
