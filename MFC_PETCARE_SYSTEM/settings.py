@@ -16,6 +16,7 @@ Django settings for MFC_PETCARE_SYSTEM project.
 
 from pathlib import Path
 import os
+import cloudinary
 ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
 
 
@@ -51,6 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
+
+    'cloudinary', 'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -84,6 +87,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MFC_PETCARE_SYSTEM.wsgi.application'
 
+cloudinary.config(
+    cloud_name='YOUR_CLOUD_NAME',
+    api_key='YOUR_API_KEY',
+    api_secret='YOUR_API_SECRET'
+)
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
@@ -135,6 +143,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "main","static")]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 
