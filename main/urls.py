@@ -65,7 +65,6 @@ urlpatterns = [
                     path('pet/<int:pet_id>/update-image/', views.update_pet_image, name='update_pet_image'),
 
               #------------------------------      
-                    path('homepage/', views.homepage, name='homepage'),
                     path('client-dashboard/', views.client_dashboard, name='client_dashboard'),
                     
              
@@ -82,7 +81,7 @@ urlpatterns = [
 
              # ADD VACCINE
                     path('vaccine-records-admin/add/<int:pet_id>/', views.add_vaccine, name='add_vaccine'),
-                    path('vaccine-records-admin/add/<int:pet_id>/', views.add_vaccine, name='add_vaccine'),
+                    
     
 
          #--------------------MEDICAL HISTORY/CHECKUPS/CONSULTATION-------------------------
@@ -139,8 +138,8 @@ urlpatterns = [
 
 
             # CLIENTS DETAILS
-                 path('client/<int:user_id>/', views.client_detail, name='client_detail'),
-                 path('clients/<int:client_id>/', views.client_detail, name='client_detail'),
+                 path('clients/<int:user_id>/', views.client_detail, name='client_detail'),
+                
 
             
 
@@ -266,6 +265,5 @@ path('vet-service-list/', views.vet_service_list, name='service_list'),
     
 ]
 
-# Serve uploaded images in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
