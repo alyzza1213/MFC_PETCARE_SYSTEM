@@ -399,7 +399,7 @@ def get_available_slots(target_date, service_type="Check-up"):
 
 @login_required(login_url='login')
 def book_appointment(request):
-    user = request.user  # guaranteed to be a real User object
+    user = request.user
 
     # Get all pets for this user
     pets = Pet.objects.filter(owner=user)
@@ -412,36 +412,53 @@ def book_appointment(request):
     except ValueError:
         target_date = date.today()
 
-    # Available slots
-    service_type = request.POST.get("service_1", "Check-up")
-    available_slots = get_available_slots(target_date, service_type)
+    # ✅ FIXED: no more service_1
+    available_slots = get_available_slots(target_date)
 
     if request.method == "POST":
         selected_pets = request.POST.getlist("selected_pets")
         slot_str = request.POST.get("slot")
         notes = request.POST.get("notes", "")
 
-        if slot_str and selected_pets:
+        # ✅ Validation (prevents 500 error)
+        if not selected_pets:
+            messages.error(request, "Please select at least one pet.")
+            return redirect(request.path)
+
+        if not slot_str:
+            messages.error(request, "Please select a time slot.")
+            return redirect(request.path)
+
+        try:
             slot_time = datetime.strptime(slot_str, "%H:%M").time()
-            for pet_id in selected_pets:
-                try:
-                    pet = Pet.objects.get(id=pet_id, owner=user)
-                    service_type = request.POST.get(f"service_{pet_id}", "Check-up")
+        except ValueError:
+            messages.error(request, "Invalid time slot.")
+            return redirect(request.path)
 
-                    Appointment.objects.create(
-                        user=user,
-                        pet=pet,
-                        date=target_date,
-                        time=slot_time,
-                        appointment_type=service_type,
-                        notes=notes,
-                        status="Pending"
-                    )
-                except Pet.DoesNotExist:
-                    messages.error(request, f"Pet with ID {pet_id} not found.")
+        for pet_id in selected_pets:
+            try:
+                pet = Pet.objects.get(id=pet_id, owner=user)
+                service_type = request.POST.get(f"service_{pet_id}", "Check-up")
 
-            qr_code_url = "/path/to/gcash_qr.png"
-            messages.success(request, "Your appointment has been successfully booked! Please complete the payment below.")
+                Appointment.objects.create(
+                    user=user,
+                    pet=pet,
+                    date=target_date,
+                    time=slot_time,
+                    appointment_type=service_type,
+                    notes=notes,
+                    status="Pending"
+                )
+
+            except Pet.DoesNotExist:
+                messages.error(request, f"Pet with ID {pet_id} not found.")
+                continue
+
+        # Optional QR
+        qr_code_url = "/path/to/gcash_qr.png"
+
+        messages.success(request, "Your appointment has been successfully booked!")
+        return redirect('my_appointments')  # ✅ important redirect
 
     context = {
         "pets": pets,
