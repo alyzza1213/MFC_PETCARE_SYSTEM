@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ggiae=#*0e66$gzg@r20%h0-&!8^8bns2pfx2i!xe+=z_6lq9i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-ENVIRONMENT == 'production'
+DEBUG = ENVIRONMENT != 'production'
 
 
 ALLOWED_HOSTS = [
@@ -88,10 +88,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'MFC_PETCARE_SYSTEM.wsgi.application'
 
 cloudinary.config(
-    cloud_name='YOUR_CLOUD_NAME',
-    api_key='YOUR_API_KEY',
-    api_secret='YOUR_API_SECRET'
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
 )
+
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
