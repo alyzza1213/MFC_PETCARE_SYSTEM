@@ -270,6 +270,7 @@ def vaccine_detail(request, pet_id):
 def client_dashboard(request):
     return render(request, 'clients/client_dashboard.html')
 
+@login_required(login_url='/login/')
 def my_appointments(request):
     appointments = Appointment.objects.filter(user=request.user).order_by('date', 'time')
     return render(request, 'clients/my_appointments.html', {'appointments': appointments})

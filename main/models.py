@@ -240,9 +240,9 @@ class Grooming(models.Model):
 
 
 class Service(models.Model):
-    name = models.CharField(max_length=225)  # e.g. Grooming, Vaccination
+    name = models.CharField(max_length=225)
     description = models.TextField(blank=True, null=True)
-    duration = models.DurationField()  # e.g. 30 mins, 1 hour
+    duration = models.DurationField(default=timedelta(minutes=30))
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):

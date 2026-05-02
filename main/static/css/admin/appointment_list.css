@@ -1,36 +1,47 @@
 body {
     font-family: 'Poppins', sans-serif;
-    background: #f4f6f8;
+    background: var(--light);
     margin: 0;
 }
 
+/* SIDEBAR */
 .sidebar {
-    width: 220px;
+    width: 260px;
     height: 100vh;
-    background: rgb(135, 179, 135);
-    color: white;
-    padding: 20px;
+    background: linear-gradient(180deg, var(--dark), var(--primary));
+    color: var(--white);
+    padding: 25px;
     position: fixed;
 }
 
 .sidebar a {
     display: block;
-    color: white;
+    color: var(--white);
     text-decoration: none;
     margin: 12px 0;
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.3s;
 }
 
+.sidebar a:hover {
+    background: var(--secondary);
+}
+
+/* MAIN */
 .main-content {
-    margin-left: 240px;
+    margin-left: 280px;
     padding: 30px;
 }
 
+/* TABLE */
 table {
     width: 100%;
-    background: white;
-    border-radius: 10px;
+    background: var(--white);
+    border-radius: 12px;
     border-collapse: collapse;
     overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
 th, td {
@@ -39,9 +50,11 @@ th, td {
 }
 
 thead {
-    background: #eef2ff;
+    background: var(--secondary);
+    color: var(--white);
 }
 
+/* STATUS BADGES */
 .status {
     padding: 6px 12px;
     border-radius: 20px;
@@ -49,22 +62,51 @@ thead {
     font-weight: 600;
 }
 
-.status.pending { background: #fff3cd; }
-.status.approved { background: #d4edda; }
-.status.cancelled { background: #f8d7da; }
+.status.pending {
+    background: #fff3cd;
+    color: #7a5a00;
+}
 
+.status.approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* BUTTONS */
 .btn {
     padding: 6px 10px;
     border: none;
     border-radius: 6px;
     font-size: 12px;
     cursor: pointer;
+    transition: 0.3s;
 }
 
-.approve { background: #61abc1; color: white; }
-.cancel { background: #dc3545; color: white; }
-.resched { background: #ffc107; }
+.approve {
+    background: var(--primary);
+    color: var(--white);
+}
 
+.approve:hover {
+    background: var(--dark);
+}
+
+.cancel {
+    background: var(--danger);
+    color: var(--white);
+}
+
+.resched {
+    background: var(--secondary);
+    color: var(--white);
+}
+
+/* MODAL */
 .modal {
     display: none;
     position: fixed;
@@ -73,9 +115,9 @@ thead {
 }
 
 .modal-box {
-    background: white;
+    background: var(--white);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 12px;
     width: 300px;
     margin: 15% auto;
     text-align: center;

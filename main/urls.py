@@ -138,7 +138,8 @@ urlpatterns = [
 
 
             # CLIENTS DETAILS
-                 path('clients/<int:user_id>/', views.client_detail, name='client_detail'),
+                 path('clients/<int:client_id>/', views.client_detail, name='client_detail'),
+
                 
 
             
