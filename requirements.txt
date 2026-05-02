@@ -10,3 +10,6 @@ sqlparse==0.5.3
 tzdata==2025.2
 wheel==0.45.1
 whitenoise==6.12.0
+cloudinary==1.41.0
+django-cloudinary-storage==0.3.0
+
