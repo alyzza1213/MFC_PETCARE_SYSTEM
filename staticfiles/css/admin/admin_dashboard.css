@@ -1,13 +1,15 @@
 :root {
+    --sidebar-width: 260px;
+
     --primary: #2e716c;
     --secondary: #70c4bb;
     --dark: #1f6f6a;
     --light: #f4f6f9;
-    --white: #fff;
-    --danger: #e5383500;
+    --white: #ffffff;
+    --danger: #e53835;
 }
 
-/* Global Reset */
+/* GLOBAL RESET */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -18,19 +20,29 @@ body {
     font-family: 'Poppins', sans-serif;
     background: var(--light);
     color: #333;
+    overflow-x: hidden;
 }
 
-/* Sidebar */
+/* =========================
+   SIDEBAR (FIXED)
+========================= */
 .sidebar {
-    width: 260px;
+    width: var(--sidebar-width);
     height: 100vh;
+
     position: fixed;
+    top: 0;
+    left: 0;
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
     padding: 25px 20px;
+
     background: linear-gradient(180deg, var(--dark), var(--primary));
     color: var(--white);
+
     box-shadow: 2px 0 15px rgba(0,0,0,0.2);
 }
 
@@ -38,57 +50,60 @@ body {
     text-align: center;
     font-size: 1.6rem;
     font-weight: 700;
-    margin-bottom: 40px;
-    letter-spacing: 1px;
+    margin-bottom: 30px;
 }
 
-/* Navigation */
+/* NAV */
 .nav-links a {
     display: flex;
     align-items: center;
+
     padding: 12px 15px;
     margin-bottom: 12px;
-    border-radius: 10px;
-    color: var(--white);
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
 
-.nav-links a span {
-    margin-left: 10px;
+    border-radius: 10px;
+
+    color: var(--white);
+    text-decoration: none;
+
+    transition: 0.3s;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
     background: var(--secondary);
     transform: translateX(5px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-/* Logout Button */
+/* LOGOUT */
 .logout-btn {
     width: 100%;
     padding: 12px;
+
     border: none;
     border-radius: 10px;
+
     background: var(--danger);
     color: var(--white);
-    font-weight: 600;
+
     cursor: pointer;
-    transition: 0.3s;
 }
 
 .logout-btn:hover {
     background: #b71c1c;
 }
 
-/* Main Content */
+/* =========================
+   MAIN CONTENT (FIXED ALIGNMENT)
+========================= */
 .main-content {
-    margin-left: 280px;
+    margin-left: var(--sidebar-width);
     padding: 40px;
+
+    width: calc(100% - var(--sidebar-width));
 }
 
+/* HEADER */
 .dashboard-header h1 {
     font-size: 2.2rem;
     font-weight: 700;
@@ -96,24 +111,31 @@ body {
     margin-bottom: 25px;
 }
 
-/* Cards */
+/* =========================
+   CARDS (STABLE GRID)
+========================= */
 .card-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 25px;
 }
 
+/* CARD */
 .card {
     background: var(--white);
-    padding: 30px;
+    padding: 28px;
+
     text-align: center;
-    border-radius: 30px;
+
+    border-radius: 20px;
+
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
+
+    transition: 0.3s;
 }
 
 .card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
     box-shadow: 0 12px 25px rgba(0,0,0,0.15);
 }
 
@@ -125,15 +147,18 @@ body {
 
 .card p {
     color: #777;
-    font-size: 1rem;
 }
 
-/* Chart Section */
+/* =========================
+   CHART SECTION (CLEAN SPACING)
+========================= */
 .chart-container {
-    margin-top: 50px;
-    padding: 30px;
+    margin-top: 40px;
+    padding: 25px;
+
     background: var(--white);
     border-radius: 15px;
+
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
@@ -141,14 +166,35 @@ body {
     font-size: 1.4rem;
     font-weight: 600;
     color: var(--dark);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
-/* Clickable Card Wrapper */
+/* LINK CARD */
 .link-card {
     display: block;
     text-decoration: none;
     color: inherit;
 }
 
+/* RESPONSIVE */
+@media (max-width: 768px) {
 
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .card-container {
+        grid-template-columns: 1fr;
+    }
+}
