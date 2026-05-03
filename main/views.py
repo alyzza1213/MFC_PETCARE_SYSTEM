@@ -1168,56 +1168,58 @@ def vet_availability_admin(request):
     for day_num in range(1, num_days + 1):
         day_date = date(year, month, day_num)
 
-        # Get or create working day
-        working_day, _ = WorkingDay.objects.get_or_create(date=day_date)
-
-        # Get appointments for the day
+        working_day = WorkingDay.objects.filter(date=day_date).first()
         appointments = Appointment.objects.filter(date=day_date).order_by('time')
 
         available_times = []
+        status = 'none'
 
-        # Morning session
-        if working_day.morning_open:
-            start_time = datetime.combine(day_date, time(7, 30))
-            end_time = datetime.combine(day_date, time(11, 30))
-            slot = start_time
-            while slot <= end_time:
-                if not appointments.filter(time=slot.time()).exists():
-                    available_times.append(slot.time())
-                slot += timedelta(minutes=30)
+        if working_day:
 
-        # Afternoon session
-        if working_day.afternoon_open:
-            start_time = datetime.combine(day_date, time(13, 0))
-            end_time = datetime.combine(day_date, time(17, 0))
-            slot = start_time
-            while slot <= end_time:
-                if not appointments.filter(time=slot.time()).exists():
-                    available_times.append(slot.time())
-                slot += timedelta(minutes=30)
+            if working_day.morning_open:
+                start_time = datetime.combine(day_date, time(7, 30))
+                end_time = datetime.combine(day_date, time(11, 30))
+                slot = start_time
 
-        # Compute status dynamically
-        if working_day.morning_open and working_day.afternoon_open:
-            status = 'whole'
-        elif working_day.morning_open or working_day.afternoon_open:
-            status = 'half'
+                while slot <= end_time:
+                    if not appointments.filter(time=slot.time()).exists():
+                        available_times.append(slot.time())
+                    slot += timedelta(minutes=30)
+
+            if working_day.afternoon_open:
+                start_time = datetime.combine(day_date, time(13, 0))
+                end_time = datetime.combine(day_date, time(17, 0))
+                slot = start_time
+
+                while slot <= end_time:
+                    if not appointments.filter(time=slot.time()).exists():
+                        available_times.append(slot.time())
+                    slot += timedelta(minutes=30)
+
+            if working_day.morning_open and working_day.afternoon_open:
+                status = 'whole'
+
+            elif working_day.morning_open or working_day.afternoon_open:
+                status = 'half'
+
+            else:
+                status = 'closed'
+
         else:
-            status = 'closed'
+            status = 'none'
+            available_times = []
 
         month_days.append({
             'date': day_date,
-            'is_working': working_day.morning_open or working_day.afternoon_open,
             'appointments': appointments,
             'available_times': available_times,
             'status': status,
         })
 
-    context = {
+    return render(request, "admin/vet_availability_admin.html", {
         'month_days': month_days,
         'current_month': today,
-    }
-
-    return render(request, "admin/vet_availability_admin.html", context)
+    })
 
 
     # AVAILABLE TIME
