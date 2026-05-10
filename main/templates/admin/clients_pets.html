@@ -3,63 +3,129 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Clients & Pets | MFC Pet Life</title>
-     <link rel="stylesheet" href="{% static 'css/admin/clients_pets.css' %}">
+    <title>Admin Dashboard | MFC Pet Life</title>
+
+    <link rel="stylesheet" href="{% static 'css/admin/clients_pets.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
-<div class="sidebar">
-    <h2>MFC Pet Life</h2>
-    <a href="{% url 'admin_dashboard' %}">Dashboard</a>
-    <a href="{% url 'clients_pets' %}" class="active">Clients & Pets</a>
-    <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
-    <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
-    <a href="{% url 'service_list' %}">Service List</a>
-    <a href="{% url 'logout' %}">Logout</a>
-</div>
 
-<div class="main-content">
-    <h1 class="title">👥 Clients & Pets</h1>
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search client or pet name...">
-    </div>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
 
-    <div class="summary">
-        <a href="?show=clients"><span>Total Clients</span><strong>{{ clients|length }}</strong></a>
-        <a href="?show=pets"><span>Total Pets</span><strong>{{ total_pets }}</strong></a>
-    </div>
-
-    {% if show == "clients" %}
-    <div class="client-list">
-        {% for client in clients %}
-        <a href="{% url 'client_detail' client.id %}" class="client-card searchable">
-            <div class="client-info-left">
-                <div class="client-number">{{ forloop.counter }}</div>
-                <div class="client-name">{{ client.username }}</div>
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a href="{% url 'clients_pets' %}" class="active">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'service_list' %}">Service List</a>
+                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}">Reports</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
             </div>
-            <div class="client-info-right">
-                Joined {{ client.date_joined|date:"M d, Y" }}
-                <div class="client-meta"><span class="tag">View Profile</span></div>
-            </div>
-        </a>
-        {% empty %}<p>No clients found.</p>{% endfor %}
-    </div>
-    {% endif %}
-
-    {% if show == "pets" %}
-    <div class="client-list">
-        {% for pet in pets %}
-        <div class="client-card searchable" onclick="window.location.href='{% url 'pet_detail_admin' pet.id %}'">
-            <div class="client-info-left">
-                <span class="pet-icon">🐾</span>
-                <div class="client-name">{{ pet.name }}</div>
-            </div>
-            <div class="client-info-right">Owner: {{ pet.owner.username }}</div>
         </div>
-        {% empty %}<p>No pets found.</p>{% endfor %}
-    </div>
-    {% endif %}
-</div>
 
-<script src="{% static 'js/admin/clients_pets.js' %}"></script>
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-content">
+                <!-- TOPNAV inside main-content -->
+        <header class="topnav-box">
+            <div class="topnav-left">
+                <h1>Welcome back, Admin! </h1>
+                <p>Here’s what’s happening in your clinic today.</p>
+            </div>
+            <div class="topnav-right">
+                <div class="date">
+                    {% now "F d, Y | l, h:i A" %}
+                </div>
+                <div class="notifications">
+                    <button class="notif-btn">
+                        🔔 <span class="notif-count">{{ notif_count }}</span>
+                    </button>
+                    <div class="notif-dropdown">
+                        <ul>
+                            {% for notif in notifications %}
+                                <li>{{ notif }}</li>
+                            {% empty %}
+                                <li>No new notifications</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="user-profile">
+                    Admin
+                </div>
+            </div>
+        </header>
+
+        
+        <div class="dashboard-header">
+            <h1>👥 Clients & Pets</h1>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search client or pet name...">
+        </div>
+
+        <div class="summary">
+            <a href="?show=clients">
+                <span>Total Clients</span>
+                <strong>{{ clients|length }}</strong>
+            </a>
+            <a href="?show=pets">
+                <span>Total Pets</span>
+                <strong>{{ total_pets }}</strong>
+            </a>
+        </div>
+
+        {% if show == "clients" %}
+        <div class="client-list">
+            {% for client in clients %}
+            <a href="{% url 'client_detail' client.id %}" class="client-card searchable">
+                <div class="client-info-left">
+                    <div class="client-number">{{ forloop.counter }}</div>
+                    <div class="client-name">{{ client.username }}</div>
+                </div>
+                <div class="client-info-right">
+                    Joined {{ client.date_joined|date:"M d, Y" }}
+                    <div class="client-meta"><span class="tag">View Profile</span></div>
+                </div>
+            </a>
+            {% empty %}
+            <p>No clients found.</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if show == "pets" %}
+        <div class="client-list">
+            {% for pet in pets %}
+            <div class="client-card searchable" onclick="window.location.href='{% url 'pet_detail_admin' pet.id %}'" style="cursor: pointer;">
+                <div class="client-info-left">
+                    <span class="pet-icon">🐾</span>
+                    <div class="client-name">{{ pet.name }}</div>
+                </div>
+                <div class="client-info-right">Owner: {{ pet.owner.username }}</div>
+            </div>
+            {% empty %}
+            <p>No pets found.</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="{% static 'js/admin/clients_pets.js' %}"></script>
 </body>
 </html>

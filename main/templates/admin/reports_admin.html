@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | MFC Pet Life</title>
+
+    <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<style>
+.main-content{
+    margin-left:260px;
+    padding:30px;
+    font-family:Poppins;
+}
+
+.card-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.card h2{
+    margin:0;
+    font-size:28px;
+    color:#2e7d73;
+}
+</style>
+
+</head>
+<body>
+
+<!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}" >Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'service_list' %}">Service List</a>
+                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}"class="active">Reports</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </div>
+        </div>
+
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+<!-- MAIN -->
+<div class="main-content">
+
+    <h1>System Reports</h1>
+
+    <div class="card-grid">
+
+        <div class="card">
+            <h2>{{ total_appointments }}</h2>
+            <p>Total Appointments</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ pending_appointments }}</h2>
+            <p>Pending Appointments</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ completed_appointments }}</h2>
+            <p>Completed Appointments</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ total_payments }}</h2>
+            <p>Total Payments</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ paid_payments }}</h2>
+            <p>Paid Payments</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ pending_payments }}</h2>
+            <p>Pending Payments</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ total_clients }}</h2>
+            <p>Total Clients</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ total_pets }}</h2>
+            <p>Total Pets</p>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

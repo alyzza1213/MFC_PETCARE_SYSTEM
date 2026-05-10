@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from datetime import date, timedelta
+from django.utils import timezone
+
 
 
 
@@ -99,6 +101,9 @@ class VetAvailability(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     available = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)  
+    updated_at = models.DateTimeField(auto_now=True)   
+
 
     class Meta:
         ordering = ['date', 'start_time']
@@ -251,3 +256,25 @@ class Service(models.Model):
 class ServiceImage(models.Model):
     service = models.ForeignKey(Service, related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='service_images/')
+
+
+class Payment(models.Model):
+    appointment = models.ForeignKey('Appointment', on_delete=models.CASCADE)
+    gcash_ref_no = models.CharField(max_length=100)
+    screenshot = models.ImageField(upload_to='payments/')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, default='pending')
+
+    created_at = models.DateTimeField(default=timezone.now)
+
+class GcashQR(models.Model):
+    image = models.ImageField(upload_to='gcash/')
+    instructions = models.TextField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class ClinicSettings(models.Model):
+    clinic_name = models.CharField(max_length=255, default="MFC Pet Life")
+    address = models.TextField(blank=True, null=True)
+    contact = models.CharField(max_length=50, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True)

@@ -8,43 +8,81 @@
     <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-   
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
 
 
-<div class="sidebar">
-    <div>
-        <h2>🐾 MFC Pet Life</h2>
-        <div class="nav-links">
-            <a href="{% url 'admin_dashboard' %}" class="active">🏠 Dashboard</a>
-            <a href="{% url 'clients_pets' %}">👥 Clients & Pets</a>
-            <a href="{% url 'vet_availability_admin' %}">🩺 Vet Availability</a>
-            <a href="{% url 'appointment_requests' %}"> 📅 Appointment Requests</a>
-            <a href="{% url 'service_list' %}">Service List</a>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'service_list' %}">Service List</a>
+                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}">Reports</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </div>
+        </div>
+
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
         </div>
     </div>
 
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="logout-btn">Log Out</button>
-    </form>
-</div>
+<!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- TOPNAV inside main-content -->
+        <header class="topnav-box">
+            <div class="topnav-left">
+                <h1>Welcome back, Admin! </h1>
+                <p>Here’s what’s happening in your clinic today.</p>
+            </div>
+            <div class="topnav-right">
+                <div class="date">
+                    {% now "F d, Y | l, h:i A" %}
+                </div>
+                <div class="notifications">
+                    <button class="notif-btn">
+                        🔔 <span class="notif-count">{{ notif_count }}</span>
+                    </button>
+                    <div class="notif-dropdown">
+                        <ul>
+                            {% for notif in notifications %}
+                                <li>{{ notif }}</li>
+                            {% empty %}
+                                <li>No new notifications</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
 
+                <div class="user-profile">
+                    Admin
+                </div>
+            </div>
+        </header>
 
-<div class="main-content">
-    <div class="dashboard-header">
-        <h1>Admin Dashboard</h1>
-    </div>
-
+        <div class="dashboard-header">
+            <h1>Admin Dashboard</h1>
+        </div>
 
     <div class="card-container">
-         <a href="{% url 'clients_pets' %}?show=clients" class="card link-card">
-        <h2>{{ total_users }}</h2>
-        <p>Total Clients</p>
-    </a>
+        <a href="{% url 'clients_pets' %}?show=clients" class="card link-card">
+            <h2>{{ total_users }}</h2>
+            <p>Total Clients</p>
+        </a>
 
         <a href="{% url 'clients_pets' %}?show=pets" class="card link-card">
             <h2>{{ total_pets }}</h2>
@@ -67,16 +105,12 @@
         </a>
     </div>
 
- 
     <div class="chart-container">
-        <h2></h2>
+        <h2>Calendar Overview</h2>
         <div id="calendar"></div>
     </div>
+
 </div>
-
-
-
-
 
 <script src="{% static 'js/admin/admin_dashboard.js' %}"></script>
 </body>

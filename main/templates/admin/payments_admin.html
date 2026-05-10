@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payments | MFC Pet Life</title>
+
+    <link rel="stylesheet" href="{% static 'css/admin/payments_admin.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}" class="active">Payments</a>
+                <a href="{% url 'service_list' %}">Service List</a>
+                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}">Reports</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </div>
+        </div>
+
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <h1>💳 Payments</h1>
+
+        <table class="table">
+
+            <tr>
+                <th>Pet</th>
+                <th>Ref No</th>
+                <th>Amount</th>
+                <th>Screenshot</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+            {% for p in payments %}
+            <tr>
+                <td>{{ p.appointment.pet_name }}</td>
+                <td>{{ p.gcash_ref_no }}</td>
+                <td>₱{{ p.amount }}</td>
+
+                <td>
+                    <img src="{{ p.screenshot.url }}" onclick="openModal(this.src)">
+                </td>
+
+                <td>
+                    {% if p.status == "pending" %}
+                        <span class="badge pending">Pending</span>
+                    {% elif p.status == "verified" %}
+                        <span class="badge verified">Verified</span>
+                    {% else %}
+                        <span class="badge rejected">Rejected</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if p.status == "pending" %}
+                        <a href="{% url 'verify_payment' p.id %}" class="btn verify">Verify</a>
+                        <a href="{% url 'reject_payment' p.id %}" class="btn reject">Reject</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+    <!-- IMAGE MODAL -->
+    <div id="imgModal" class="modal">
+        <img id="modalImg">
+    </div>
+
+    <script>
+    function openModal(src){
+        document.getElementById("imgModal").style.display = "flex";
+        document.getElementById("modalImg").src = src;
+    }
+
+    document.getElementById("imgModal").onclick = function(){
+        this.style.display = "none";
+    }
+    </script>
+
+</body>
+</html>

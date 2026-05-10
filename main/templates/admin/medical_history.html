@@ -2,21 +2,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Medical History | MFC Pet Life</title>
-<link rel="stylesheet" href="{% static 'css/admin/medical_history.css' %}">
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | MFC Pet Life</title>
+
+    <link rel="stylesheet" href="{% static 'css/admin/medical_history.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 </head>
 <body>
 
-<div class="sidebar">
-    <h2>MFC Pet Life</h2>
-    <a href="{% url 'admin_dashboard' %}" class="active">🏠 Dashboard</a>
-            <a href="{% url 'clients_pets' %}" class="active" >👥 Clients & Pets</a>
-            <a href="{% url 'vet_availability_admin' %}" class="active">🩺 Vet Availability</a>
-            <a href="{% url 'appointment_requests' %}" class="active"> 📅 Appointment Requests</a>
-            <a href="{% url 'service_list' %}" class="active">Service List</a>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}" >Dashboard</a>
+                <a href="{% url 'clients_pets' %}"class="active">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'service_list' %}">Service List</a>
+                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}">Reports</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </div>
         </div>
+
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
 
 <div class="main-content">
     <h1>Medical History</h1>

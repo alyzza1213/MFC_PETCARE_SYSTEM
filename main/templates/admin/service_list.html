@@ -2,91 +2,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Admin - Veterinary Services</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
- <link rel="stylesheet" href="{% static 'css/admin/service_list.css' %}">
+    <meta charset="UTF-8">
+    <title> Service Lists | MFC Pet Life</title>
+
+    <link rel="stylesheet" href="{% static 'css/admin/service_list.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-<div class="sidebar">
-    <div>
-        <h2>🐾 Admin Panel</h2>
-        <div class="nav-links">
-            <a href="{% url 'admin_dashboard' %}">🏠 Dashboard</a>
-            <a href="{% url 'clients_pets' %}">👥 Clients & Pets</a>
-            <a href="{% url 'vet_availability_admin' %}">🩺 Vet Availability</a>
-            <a href="{% url 'appointment_requests' %}">📅 Appointment Requests</a>
-            <a href="{% url 'service_list' %}" class="active">Service List</a>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}" >Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'service_list' %}" class="active">Service List</a>
+                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}">Reports</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </div>
+        </div>
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
         </div>
     </div>
-    
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="logout-btn">Log Out</button>
-    </form>
-</div>
 
 <div class="main">
-    <h1>Admin - Veterinary Services</h1>
+
+    <h1> Service List</h1>
+
     <div class="container">
-        <!-- Messages -->
-        <div class="messages">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="success-msg">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        </div>
 
-        <!-- Add New Service -->
-        <form method="POST" action="{% url 'add_service' %}" enctype="multipart/form-data" class="add-form">
-            {% csrf_token %}
-            <input type="text" name="name" placeholder="Service Name" required>
-            <input type="text" name="description" placeholder="Description">
-            <input type="number" step="0.01" min="0" name="price" placeholder="Price" required>
-            <input type="file" name="images" multiple>
-            <button type="submit">Add Service</button>
-        </form>
+    
+    <form method="POST" action="{% url 'add_service' %}" class="add-form">
+        {% csrf_token %}
 
-        <!-- Existing Services -->
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <table id="serviceTable">
-                <thead>
-                    <tr>
-                        <th onclick="sortTable(0)">Service Name ▲▼</th>
-                        <th onclick="sortTable(1)">Description ▲▼</th>
-                        <th onclick="sortTable(2)">Price ▲▼</th>
-                        <th>Images</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for service in services %}
-                    <tr>
-                        <td><input type="text" name="name_{{ service.id }}" value="{{ service.name }}"></td>
-                        <td><input type="text" name="description_{{ service.id }}" value="{{ service.description }}"></td>
-                        <td><input type="number" step="0.01" min="0" name="price_{{ service.id }}" value="{{ service.price }}"></td>
-                        <td>
-                            <input type="file" name="images_{{ service.id }}" multiple>
-                            {% if service.images.all %}
-                                <div style="margin-top:5px;">
-                                    {% for img in service.images.all %}
-                                        <img src="{{ img.url }}" style="width:50px;height:50px;margin:2px;border-radius:5px;">
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button type="submit">Update Services</button>
-        </form>
-    </div>
+        <input type="text" name="name" placeholder="Service Name" required>
+        <input type="text" name="description" placeholder="Description">
+        <input type="number" step="0.01" name="price" placeholder="Price" required>
+
+        <button type="submit">➕ Add Service</button>
+    </form>
+
+    <hr>
+
+    <!-- ================= SERVICE TABLE ================= -->
+    <form method="POST" action="{% url 'update_services' %}">
+        {% csrf_token %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Images</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for service in services %}
+            <tr>
+
+                <td>
+                    <input type="text" name="name_{{ service.id }}" value="{{ service.name }}">
+                </td>
+
+                <td>
+                    <input type="text" name="description_{{ service.id }}" value="{{ service.description }}">
+                </td>
+
+                <td>
+                    <input type="number" step="0.01" name="price_{{ service.id }}" value="{{ service.price }}">
+                </td>
+
+                <td>
+                    {% if service.images.all %}
+                        {% for img in service.images.all %}
+                            <img src="{{ img.url }}" width="40">
+                        {% endfor %}
+                    {% endif %}
+                </td>
+
+                <td>
+                    <a href="{% url 'delete_service' service.id %}">Delete</a>
+                </td>
+
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+    <button type="submit">💾 Save Updates</button>
+</form>
+
+</div>
 </div>
 
-
-<script src="{% static 'js/admin/service_list.js' %}"></script>
 </body>
 </html>

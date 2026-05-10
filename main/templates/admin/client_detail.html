@@ -2,56 +2,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Client Detail | MFC Pet Life Admin</title>
-<link rel="stylesheet" href="{% static 'css/admin/clients_detail.css' %}">
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | MFC Pet Life</title>
+
+    <link rel="stylesheet" href="{% static 'css/admin/clients_detail.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-<div class="sidebar">
-    <h2>MFC Pet Life</h2>
-    <a href="{% url 'admin_dashboard' %}">Dashboard</a>
-    <a href="{% url 'clients_pets' %}">Clients & Pets</a>
-    <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
-    <a href="{% url 'vet_availability_admin' %}" class='active'>🩺 <span>Vet Availability</span></a>
-    <a href="{% url 'service_list' %}" class="active">Service List</a>
-    <a href="{% url 'logout' %}">Logout</a>
-</div>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
 
- <div class="main-content">
-        
-      
-        <div class="client-card">
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}" >Dashboard</a>
+                <a href="{% url 'clients_pets' %}"class="active">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'service_list' %}">Service List</a>
+                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}">Reports</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </div>
+        </div>
+
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+<div class="main-content">
+
+    <div class="client-card">
             <h1>👤 {{ client.username|default:"No Name" }}</h1>
             <p><strong>Email:</strong> {{ client.email|default:"-" }}</p>
             <p><strong>Contact No:</strong> {{ client.contact_no|default:"-" }}</p>
             <p><strong>Address:</strong> {{ client.address|default:"-" }}</p>
             <p><strong>Date Joined:</strong> {{ client.date_joined|date:"M d, Y"|default:"-" }}</p>
-        </div>
-
-       
-        <div class="pets-section">
-    <h2>🐶 Pets List</h2>
-
-            {% if pets %}
-                <div class="pets-grid">
-                    {% for pet in pets %}
-                    <div class="profile-container" onclick="window.location.href='{% url 'pet_detail_admin' pet.id %}'">
-                        {% if pet.image %}
-                            <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
-                        {% else %}
-                            <img src="{% static 'images/default_pet.png' %}" alt="Default Pet">
-                        {% endif %}
-                        <h2>{{ pet.name }}</h2>
-                        <p>{{ pet.species }}</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p>No pets found for this client.</p>
-            {% endif %}
-        </div>
     </div>
+
+        
+            <div class="pets-section">
+        <h2>🐶 Pets List</h2>
+
+                {% if pets %}
+                    <div class="pets-grid">
+                        {% for pet in pets %}
+                        <div class="profile-container" onclick="window.location.href='{% url 'pet_detail_admin' pet.id %}'">
+                            {% if pet.image %}
+                                <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                            {% else %}
+                                <img src="{% static 'images/default_pet.png' %}" alt="Default Pet">
+                            {% endif %}
+                            <h2>{{ pet.name }}</h2>
+                            <p>{{ pet.species }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No pets found for this client.</p>
+                {% endif %}
+            </div>
+        </div>
 
 </body>
 </html>

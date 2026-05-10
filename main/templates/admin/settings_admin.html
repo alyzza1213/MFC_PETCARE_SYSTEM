@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings Admin | MFC Pet Life</title>
+
+    <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+.main-content{
+    margin-left:260px;
+    padding:30px;
+    font-family:Poppins;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    width:500px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-bottom:10px;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    background:#2e7d73;
+    color:white;
+    border:none;
+    border-radius:8px;
+}
+</style>
+
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}" >Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'service_list' %}">Service List</a>
+                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}">Reports</a>
+                <a href="{% url 'settings_admin' %}"class="active">Settings</a>
+            </div>
+        </div>
+
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+<!-- MAIN -->
+<div class="main-content">
+
+    <h1>System Settings</h1>
+
+    <div class="card">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <h3>Clinic Information</h3>
+
+            <input type="text" name="clinic_name" value="{{ settings.clinic_name }}" placeholder="Clinic Name">
+            <input type="text" name="address" value="{{ settings.address }}" placeholder="Address">
+            <input type="text" name="contact" value="{{ settings.contact }}" placeholder="Contact">
+            <input type="email" name="email" value="{{ settings.email }}" placeholder="Email">
+
+            <h3>Change Password</h3>
+            <input type="password" name="new_password" placeholder="New Password">
+
+            <button type="submit">Save Settings</button>
+        </form>
+
+    </div>
+
+    </div>
+
+    </body>
+    </html>

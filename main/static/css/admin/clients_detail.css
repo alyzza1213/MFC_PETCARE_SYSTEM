@@ -1,143 +1,171 @@
-/* --- Body --- */
-body {
-    font-family: Poppins, sans-serif;
-    margin: 0;
-    background: #f0f2f5;
-    color: #333;
+:root {
+    --sidebar-width: 260px;
+
+    --primary: #2e716c;
+    --secondary: #70c4bb;
+    --dark: #1f6f6a;
+    --light: #f4f6f9;
+    --white: #ffffff;
+    --danger: #e53835;
 }
 
-/* --- Sidebar --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--light);
+    color: #333;
+    overflow-x: hidden;
+}
+
+
 .sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+
     position: fixed;
-    left: 0;
     top: 0;
-    width: 250px;
-    height: 100%;
-    background: #00695c;
-    color: white;
+    left: 0;
+
     display: flex;
     flex-direction: column;
-    padding: 20px 0;
+    justify-content: space-between;
+
+    padding: 25px 20px;
+
+    background: linear-gradient(180deg, var(--dark), var(--primary));
+    color: var(--white);
+
+    box-shadow: 2px 0 15px rgba(0,0,0,0.2);
 }
+
 .sidebar h2 {
     text-align: center;
-    margin-bottom: 40px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+
+.nav-links a {
+    display: flex;
+    align-items: center;
+
+    padding: 12px 15px;
+    margin-bottom: 12px;
+
+    border-radius: 10px;
+
+    color: var(--white);
+    text-decoration: none;
+
+    transition: 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background: var(--secondary);
+    transform: translateX(5px);
+}
+
+
+.logout-btn {
+    width: 100%;
+    padding: 12px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: var(--danger);
+    color: var(--white);
+
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #b71c1c;
+}
+
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 40px;
+
+    width: calc(100% - var(--sidebar-width));
+}
+
+.client-card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+}
+
+.client-card h1 {
+    margin-bottom: 15px;
     font-size: 24px;
     font-weight: 700;
 }
-.sidebar a {
-    color: white;
-    text-decoration: none;
-    padding: 15px 25px;
-    display: block;
-    transition: 0.3s;
-}
-.sidebar a:hover,
-.sidebar a.active {
-    background: #004d40;
-}
 
-/* --- Main content --- */
-.main-content {
-    margin-left: 250px;
-    padding: 40px;
-}
-
-/* --- Client Card --- */
-.client-card {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-}
-.client-card h1 {
-    margin-bottom: 15px;
-    font-size: 28px;
-}
 .client-card p {
-    font-size: 16px;
-    margin: 5px 0;
+    margin: 6px 0;
+    color: #555;
 }
 
-/* --- Pets Section --- */
 .pets-section {
-    margin-top: 30px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
 }
+
 .pets-section h2 {
-    font-size: 22px;
-    margin-bottom: 20px;
-    color: #00695c;
+    margin-bottom: 15px;
+    font-weight: 600;
 }
 
-/* Grid layout for pet cards */
 .pets-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
 }
 
-/* Pet Card */
 .profile-container {
-    width: 150px;
-    background: #fff;
-    padding: 15px;
+    background: #f9fbfc;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 15px;
     text-align: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    border: 1px solid #ddd; /* subtle card border */
+    transition: all 0.25s ease;
+    position: relative;
 }
 
 .profile-container:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
 }
 
-/* Pet Image */
 .profile-container img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;              /* circle */
+    width: 80px;
+    height: 80px;
     object-fit: cover;
+    border-radius: 50%;
     margin-bottom: 10px;
-    border: 3px solid #00695c;       /* colored frame */
-    padding: 2px;                     /* inner spacing for frame */
-    transition: transform 0.3s ease, border-color 0.3s ease;
+    border: 3px solid #2e7d73;
 }
 
-.profile-container:hover img {
-    transform: scale(1.05);
-    border-color: #004d40;           /* highlight frame on hover */
-}
-
-/* Pet Name & Species */
 .profile-container h2 {
     font-size: 16px;
-    margin: 5px 0 2px 0;
-    color: #333;
+    margin-bottom: 5px;
 }
+
 
 .profile-container p {
-    font-size: 14px;
-    color: #666;
-    margin: 0;
-}
-
-/* --- Responsive --- */
-@media(max-width:768px){
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-    }
-    .main-content {
-        margin-left: 0;
-        padding: 20px;
-    }
-    .pets-grid {
-        justify-content: center;
-    }
+    font-size: 13px;
+    color: #777;
 }

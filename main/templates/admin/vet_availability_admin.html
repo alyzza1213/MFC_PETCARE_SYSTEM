@@ -3,233 +3,154 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Calendar | MFC Pet Life</title>
+<title> Vet Availabilty | MFC Pet Life</title>
 
 <link rel="stylesheet" href="{% static 'css/admin/vet_availability.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-body {
-    margin: 0;
-    font-family: "Segoe UI", sans-serif;
-    background: #f0f2f5;
-}
-
-/* SIDEBAR */
-.sidebar {
-    width: 250px;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-}
-
-/* MAIN CONTAINER */
-.container {
-    margin-left: 250px;
-    padding: 25px;
-
-    display: flex;
-    justify-content: center;
-}
-
-/* WRAPPER */
-.calendar-wrapper {
-    width: 100%;
-    max-width: 1100px;
-}
-
-/* TITLE */
-.month-title {
-    text-align: center;
-    font-size: 28px;
-    font-weight: 700;
-    color: #0f766e;
-    margin-bottom: 20px;
-}
-
-/* CALENDAR GRID */
-.calendar {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 14px;
-}
-
-/* DAY CARD */
-.day-card {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 16px;
-    min-height: 95px;
-    cursor: pointer;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    border: 1px solid #eef2f7;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-
-    transition: all 0.2s ease;
-}
-
-.day-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-}
-
-/* DATE */
-.day-card strong {
-    font-size: 16px;
-    margin-bottom: 8px;
-    color: #111827;
-}
-
-/* STATUS */
-.status-badge {
-    font-size: 12px;
-    padding: 5px 10px;
-    border-radius: 999px;
-    font-weight: 600;
-}
-
-.whole {
-    background: #c7f9cc;
-    color: #166534;
-}
-
-.half {
-    background: #fde68a;
-    color: #92400e;
-}
-
-.closed {
-    background: #fecaca;
-    color: #991b1b;
-}
-
-.unknown {
-    background: #e5e7eb;
-    color: #374151;
-}
-
-.empty-day {
-    min-height: 95px;
-}
-
-
-@media (max-width: 992px) {
-    .container {
-        margin-left: 0;
-        padding: 15px;
-    }
-
-    .calendar {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-
-@media (max-width: 600px) {
-    .container {
-        margin-left: 0;
-        padding: 10px;
-    }
-
-    .calendar {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-
-    .month-title {
-        font-size: 20px;
-    }
-
-    .day-card {
-        min-height: 80px;
-        padding: 10px;
-    }
-}
-
-</style>
 
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <div>
-        <h2>🐾 Admin Panel</h2>
-        <div class="nav-links">
-            <a href="{% url 'admin_dashboard' %}">🏠 Dashboard</a>
-            <a href="{% url 'clients_pets' %}">👥 Clients & Pets</a>
-            <a href="{% url 'vet_availability_admin' %}">🩺 Vet Availability</a>
-            <a href="{% url 'appointment_requests' %}">📅 Appointment Requests</a>
-            <a href="{% url 'service_list' %}" class="active">Service List</a>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}" >Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}"class="active">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'service_list' %}">Service List</a>
+                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}">Reports</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </div>
+        </div>
+
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
         </div>
     </div>
-</div>
 
-<!-- MAIN CONTENT (IMPORTANT FIX) -->
+<!-- MAIN -->
 <div class="container">
 
-    <!-- MONTH TITLE (IMPORTANT FIX) -->
-    <h1 class="month-title">{{ current_month|date:"F Y" }}</h1>
+    <div class="calendar-wrapper">
 
-    <div class="calendar">
+        <h1 class="month-title">{{ current_month|date:"F Y" }}</h1>
 
-        <!-- HEADER -->
-        <div class="day-header">Mon</div>
-        <div class="day-header">Tue</div>
-        <div class="day-header">Wed</div>
-        <div class="day-header">Thu</div>
-        <div class="day-header">Fri</div>
-        <div class="day-header">Sat</div>
-        <div class="day-header">Sun</div>
+        <div class="calendar">
 
-        <!-- EMPTY START (alignment fix) -->
-        {% for _ in empty_days_start %}
-            <div class="empty-day"></div>
-        {% endfor %}
+            <div class="day-header">Mon</div>
+            <div class="day-header">Tue</div>
+            <div class="day-header">Wed</div>
+            <div class="day-header">Thu</div>
+            <div class="day-header">Fri</div>
+            <div class="day-header">Sat</div>
+            <div class="day-header">Sun</div>
 
-        <!-- DAYS -->
-        {% for day in month_days %}
-        <div class="day-card {% if not day.is_working %}non-working{% endif %}"
-             onclick="goToEdit('{{ day.date|date:'Y-m-d' }}')">
+            {% for _ in empty_days_start %}
+                <div class="empty-day"></div>
+            {% endfor %}
 
-            <div><strong>{{ day.date|date:"d" }}</strong></div>
+            {% for day in month_days %}
+            <div class="day-card status-{{ day.status }}"
+                 onclick="openModal('{{ day.date|date:'Y-m-d' }}')">
 
-            <div>
-                {% if day.status == 'whole' %}
-                    <span class="status-badge whole">Whole Day</span>
-                {% elif day.status == 'half' %}
-                    <span class="status-badge half">Half Day</span>
-                {% elif day.status == 'closed' %}
-                    <span class="status-badge closed">Closed</span>
-                {% else %}
-                    <span class="status-badge unknown">Not Set</span>
-                {% endif %}
+                <div><strong>{{ day.date|date:"d" }}</strong></div>
+
+                <div>
+                    {% if day.status == 'whole' %}
+                        <span class="status-badge whole">Whole Day</span>
+                    {% elif day.status == 'half' %}
+                        <span class="status-badge half">Half Day</span>
+                    {% elif day.status == 'closed' %}
+                        <span class="status-badge closed">Closed</span>
+                    {% else %}
+                        <span class="status-badge unknown">Not Set</span>
+                    {% endif %}
+                </div>
+
             </div>
+            {% endfor %}
+
+            {% for _ in empty_days_end %}
+                <div class="empty-day"></div>
+            {% endfor %}
 
         </div>
-        {% endfor %}
-
-        <!-- EMPTY END -->
-        {% for _ in empty_days_end %}
-            <div class="empty-day"></div>
-        {% endfor %}
 
     </div>
-</div>
 
 </div>
 
-<script>
-function goToEdit(date) {
-    window.location.href = "/vet-availability-admin/edit/" + date + "/";
-}
-</script>
+<!-- MODAL -->
+<div id="workingDayModal" class="modal-backdrop">
+
+    <div class="modal-box">
+
+        <a href="javascript:void(0)" class="back-btn" onclick="closeModal()">← Close</a>
+
+        <h2>Edit Working Day</h2>
+        <small id="selectedDate"></small>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="hidden" name="day_date" id="dayInput">
+
+            <div class="slot-group">
+                <label>
+                    <input type="checkbox" name="morning_open" id="morning">
+                    Morning (7:30 AM – 11:30 AM)
+                </label>
+            </div>
+
+            <div class="slot-group">
+                <label>
+                    <input type="checkbox" name="afternoon_open" id="afternoon">
+                    Afternoon (1:00 PM – 5:00 PM)
+                </label>
+            </div>
+
+            <button type="submit" class="submit-btn">Save Changes</button>
+        </form>
+
+    </div>
+
+</div>
+
+    <script>
+    function openModal(date) {
+        document.getElementById("workingDayModal").style.display = "flex";
+        document.getElementById("selectedDate").innerText = date;
+        document.getElementById("dayInput").value = date;
+
+        document.getElementById("morning").checked = false;
+        document.getElementById("afternoon").checked = false;
+
+        fetch(`/vet-availability-get/${date}/`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("morning").checked = data.morning_open;
+                document.getElementById("afternoon").checked = data.afternoon_open;
+            })
+            .catch(err => {
+                console.log("No data yet (OK ra ni):", err);
+            });
+    }
+
+    function closeModal() {
+        document.getElementById("workingDayModal").style.display = "none";
+    }
+    </script>
 
 </body>
 </html>

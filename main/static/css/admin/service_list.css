@@ -6,12 +6,10 @@
     --dark: #1f6f6a;
     --light: #f4f6f9;
     --white: #ffffff;
-    --danger: #e74c3c;
-
-    --text: #2c3e50;
+    --danger: #e53835;
 }
 
-/* RESET */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -21,196 +19,222 @@
 body {
     font-family: 'Poppins', sans-serif;
     background: var(--light);
-    color: var(--text);
+    color: #333;
     overflow-x: hidden;
 }
 
-/* =========================
-   SIDEBAR (UNIFIED DESIGN)
-========================= */
+
 .sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+
     position: fixed;
     top: 0;
     left: 0;
 
-    width: var(--sidebar-width);
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 25px 20px;
 
     background: linear-gradient(180deg, var(--dark), var(--primary));
     color: var(--white);
 
-    padding: 25px 15px;
-
-    display: flex;
-    flex-direction: column;
+    box-shadow: 2px 0 15px rgba(0,0,0,0.2);
 }
 
 .sidebar h2 {
     text-align: center;
     font-size: 1.6rem;
+    font-weight: 700;
     margin-bottom: 30px;
 }
 
+
 .nav-links a {
-    display: block;
+    display: flex;
+    align-items: center;
+
     padding: 12px 15px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+
+    border-radius: 10px;
 
     color: var(--white);
     text-decoration: none;
 
-    border-radius: 8px;
     transition: 0.3s;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
     background: var(--secondary);
+    transform: translateX(5px);
 }
 
-/* logout */
+
 .logout-btn {
-    margin-top: auto;
+    width: 100%;
     padding: 12px;
+
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
 
     background: var(--danger);
-    color: white;
+    color: var(--white);
+
     cursor: pointer;
 }
 
 .logout-btn:hover {
-    opacity: 0.85;
+    background: #b71c1c;
 }
 
-/* =========================
-   MAIN CONTENT (FIXED ALIGNMENT)
-========================= */
-.main {
+
+.main-content {
     margin-left: var(--sidebar-width);
-    padding: 30px;
+    padding: 40px;
+
     width: calc(100% - var(--sidebar-width));
 }
 
-/* TITLE */
+.main {
+    margin-left: 250px; /* sidebar space */
+    padding: 25px;
+}
+
 h1 {
-    text-align: center;
-    margin-bottom: 25px;
+    color: #2e7d73;
+    margin-bottom: 20px;
 }
 
 /* =========================
    CONTAINER
 ========================= */
 .container {
-    background: var(--white);
-    padding: 25px;
+    background: #fff;
+    padding: 20px;
     border-radius: 12px;
-
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-
-    overflow-x: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
 }
 
 /* =========================
-   FORM
+   ADD FORM
 ========================= */
 .add-form {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-
-    margin-bottom: 25px;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
 .add-form input {
     flex: 1;
     min-width: 180px;
-
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 8px;
+    outline: none;
+}
+
+.add-form input:focus {
+    border-color: #2e7d73;
 }
 
 .add-form button {
-    padding: 10px 18px;
-
+    padding: 10px 16px;
+    background: #2e7d73;
+    color: white;
     border: none;
     border-radius: 8px;
-
-    background: var(--primary);
-    color: white;
-
     cursor: pointer;
+    transition: 0.3s;
 }
 
 .add-form button:hover {
-    background: var(--dark);
+    background: #245e58;
 }
 
 /* =========================
-   TABLE (CLEAN + RESPONSIVE)
+   TABLE
 ========================= */
 table {
     width: 100%;
     border-collapse: collapse;
-
-    min-width: 600px;
+    margin-top: 10px;
+    overflow: hidden;
+    border-radius: 10px;
 }
 
-th, td {
-    padding: 12px 15px;
-    text-align: left;
-}
-
-th {
-    background: var(--secondary);
+thead {
+    background: #2e7d73;
     color: white;
 }
 
-tr:nth-child(even) {
-    background: #f9f9f9;
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
 }
 
-tr:hover {
-    background: #eef7f6;
-}
-
-/* inputs inside table */
-input[type=text],
-input[type=number],
-input[type=file] {
+/* INPUT INSIDE TABLE */
+td input {
     width: 100%;
-    padding: 6px 8px;
-
-    border: 1px solid #ccc;
+    padding: 8px;
+    border: 1px solid #ddd;
     border-radius: 6px;
 }
 
 /* =========================
-   RESPONSIVE FIX
+   IMAGES
 ========================= */
-@media (max-width: 768px) {
+td img {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    margin-right: 5px;
+    object-fit: cover;
+}
 
-    .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-    }
+/* =========================
+   BUTTONS
+========================= */
+button {
+    cursor: pointer;
+}
 
-    .main {
-        margin-left: 0;
-        width: 100%;
-        padding: 20px;
-    }
+.container > form > button {
+    margin-top: 15px;
+    padding: 10px 16px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: 0.3s;
+}
 
-    .add-form {
-        flex-direction: column;
-    }
+.container > form > button:hover {
+    background: #125aa0;
+}
 
-    table {
-        min-width: 100%;
-        display: block;
-        overflow-x: auto;
-    }
+/* DELETE LINK */
+a {
+    color: #e53935;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   HR
+========================= */
+hr {
+    margin: 20px 0;
+    border: 0;
+    height: 1px;
+    background: #ddd;
 }

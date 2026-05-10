@@ -3,6 +3,7 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from . import test_mail
 
 urlpatterns = [
 
@@ -241,23 +242,38 @@ urlpatterns = [
                  path("toggle-working-day/", views.toggle_working_day, name="toggle_working_day"),
 
              # EDIT WORKING DAY
-                 path('vet-availability-admin/edit/<str:date>/', views.edit_working_day, name='edit_working_day'),
-
+                 
 
          #------------------------VET AVAILABILITY---------------------------------------------------------
     
              #VET AVAILABILITY
-                 path('vet-availability-admin/', views.vet_availability_admin, name='vet_availability_admin'),
-                  path('vet-availability-admin/edit/<date>/', views.edit_working_day, name='edit_working_day'),
+                path('vet-availability-admin/', views.vet_availability_admin, name='vet_availability_admin'),
+                
+                path('vet-service-list/', views.service_list, name='service_list'),
+                path('service-list/', views.service_list, name='service_list'),
+                path("add-service/", views.add_service, name="add_service"), 
+                path('update-services/', views.update_services, name='update_services'),
+                
 
-path('vet-service-list/', views.vet_service_list, name='service_list'),
- path("add-service/", views.add_service, name="add_service"), 
+         #------------------------VET AVAILABILITY---------------------------------------------------------
+
+                path('test-email/', test_mail.test_email, name='test_email'),
 
 
+                
+               
+                path('payments-admin/', views.payments_admin, name='payments_admin'),
+                    path('payments/verify/<int:payment_id>/', views.verify_payment, name='verify_payment'),
+                    path('payments/reject/<int:payment_id>/', views.reject_payment, name='reject_payment'),
 
 
+                path('gcash_qr/', views.gcash_qr, name='gcash_qr'),
 
+                path('email-notification/', views.email_notification, name='email_notification'),
 
+                path('reports-admin/', views.reports_admin, name='reports_admin'),
+
+                path('settings_admin/', views.settings_admin, name='settings_admin'),
 
 
 

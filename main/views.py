@@ -1,3 +1,4 @@
+from django import views
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -10,7 +11,8 @@ from .models import (
     Pet, Owner, Service,
     WorkingDay, Appointment, VetAvailability,
     History, Vaccination, VaccineRecord,
-    Vaccine, Grooming, MedicalRecord, ServiceImage
+    Vaccine, Grooming, MedicalRecord, ServiceImage, Payment, 
+    GcashQR, ClinicSettings
 )
 from .notifications import (
     send_registration_email,
@@ -26,10 +28,12 @@ import qrcode
 from decimal import Decimal
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.db import IntegrityError
 
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth import update_session_auth_hash
+from django.core.mail import send_mail
 
     #---------------BOTH ADMIN AND USER VIEWS NI SIYA HA TAS SA LOGIN/REGISTER-------------
 
@@ -55,29 +59,44 @@ def register(request):
             messages.error(request, 'Gmail account lang ang pwede gamiton.')
             return render(request, 'main/register.html')
 
+        # Check duplicate username
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists!')
             return render(request, 'main/register.html')
 
-        # Create user
-        user = User.objects.create_user(username=username, email=email, password=password)
+        try:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password
+            )
+        except IntegrityError:
+            messages.error(request, 'Error creating account.')
+            return render(request, 'main/register.html')
 
-        # Send welcome email
+        # Send email
         email_subject = "Welcome to MFC Pet Life 🐾"
         email_body = f"""
-        Hi {username},
+            Hi {username},
 
-        Your account has been successfully created!
+            Your account has been created successfully!
 
-        You can now log in using your username and password.
+            Thank you,
+            MFC Pet Life Team
+            """
 
-        Thank you,
-        MFC Pet Life Team
-        """
-        email_message = EmailMessage(email_subject, email_body, to=[email])
-        email_message.send()
+        email_message = EmailMessage(
+            email_subject,
+            email_body,
+            "noreply@mfcpetcare.xyz",
+            [email]
+        )
 
-        messages.success(request, 'Account created successfully! Check your email.')
+        result = email_message.send()
+
+        print("EMAIL RESULT:", result)  # 1 = success, 0 = failed
+
+        messages.success(request, 'Account created! Check your email.')
         return redirect('login')
 
     return render(request, 'main/register.html')
@@ -623,11 +642,24 @@ def is_admin(user):
 
 
 def admin_dashboard(request):
+    # Existing totals
     total_users = User.objects.count()
     total_pets = Pet.objects.filter(is_active=True).count()
     total_vaccines = Vaccine.objects.count()
     total_appointments = Appointment.objects.count()
     total_vets = VetAvailability.objects.count()
+
+    # Notifications: show latest 3 pending appointments + 3 recent vet updates
+    pending_appointments = Appointment.objects.filter(status='pending').order_by('-created_at')[:3]
+    recent_vets = VetAvailability.objects.order_by('-updated_at')[:3]
+
+    notifications = []
+
+    for a in pending_appointments:
+        notifications.append(f"New appointment request from {a.client.name}")
+
+    for v in recent_vets:
+        notifications.append(f"Vet schedule updated for {v.vet.name}")
 
     context = {
         'total_users': total_users,
@@ -635,6 +667,8 @@ def admin_dashboard(request):
         'total_vaccines': total_vaccines,
         'total_appointments': total_appointments,
         'total_vets': total_vets,
+        'notif_count': len(notifications),
+        'notifications': notifications[:3],  # show top 3
     }
 
     return render(request, 'admin/admin_dashboard.html', context)
@@ -1128,26 +1162,6 @@ def add_working_day(request):
         return redirect("vet_availability_admin")
             
 
-def edit_working_day(request, date):
-    # Convert string to date
-    day_date = datetime.strptime(date, "%Y-%m-%d").date()
-    working_day, _ = WorkingDay.objects.get_or_create(date=day_date)
-
-    if request.method == 'POST':
-        working_day.morning_open = 'morning_open' in request.POST
-        working_day.afternoon_open = 'afternoon_open' in request.POST
-        working_day.save()
-        return redirect('vet_availability_admin')
-
-    # GET request → render form
-    context = {
-        'day_date': day_date,
-        'morning_open': working_day.morning_open,
-        'afternoon_open': working_day.afternoon_open,
-    }
-    return render(request, 'admin/edit_working_day.html', context)
-
-
 def toggle_working_day(request, day_id):
     day = get_object_or_404(WorkingDay, id=day_id)
     day.is_active = not day.is_active
@@ -1158,69 +1172,113 @@ def toggle_working_day(request, day_id):
 #------VET AVAILABILITY -----------
 
 def vet_availability_admin(request):
+
     today = date.today()
     year = today.year
     month = today.month
 
+    # =========================
+    # SAVE MODAL FORM
+    # =========================
+    if request.method == "POST":
+        day_date = request.POST.get("day_date")
+        morning = request.POST.get("morning_open") == "on"
+        afternoon = request.POST.get("afternoon_open") == "on"
+
+        day_obj = datetime.strptime(day_date, "%Y-%m-%d").date()
+
+        obj, created = WorkingDay.objects.get_or_create(date=day_obj)
+        obj.morning_open = morning
+        obj.afternoon_open = afternoon
+        obj.save()
+
+        return redirect("vet_availability_admin")
+
+    # =========================
+    # CALENDAR BUILD
+    # =========================
     num_days = monthrange(year, month)[1]
     month_days = []
+
+    first_day = date(year, month, 1)
+    start_weekday = first_day.weekday()
+
+    last_day = date(year, month, num_days)
+    end_weekday = last_day.weekday()
+
+    empty_days_start = range(start_weekday)
+    empty_days_end = range(6 - end_weekday)
 
     for day_num in range(1, num_days + 1):
         day_date = date(year, month, day_num)
 
-        working_day = WorkingDay.objects.filter(date=day_date).first()
         appointments = Appointment.objects.filter(date=day_date).order_by('time')
-
         available_times = []
-        status = 'none'
 
-        if working_day:
+        working_day = WorkingDay.objects.filter(date=day_date).first()
 
+        # =========================
+        # DEFAULT STATUS
+        # =========================
+        status = "not_set"
+
+        # =========================
+        # SUNDAY RULE
+        # =========================
+        if day_date.weekday() == 6:
+            status = "closed"
+
+        # =========================
+        # ONLY IF SET BY ADMIN
+        # =========================
+        elif working_day:
+
+            # MORNING SLOT
             if working_day.morning_open:
-                start_time = datetime.combine(day_date, time(7, 30))
-                end_time = datetime.combine(day_date, time(11, 30))
-                slot = start_time
+                start = datetime.combine(day_date, time(7, 30))
+                end = datetime.combine(day_date, time(11, 30))
 
-                while slot <= end_time:
+                slot = start
+                while slot <= end:
                     if not appointments.filter(time=slot.time()).exists():
                         available_times.append(slot.time())
                     slot += timedelta(minutes=30)
 
+            # AFTERNOON SLOT
             if working_day.afternoon_open:
-                start_time = datetime.combine(day_date, time(13, 0))
-                end_time = datetime.combine(day_date, time(17, 0))
-                slot = start_time
+                start = datetime.combine(day_date, time(13, 0))
+                end = datetime.combine(day_date, time(17, 0))
 
-                while slot <= end_time:
+                slot = start
+                while slot <= end:
                     if not appointments.filter(time=slot.time()).exists():
                         available_times.append(slot.time())
                     slot += timedelta(minutes=30)
 
+            # =========================
+            # STATUS LOGIC (FIXED CLEAN)
+            # =========================
             if working_day.morning_open and working_day.afternoon_open:
-                status = 'whole'
-
+                status = "whole"
             elif working_day.morning_open or working_day.afternoon_open:
-                status = 'half'
-
+                status = "half"
             else:
-                status = 'closed'
+                status = "not_set"
 
-        else:
-            status = 'none'
-            available_times = []
-
+        # FINAL OUTPUT
         month_days.append({
-            'date': day_date,
-            'appointments': appointments,
-            'available_times': available_times,
-            'status': status,
+            "date": day_date,
+            "appointments": appointments,
+            "available_times": available_times,
+            "status": status,
         })
 
     return render(request, "admin/vet_availability_admin.html", {
-        'month_days': month_days,
-        'current_month': today,
+        "month_days": month_days,
+        "current_month": today,
+        "empty_days_start": empty_days_start,
+        "empty_days_end": empty_days_end,
     })
-
 
     # AVAILABLE TIME
 
@@ -1238,6 +1296,7 @@ def find_next_available_time(day_date, total_duration):
     ).order_by('time')
 
     blocked = []
+
     for appt in appointments:
         appt_start = datetime.combine(day_date, appt.time)
         appt_end = appt_start + appt.duration
@@ -1474,54 +1533,170 @@ def view_grooming(request, pet_id):
 
 
 
-def vet_service_list(request):
+def service_list(request):
     services = Service.objects.all()
 
-    if request.method == "POST":
-        # Update existing services
-        for service in services:
-            name = request.POST.get(f"name_{service.id}")
-            description = request.POST.get(f"description_{service.id}")
-            price = request.POST.get(f"price_{service.id}")
-            if name and price:
-                service.name = name
-                service.description = description
-                service.price = price
-                service.save()
-        messages.success(request, "Services updated successfully!")
-        return redirect("service_list")
-
-    return render(request, "admin/service_list.html", {"services": services})
+    return render(request, "admin/service_list.html", {
+        "services": services
+    })
 
 
 def add_service(request):
     if request.method == "POST":
         name = request.POST.get("name")
-        description = request.POST.get("description", "")
         price = request.POST.get("price")
-        if name and price:
-            Service.objects.create(name=name, description=description, price=price)
-            messages.success(request, "Service added successfully!")
-        else:
-            messages.error(request, "Please provide a name and price.")
-    return redirect("service_list")
 
+        Service.objects.create(name=name, price=price)
 
-def add_service_with_images(request):
-    if request.method == "POST":
-        name = request.POST.get("name")
-        description = request.POST.get("description")
-        price = request.POST.get("price")
-        images = request.FILES.getlist("images")
-
-        service = Service.objects.create(name=name, description=description, price=price)
-
-        for img in images:
-            ServiceImage.objects.create(service=service, image=img)
-
-        messages.success(request, "Service and images added successfully!")
         return redirect("service_list")
 
-    return render(request, "admin/add_service.html")
+
+def delete_service(request, service_id):
+    service = Service.objects.get(id=service_id)
+    service.delete()
+    return redirect("service_list")
+
+def update_services(request):
+    if request.method == "POST":
+        for service in Service.objects.all():
+            service.name = request.POST.get(f"name_{service.id}")
+            service.description = request.POST.get(f"description_{service.id}")
+            service.price = request.POST.get(f"price_{service.id}")
+            service.save()
+
+    return redirect('service_list')
 
 #-------------NOTIFICATIONS-----------------------
+
+
+
+
+
+def payments_admin(request):
+    payments = Payment.objects.all().order_by('-created_at')
+
+    return render(request, "admin/payments_admin.html", {
+        "payments": payments
+    })
+
+def verify_payment(request, payment_id):
+    payment = get_object_or_404(Payment, id=payment_id)
+
+    payment.status = "verified"
+    payment.verified_at = datetime.now()
+    payment.save()
+
+    # link to appointment
+    appointment = payment.appointment
+    appointment.is_paid = True
+    appointment.save()
+
+    return redirect("payments_admin")
+
+def reject_payment(request, payment_id):
+    payment = get_object_or_404(Payment, id=payment_id)
+
+    payment.status = "rejected"
+    payment.save()
+
+    return redirect("payments_admin")
+
+def gcash_qr(request):
+    qr = GcashQR.objects.first()
+
+    if request.method == "POST":
+        image = request.FILES.get("image")
+        instructions = request.POST.get("instructions")
+
+        if qr:
+            if image:
+                qr.image = image
+            qr.instructions = instructions
+            qr.save()
+        else:
+            GcashQR.objects.create(image=image, instructions=instructions)
+
+        return redirect("gcash_qr")
+
+    return render(request, "admin/gcash_qr.html", {
+        "qr": qr
+    })
+
+def email_notification(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
+
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False
+        )
+
+        return redirect("email_notification")
+
+    return render(request, "admin/email_notification.html")
+
+def reports_admin(request):
+
+    today = date.today()
+
+    # 📌 Appointment Stats
+    total_appointments = Appointment.objects.count()
+    pending_appointments = Appointment.objects.filter(status="Pending").count()
+    completed_appointments = Appointment.objects.filter(status="Completed").count()
+
+    # 📌 Payment Stats
+    total_payments = Payment.objects.count()
+    paid_payments = Payment.objects.filter(status="Paid").count()
+    pending_payments = Payment.objects.filter(status="Pending").count()
+
+    # 📌 Clients & Pets
+    total_clients = User.objects.count()
+    total_pets = Pet.objects.count()
+
+    context = {
+        "total_appointments": total_appointments,
+        "pending_appointments": pending_appointments,
+        "completed_appointments": completed_appointments,
+
+        "total_payments": total_payments,
+        "paid_payments": paid_payments,
+        "pending_payments": pending_payments,
+
+        "total_clients": total_clients,
+        "total_pets": total_pets,
+    }
+
+    return render(request, "admin/reports_admin.html", context)
+
+@login_required
+def settings_admin(request):
+
+    settings_obj, created = ClinicSettings.objects.get_or_create(id=1)
+
+    if request.method == "POST":
+
+        # Clinic info update
+        settings_obj.clinic_name = request.POST.get("clinic_name")
+        settings_obj.address = request.POST.get("address")
+        settings_obj.contact = request.POST.get("contact")
+        settings_obj.email = request.POST.get("email")
+        settings_obj.save()
+
+        # Password change
+        if request.POST.get("new_password"):
+            user = request.user
+            user.set_password(request.POST.get("new_password"))
+            user.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Password updated!")
+
+        return redirect("settings_admin")
+
+    return render(request, "admin/settings_admin.html", {
+        "settings": settings_obj
+    })

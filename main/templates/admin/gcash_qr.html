@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Gcash QR Code| MFC Pet Life</title>
+
+    <link rel="stylesheet" href="{% static 'css/admin/gcash_qr.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+
+            <div class="nav-links">
+                <a href="{% url 'admin_dashboard' %}" >Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'service_list' %}">Service List</a>
+                <a href="{% url 'gcash_qr' %}"class="active">Gcash QR Code</a>
+                <a href="{% url 'email_notification' %}">Email Notifications</a>
+                <a href="{% url 'reports_admin' %}">Reports</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </div>
+        </div>
+
+
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- MAIN CONTENT -->
+<div class="main-content">
+
+    <h1>GCash QR Code Management</h1>
+
+    <div class="qr-card">
+
+        {% if qr and qr.image %}
+            <h3>Current QR Code</h3>
+            <img src="{{ qr.image.url }}" alt="GCash QR">
+        {% else %}
+            <p>No QR code uploaded yet.</p>
+        {% endif %}
+
+        <hr>
+
+        <!-- UPLOAD FORM -->
+        <form class="upload-form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label>Upload New QR Code:</label>
+            <input type="file" name="image" required>
+
+            <label>Instructions:</label>
+            <textarea name="instructions" rows="3">{{ qr.instructions }}</textarea>
+
+            <button type="submit">Save QR Code</button>
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
