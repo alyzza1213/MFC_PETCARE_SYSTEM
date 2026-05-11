@@ -1,12 +1,23 @@
+import email
+
 from django.http import HttpResponse
 from django.core.mail import send_mail
+import threading
 
 def test_email(request):
     send_mail(
-        "Test Email",
-        "SMTP from Django view works!",
+        "Welcome!",
+        "Thanks for registering sa MFC Pet Care",
         "noreply@mfcpetcare.xyz",
-        ["alyzzalongboy88@gmail.com"],
-        fail_silently=False,
+        [email],
+        fail_silently=True,
     )
-    return HttpResponse("Email sent!")
+
+def register(request):
+    # your register logic here
+
+    email = request.POST.get("email")
+
+    threading.Thread(target=test_email, args=(email,)).start()
+
+    return HttpResponse("Registered successfully!")
