@@ -103,71 +103,44 @@ body {
     width: calc(100% - var(--sidebar-width));
 }
 
-.table-container {
-    overflow-x: auto;
+body {
+    font-family: Poppins;
+    background: #f4f6f9;
 }
 
-/* =========================
-   TABLE DESIGN
-========================= */
-table {
+.table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-thead {
-    background: #2e7d73;
-    color: white;
-}
-
-th, td {
+.table th, .table td {
     padding: 12px;
+    border-bottom: 1px solid #ddd;
     text-align: center;
-    font-size: 13px;
-    border-bottom: 1px solid #eee;
 }
 
-tbody tr:hover {
-    background: #f1f9f8;
-}
-
-/* =========================
-   LIST INSIDE TABLE
-========================= */
-td ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-td ul li {
-    background: #eaf7f5;
-    color: #2e7d73;
-    padding: 4px 6px;
-    margin: 2px 0;
-    border-radius: 6px;
-    font-size: 12px;
-}
-
-/* =========================
-   BADGE
-========================= */
-.badge-grooming {
-    background: #f39c12;
-    color: white;
+.badge {
     padding: 5px 10px;
-    border-radius: 20px;
+    border-radius: 8px;
     font-size: 12px;
 }
 
-/* =========================
-   EMPTY STATE
-========================= */
-td[colspan] {
-    color: #777;
-    font-size: 14px;
+.pending { background: orange; color: white; }
+.verified { background: green; color: white; }
+.rejected { background: red; color: white; }
+
+.btn {
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.verify { background: green; color: white; }
+.reject { background: red; color: white; }
+
+img {
+    width: 70px;
+    cursor: pointer;
 }

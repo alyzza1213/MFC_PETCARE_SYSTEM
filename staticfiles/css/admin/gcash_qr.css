@@ -103,71 +103,37 @@ body {
     width: calc(100% - var(--sidebar-width));
 }
 
-.table-container {
-    overflow-x: auto;
-}
-
-/* =========================
-   TABLE DESIGN
-========================= */
-table {
-    width: 100%;
-    border-collapse: collapse;
+.qr-card {
     background: white;
+    padding: 25px;
     border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    width: 400px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
 }
 
-thead {
+.qr-card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.upload-form {
+    margin-top: 20px;
+}
+
+.upload-form input,
+.upload-form textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.upload-form button {
     background: #2e7d73;
     color: white;
-}
-
-th, td {
-    padding: 12px;
-    text-align: center;
-    font-size: 13px;
-    border-bottom: 1px solid #eee;
-}
-
-tbody tr:hover {
-    background: #f1f9f8;
-}
-
-/* =========================
-   LIST INSIDE TABLE
-========================= */
-td ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-td ul li {
-    background: #eaf7f5;
-    color: #2e7d73;
-    padding: 4px 6px;
-    margin: 2px 0;
-    border-radius: 6px;
-    font-size: 12px;
-}
-
-/* =========================
-   BADGE
-========================= */
-.badge-grooming {
-    background: #f39c12;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-}
-
-/* =========================
-   EMPTY STATE
-========================= */
-td[colspan] {
-    color: #777;
-    font-size: 14px;
+    padding: 10px;
+    border: none;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
 }

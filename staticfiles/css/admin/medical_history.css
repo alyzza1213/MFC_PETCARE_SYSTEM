@@ -1,149 +1,252 @@
+:root {
+    --sidebar-width: 260px;
+
+    --primary: #2e716c;
+    --secondary: #70c4bb;
+    --dark: #1f6f6a;
+    --light: #f4f6f9;
+    --white: #ffffff;
+    --danger: #e53835;
+}
+
+/* GLOBAL RESET */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(180deg,#f4f6f8,#eef1f4);
-    margin: 0;
+    background: var(--light);
     color: #333;
+    overflow-x: hidden;
 }
 
-
+/* =========================
+   SIDEBAR (FIXED)
+========================= */
 .sidebar {
-    width: 220px;
+    width: var(--sidebar-width);
+    height: 100vh;
+
     position: fixed;
-    top: 0; left: 0;
-    height: 100%;
-    background: linear-gradient(180deg,#00695c,#004d40);
-    padding: 30px 20px;
-}
-.sidebar h2 {
-    color: #fff;
-    margin-bottom: 40px;
-    font-size: 24px;
-}
-.sidebar a {
-    display: block;
-    color: #e0f2f1;
-    text-decoration: none;
-    margin-bottom: 16px;
-    padding: 10px 14px;
-    border-radius: 10px;
-    transition: all .3s;
-}
-.sidebar a:hover {
-    background: rgba(255,255,255,0.15);
-    transform: translateX(4px);
+    top: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 25px 20px;
+
+    background: linear-gradient(180deg, var(--dark), var(--primary));
+    color: var(--white);
+
+    box-shadow: 2px 0 15px rgba(0,0,0,0.2);
 }
 
-.main-content {
-    margin-left: 240px;
-    padding: 40px;
-}
-h1 {
-    color: #00695c;
-    font-size: 30px;
-}
-h3 {
-    color: #666;
+.sidebar h2 {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
     margin-bottom: 30px;
+}
+
+/* NAV */
+.nav-links a {
+    display: flex;
+    align-items: center;
+
+    padding: 12px 15px;
+    margin-bottom: 12px;
+
+    border-radius: 10px;
+
+    color: var(--white);
+    text-decoration: none;
+
+    transition: 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background: var(--secondary);
+    transform: translateX(5px);
+}
+
+/* LOGOUT */
+.logout-btn {
+    width: 100%;
+    padding: 12px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: var(--danger);
+    color: var(--white);
+
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background: #b71c1c;
+}
+
+/* =========================
+   MAIN CONTENT (FIXED ALIGNMENT)
+========================= */
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 40px;
+
+    width: calc(100% - var(--sidebar-width));
 }
 
 .add-checkup {
     background: #fff;
-    padding: 30px;
-    border-radius: 18px;
-    box-shadow: 0 10px 25px rgba(0,0,0,.08);
-    margin-bottom: 35px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
-    gap: 16px;
-}
-.add-checkup input,
-.add-checkup select,
-.add-checkup textarea {
-    padding: 12px 14px;
+    padding: 20px;
     border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    align-items: center;
+}
+
+.add-checkup input,
+.add-checkup select {
+    padding: 8px;
     border: 1px solid #ddd;
-    font-size: 14px;
-    transition: .3s;
-}
-.add-checkup input:focus,
-.add-checkup select:focus,
-.add-checkup textarea:focus {
+    border-radius: 6px;
+    font-size: 13px;
     outline: none;
-    border-color: #00695c;
-    box-shadow: 0 0 0 2px rgba(0,105,92,.15);
 }
+
+.add-checkup input:focus,
+.add-checkup select:focus {
+    border-color: #2e7d73;
+    box-shadow: 0 0 4px rgba(46,125,115,0.3);
+}
+
+/* =========================
+   ADD BUTTON
+========================= */
 .add-checkup button {
-    grid-column: span 2;
-    padding: 12px;
-    border-radius: 14px;
-    font-weight: 600;
-    font-size: 15px;
-    background: linear-gradient(135deg,#ff9800,#fb8c00);
-    color: #fff;
+    background: #2e7d73;
+    color: white;
     border: none;
+    padding: 10px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
 }
+
+.add-checkup button:hover {
+    background: #245e59;
+}
+
 .add-checkup button:disabled {
     background: #ccc;
     cursor: not-allowed;
 }
 
+/* =========================
+   TABLE WRAPPER
+========================= */
 .table-container {
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 10px 25px rgba(0,0,0,.06);
-    overflow: hidden;
+    overflow-x: auto;
 }
+
+/* =========================
+   TABLE STYLE
+========================= */
 table {
     width: 100%;
     border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
-th {
-    background: #00695c;
-    color: #fff;
-    padding: 16px;
+
+thead {
+    background: #2e7d73;
+    color: white;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
     font-size: 13px;
-    letter-spacing: .5px;
-}
-td {
-    padding: 15px;
-    font-size: 14px;
-}
-tr:nth-child(even) {
-    background: #f9fbfb;
-}
-tr:hover {
-    background: #e0f2f1;
+    border-bottom: 1px solid #eee;
 }
 
+tbody tr:hover {
+    background: #f1f9f8;
+}
 
+/* =========================
+   BADGES
+========================= */
 .badge {
     padding: 5px 10px;
+    border-radius: 20px;
     font-size: 12px;
-    border-radius: 12px;
-    font-weight: 600;
-    color: #fff;
+    color: white;
 }
-.badge-checkup { background: #4caf50; }
-.badge-consultation { background: #2196f3; }
-.badge-emergency { background: #f44336; }
 
+.badge-checkup {
+    background: #3498db;
+}
 
+.badge-consultation {
+    background: #9b59b6;
+}
+
+.badge-emergency {
+    background: #e74c3c;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
 .btn {
-    padding: 7px 14px;
-    border-radius: 10px;
-    color: #fff;
-    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 6px;
     text-decoration: none;
-}
-.btn-update {
-    background: linear-gradient(135deg,#ff9800,#fb8c00);
-}
-.btn-delete {
-    background: linear-gradient(135deg,#f44336,#d32f2f);
+    font-size: 12px;
+    margin: 2px;
+    display: inline-block;
 }
 
+.btn-update {
+    background: #2e7d73;
+    color: white;
+}
+
+.btn-update:hover {
+    background: #245e59;
+}
+
+.btn-delete {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+}
+
+/* =========================
+   EMPTY TEXT
+========================= */
+p {
+    color: #777;
+    font-size: 14px;
+}
 
 @media(max-width:768px) {
     .sidebar { width: 180px; }
