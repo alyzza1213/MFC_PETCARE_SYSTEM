@@ -72,8 +72,8 @@ ROOT_URLCONF = 'MFC_PETCARE_SYSTEM.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'main' / 'templates'],  # optional global templates folder
-        'APP_DIRS': True,  # this must be True
+        'DIRS': [BASE_DIR / 'main' / 'templates'],  
+        'APP_DIRS': True,  
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
