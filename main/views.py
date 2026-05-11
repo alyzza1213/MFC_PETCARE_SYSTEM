@@ -34,6 +34,7 @@ from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.core.mail import send_mail
+import threading
 
     #---------------BOTH ADMIN AND USER VIEWS NI SIYA HA TAS SA LOGIN/REGISTER-------------
 
@@ -47,6 +48,26 @@ def homepage(request):
     print("AUTH:", request.user.is_authenticated)
     return render(request, 'main/homepage.html')
 
+def send_welcome_email(username, email):
+    email_subject = "Welcome to MFC Pet Life 🐾"
+    email_body = f"""
+        Hi {username},
+
+        Your account has been created successfully!
+
+        Thank you,
+        MFC Pet Life Team
+        """
+
+    email_message = EmailMessage(
+        email_subject,
+        email_body,
+        "noreply@mfcpetcare.xyz",
+        [email]
+    )
+
+    email_message.send(fail_silently=True)
+
 # RESISTER
 def register(request):
     if request.method == 'POST':
@@ -54,18 +75,16 @@ def register(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        # Gmail only
         if not email.endswith('@gmail.com'):
             messages.error(request, 'Gmail account lang ang pwede gamiton.')
             return render(request, 'main/register.html')
 
-        # Check duplicate username
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists!')
             return render(request, 'main/register.html')
 
         try:
-            user = User.objects.create_user(
+            User.objects.create_user(
                 username=username,
                 email=email,
                 password=password
@@ -74,27 +93,11 @@ def register(request):
             messages.error(request, 'Error creating account.')
             return render(request, 'main/register.html')
 
-        # Send email
-        email_subject = "Welcome to MFC Pet Life 🐾"
-        email_body = f"""
-            Hi {username},
-
-            Your account has been created successfully!
-
-            Thank you,
-            MFC Pet Life Team
-            """
-
-        email_message = EmailMessage(
-            email_subject,
-            email_body,
-            "noreply@mfcpetcare.xyz",
-            [email]
-        )
-
-        result = email_message.send()
-
-        print("EMAIL RESULT:", result)  # 1 = success, 0 = failed
+        # 🔥 ASYNC EMAIL (NO HANG)
+        threading.Thread(
+            target=send_welcome_email,
+            args=(username, email)
+        ).start()
 
         messages.success(request, 'Account created! Check your email.')
         return redirect('login')
