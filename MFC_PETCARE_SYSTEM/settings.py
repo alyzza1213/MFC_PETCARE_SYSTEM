@@ -149,6 +149,12 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dgbls4glr',
+    'API_KEY': 'YOUR_API_KEY_HERE',
+    'API_SECRET': 'YOUR_API_SECRET_HERE',
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
