@@ -57,7 +57,7 @@
                         {% for pet in pets %}
                         <div class="profile-container" onclick="window.location.href='{% url 'pet_detail_admin' pet.id %}'">
                             {% if pet.image %}
-                                <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                                <img src="{{ pet.image.url }}" alt="pet">
                             {% else %}
                                 <img src="{% static 'images/image1.png' %}" alt="MFC PetCare Logo">
                             {% endif %}
