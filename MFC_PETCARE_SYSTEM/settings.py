@@ -17,6 +17,7 @@ Django settings for MFC_PETCARE_SYSTEM project.
 from pathlib import Path
 import os
 ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
+from django.core.files.storage import FileSystemStorage
 
 
 
@@ -142,18 +143,22 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "main","static")]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dgbls4glr',
-    'API_KEY': 'YOUR_API_KEY_HERE',
-    'API_SECRET': 'YOUR_API_SECRET_HERE',
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 }
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
