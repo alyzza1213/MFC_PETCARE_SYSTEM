@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from datetime import date, timedelta
 from django.utils import timezone
-from cloudinary.models import CloudinaryField
+
 
 
 
@@ -30,7 +30,7 @@ class Pet(models.Model):
     birthday = models.DateField(blank=True, null=True)
     age = models.PositiveIntegerField(default=0)
     weight = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    image = CloudinaryField('image', blank=True, null=True)
+    image = models.ImageField(upload_to='pets/', blank=True, null=True)
     is_active = models.BooleanField(default=True)  # Soft-delete flag
 
     def __str__(self):
