@@ -17,7 +17,7 @@ Django settings for MFC_PETCARE_SYSTEM project.
 from pathlib import Path
 import os
 ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
-from django.core.files.storage import FileSystemStorage
+
 
 
 
