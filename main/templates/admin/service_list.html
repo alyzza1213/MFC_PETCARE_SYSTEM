@@ -38,81 +38,79 @@
 
 <div class="main">
 
-    <h1> Service List</h1>
+    <h1>Service List</h1>
 
     <div class="container">
 
-    
-    <form method="POST" action="{% url 'add_service' %}" class="add-form">
-        {% csrf_token %}
+        <!-- ADD SERVICE FORM -->
+        <form method="POST" action="{% url 'add_service' %}" class="add-form" enctype="multipart/form-data">
+            {% csrf_token %}
 
-        <input type="text" name="name" placeholder="Service Name" required>
-        <input type="text" name="description" placeholder="Description">
-        <input type="number" step="0.01" name="price" placeholder="Price" required>
+            <input type="text" name="name" placeholder="Service Name" required>
+            <input type="text" name="description" placeholder="Description">
+            <input type="number" step="0.01" name="price" placeholder="Price" required>
 
-        <button type="submit">➕ Add Service</button>
-    </form>
+            <!-- IMAGE INPUT (THIS IS MISSING BEFORE) -->
+            <input type="file" name="image">
 
-    <hr>
+            <button type="submit">➕ Add Service</button>
+        </form>
+        <hr>
 
-    <!-- ================= SERVICE TABLE ================= -->
-    <form method="POST" action="{% url 'update_services' %}">
-        {% csrf_token %}
+        <!-- UPDATE FORM -->
+        <form method="POST" action="{% url 'update_services' %}">
+            {% csrf_token %}
 
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Images</th>
-                <th>Action</th>
-            </tr>
-        </thead>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Images</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
 
-        <tbody>
-        {% for service in services %}
-            <tr>
+                <tbody>
+                {% for service in services %}
+                    <tr>
 
-                <td>
-                    <input type="text" name="name_{{ service.id }}" value="{{ service.name }}">
-                </td>
+                        <td>
+                            <input type="text" name="name_{{ service.id }}" value="{{ service.name }}">
+                        </td>
 
-                <td>
-                    <input type="text" name="description_{{ service.id }}" value="{{ service.description }}">
-                </td>
+                        <td>
+                            <input type="text" name="description_{{ service.id }}" value="{{ service.description }}">
+                        </td>
 
-                <td>
-                    <input type="number" step="0.01" name="price_{{ service.id }}" value="{{ service.price }}">
-                </td>
+                        <td>
+                            <input type="number" step="0.01" name="price_{{ service.id }}" value="{{ service.price }}">
+                        </td>
 
-               <td>
-                    {% if service.images.exists %}
-                        {% for img in service.images.all %}
-                            {% if img %}
-                                <img src="{{ img.url }}" width="40">
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        <p>No image</p>
-                    {% endif %}
-                </td>
+                        <!-- IMAGES FIXED -->
+                       <td>
+                            {% for img in service.images.all %}
+                                {% if img.image %}
+                                    <img src="{{ img.image.url }}" width="60">
+                                {% endif %}
+                            {% empty %}
+                                <p>No image</p>
+                            {% endfor %}
+                        </td>
 
-                <td>
-                    <a href="{% url 'delete_service' service.id %}">Delete</a>
-                </td>
+                        <td>
+                            <a href="{% url 'delete_service' service.id %}">Delete</a>
+                        </td>
 
-            </tr>
-        {% endfor %}
-        </tbody>
+                    </tr>
+                {% endfor %}
+                </tbody>
 
-    </table>
+            </table>
 
-    <button type="submit">💾 Save Updates</button>
-</form>
+            <button type="submit">💾 Save Updates</button>
+        </form>
 
+    </div>
 </div>
-</div>
-
-</body>
-</html>

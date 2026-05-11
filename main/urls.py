@@ -263,6 +263,7 @@ urlpatterns = [
                 path('payments-admin/', views.payments_admin, name='payments_admin'),
                     path('payments/verify/<int:payment_id>/', views.verify_payment, name='verify_payment'),
                     path('payments/reject/<int:payment_id>/', views.reject_payment, name='reject_payment'),
+                    path('delete-service/<int:service_id>/', views.delete_service, name='delete_service'),
 
 
                 path('gcash_qr/', views.gcash_qr, name='gcash_qr'),

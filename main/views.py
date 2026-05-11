@@ -1518,6 +1518,30 @@ def service_list(request):
         "services": services
     })
 
+def add_service(request):
+    if request.method == "POST":
+        name = request.POST.get("name")
+        description = request.POST.get("description")
+        price = request.POST.get("price")
+        image = request.FILES.get("image")
+
+        service = Service.objects.create(
+            name=name,
+            description=description,
+            price=price
+        )
+
+        # SAVE IMAGE
+        if image:
+            ServiceImage.objects.create(
+                service=service,
+                image=image
+            )
+
+        return redirect("service_list")
+
+    # IMPORTANT: handle GET request
+    return redirect("service_list")
 
 def add_service(request):
     if request.method == "POST":
