@@ -28,7 +28,7 @@
                 <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
                 <a href="{% url 'email_notification' %}"class="active">Email Notifications</a>
                 <a href="{% url 'reports_admin' %}">Reports</a>
-                <a href="{% url 'settings_admin' %}">Settings</a>
+                
             </div>
         </div>
 
@@ -42,6 +42,36 @@
 
     <!-- MAIN -->
 <div class="main-content" style="margin-left:260px; padding:30px; font-family:Poppins;">
+
+    <header class="topnav-box">
+            <div class="topnav-left">
+                <h1>Welcome back, Admin! </h1>
+                <p>Here’s what’s happening in your clinic today.</p>
+            </div>
+            <div class="topnav-right">
+                <div class="date">
+                    {% now "F d, Y | l, h:i A" %}
+                </div>
+                <div class="notifications">
+                    <button class="notif-btn">
+                        🔔 <span class="notif-count">{{ notif_count }}</span>
+                    </button>
+                    <div class="notif-dropdown">
+                        <ul>
+                            {% for notif in notifications %}
+                                <li>{{ notif }}</li>
+                            {% empty %}
+                                <li>No new notifications</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="user-profile">
+                    Admin
+                </div>
+            </div>
+        </header>
 
     <h1>Email Notifications</h1>
 

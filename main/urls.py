@@ -272,7 +272,7 @@ urlpatterns = [
 
                 path('reports-admin/', views.reports_admin, name='reports_admin'),
 
-                path('settings_admin/', views.settings_admin, name='settings_admin')
+               
 
 
 

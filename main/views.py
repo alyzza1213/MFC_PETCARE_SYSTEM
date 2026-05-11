@@ -1675,30 +1675,3 @@ def reports_admin(request):
 
     return render(request, "admin/reports_admin.html", context)
 
-@login_required
-def settings_admin(request):
-
-    settings_obj, created = ClinicSettings.objects.get_or_create(id=1)
-
-    if request.method == "POST":
-
-        # Clinic info update
-        settings_obj.clinic_name = request.POST.get("clinic_name")
-        settings_obj.address = request.POST.get("address")
-        settings_obj.contact = request.POST.get("contact")
-        settings_obj.email = request.POST.get("email")
-        settings_obj.save()
-
-        # Password change
-        if request.POST.get("new_password"):
-            user = request.user
-            user.set_password(request.POST.get("new_password"))
-            user.save()
-            update_session_auth_hash(request, user)
-            messages.success(request, "Password updated!")
-
-        return redirect("settings_admin")
-
-    return render(request, "admin/settings_admin.html", {
-        "settings": settings_obj
-    })
