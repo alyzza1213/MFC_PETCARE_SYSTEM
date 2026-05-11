@@ -14,15 +14,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 Django settings for MFC_PETCARE_SYSTEM project.
 """
 
-from dotenv import load_dotenv
 from pathlib import Path
 import os
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-load_dotenv(BASE_DIR / "MFC_PETCARE_SYSTEM" / ".env")
-
-ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
 
 
 
@@ -34,11 +28,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
-if ENVIRONMENT == 'development':
-    DEBUG = True
-else:
-    DEBUG = False
+SECRET_KEY = 'django-insecure-ggiae=#*0e66$gzg@r20%h0-&!8^8bns2pfx2i!xe+=z_6lq9i'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = ENVIRONMENT != 'production'
 
 
 ALLOWED_HOSTS = [
@@ -145,23 +138,16 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "main", "static")]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "main","static")]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 
 MEDIA_URL = '/media/'
-
-if ENVIRONMENT == 'development':
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-else:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-        'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
-    }
-
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Default primary key field type
@@ -171,7 +157,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/homepage/'
 LOGOUT_REDIRECT_URL = '/'
 
-
+# =========================
+# CSRF + HTTPS FIX (VERY IMPORTANT)
+# =========================
 
 if ENVIRONMENT == 'production':
     CSRF_TRUSTED_ORIGINS = [
@@ -184,6 +172,7 @@ else:
     CSRF_TRUSTED_ORIGINS = []
 
 
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_HOST = "smtp-relay.brevo.com"
@@ -194,4 +183,3 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 DEFAULT_FROM_EMAIL ="MFC Pet Care <noreply@mfcpetcare.xyz>"
-
