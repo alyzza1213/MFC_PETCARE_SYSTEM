@@ -34,9 +34,10 @@ from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.core.mail import send_mail
-import threading
+   
 
-    #---------------BOTH ADMIN AND USER VIEWS NI SIYA HA TAS SA LOGIN/REGISTER-------------
+
+#---------------BOTH ADMIN AND USER VIEWS NI SIYA HA TAS SA LOGIN/REGISTER-------------
 
 
 # LANDING PAGE
@@ -47,26 +48,6 @@ def homepage(request):
     print("USER:", request.user)
     print("AUTH:", request.user.is_authenticated)
     return render(request, 'main/homepage.html')
-
-def send_welcome_email(username, email):
-    email_subject = "Welcome to MFC Pet Life 🐾"
-    email_body = f"""
-        Hi {username},
-
-        Your account has been created successfully!
-
-        Thank you,
-        MFC Pet Life Team
-        """
-
-    email_message = EmailMessage(
-        email_subject,
-        email_body,
-        "noreply@mfcpetcare.xyz",
-        [email]
-    )
-
-    email_message.send(fail_silently=True)
 
 # RESISTER
 def register(request):
@@ -92,12 +73,6 @@ def register(request):
         except IntegrityError:
             messages.error(request, 'Error creating account.')
             return render(request, 'main/register.html')
-
-        # 🔥 ASYNC EMAIL (NO HANG)
-        threading.Thread(
-            target=send_welcome_email,
-            args=(username, email)
-        ).start()
 
         messages.success(request, 'Account created! Check your email.')
         return redirect('login')
