@@ -16,12 +16,17 @@ Django settings for MFC_PETCARE_SYSTEM project.
 
 from pathlib import Path
 import os
+import cloudinary
+from dotenv import load_dotenv
 ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
 
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
+CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
+USE_CLOUDINARY = bool(CLOUDINARY_URL)
 
 
 # Quick-start development settings - unsuitable for production
@@ -142,7 +147,11 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "main","static")]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+if USE_CLOUDINARY:
+    cloudinary.config(cloudinary_url=CLOUDINARY_URL, secure=True)
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 
 

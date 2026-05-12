@@ -24,11 +24,13 @@ from .notifications import (
 from datetime import date, datetime, time, timedelta
 from calendar import monthrange
 import calendar
-import os
+from io import BytesIO
 import qrcode
 from decimal import Decimal
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db import IntegrityError
 
 from django.db.models import Count
@@ -1034,20 +1036,12 @@ def get_available_slots_legacy(target_date, service_type="Check-up"):
 def generate_qr_code_url(appointment):
     """
     Generate a QR code PNG for the appointment payment link,
-    save it under MEDIA_ROOT/qr_codes/, and return the media URL.
+    save it through Django's configured storage, and return the file URL.
     """
-    # Ensure QR code folder exists
-    qr_folder = os.path.join(settings.MEDIA_ROOT, 'qr_codes')
-    os.makedirs(qr_folder, exist_ok=True)
+    filename = f"qr_codes/appointment-{appointment.id}.png"
+    client_name = appointment.user.username if appointment.user_id else "client"
+    qr_data = f"Payment for Appointment #{appointment.id} - Client: {client_name}"
 
-    # File name example: appointment-<id>.png
-    filename = f"appointment-{appointment.id}.png"
-    filepath = os.path.join(qr_folder, filename)
-
-    # Example QR data (can be dynamic link to payment page or GCash)
-    qr_data = f"Payment for Appointment #{appointment.id} - Client: {appointment.client.username}"
-
-    # Generate QR code
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_H,
@@ -1058,10 +1052,12 @@ def generate_qr_code_url(appointment):
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")
-    img.save(filepath)
+    image_buffer = BytesIO()
+    img.save(image_buffer, format="PNG")
+    image_buffer.seek(0)
 
-    # Return media URL for HTML/email
-    return f"{settings.MEDIA_URL}qr_codes/{filename}"
+    saved_path = default_storage.save(filename, ContentFile(image_buffer.getvalue()))
+    return default_storage.url(saved_path)
 
 # --- Send payment email with embedded QR ---
 def send_payment_email(appointment):
@@ -1589,7 +1585,7 @@ def add_service(request):
     # IMPORTANT: handle GET request
     return redirect("service_list")
 
-def add_service(request):
+def add_service_legacy(request):
     if request.method == "POST":
         name = request.POST.get("name")
         price = request.POST.get("price")
