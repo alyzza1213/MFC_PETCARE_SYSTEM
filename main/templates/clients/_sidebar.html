@@ -1,0 +1,30 @@
+{% load static %}
+<aside class="sidebar">
+    <div class="sidebar-art" aria-hidden="true">
+        <img src="{% static 'images/sidebar background.png' %}" alt="" class="sidebar-art-image">
+    </div>
+    <div class="sidebar-shell">
+        <div class="brand-block">
+            <div class="brand-mark">MFC</div>
+            <div>
+                <h1>MFC Pet Life</h1>
+                <p>Client Care Portal</p>
+            </div>
+        </div>
+
+        <nav class="nav-links">
+            <a href="{% url 'home' %}" class="{% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
+            <a href="{% url 'pet_profile' %}" class="{% if active_page == 'pets' %}active{% endif %}">My Pets</a>
+            <a href="{% url 'vet_availability' %}" class="{% if active_page == 'schedule' %}active{% endif %}">Available Schedule</a>
+            <a href="{% url 'book_appointment' %}" class="{% if active_page == 'book' %}active{% endif %}">Book Appointment</a>
+            <a href="{% url 'my_appointments' %}" class="{% if active_page == 'appointments' %}active{% endif %}">My Appointments</a>
+            <a href="{% url 'vaccine_records' %}" class="{% if active_page == 'vaccines' %}active{% endif %}">Vaccination History</a>
+            <a href="{% url 'logout' %}">Log Out</a>
+        </nav>
+
+        <div class="sidebar-note">
+            <strong>Need help?</strong>
+            <p>Track bookings, payments, and pet health updates in one place.</p>
+        </div>
+    </div>
+</aside>

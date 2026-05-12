@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Admin Dashboard | MFC Pet Life</title>
 
-    <link rel="stylesheet" href="{% static 'css/admin/vaccine_records_admin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/vaccine_records_admin.css' %}?v=admin-remodel-5">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 </head>
@@ -38,6 +38,7 @@
     </div>
 
 <div class="main-content">
+    <a href="{% url 'pet_detail_admin' pet.id %}" class="back-link" style="display:inline-block;margin-bottom:20px;color:#1f6f6a;font-weight:700;text-decoration:none;">← Back to Pet Details</a>
     <h1>Vaccination Records</h1>
     <h3 class="pet-name">{{ pet.name }} ({{ pet.species }})</h3>
 

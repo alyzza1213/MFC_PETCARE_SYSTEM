@@ -1,9 +1,24 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Appointment Confirmed</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Confirmed | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/clients/client_shell.css' %}?v=client-shell-1">
 </head>
 <body>
-    <h1>Your appointment has been successfully booked!</h1>
+    {% include 'clients/_sidebar.html' with active_page='appointments' %}
+
+    <main class="client-shell">
+        <section class="client-page-header">
+            <div>
+                <p class="eyebrow">Appointment Booking</p>
+                <h1>Appointment Confirmed</h1>
+                <p class="header-copy">Your appointment has been successfully booked.</p>
+            </div>
+            <a href="{% url 'my_appointments' %}" class="client-primary">View Appointments</a>
+        </section>
+    </main>
 </body>
 </html>

@@ -2,63 +2,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Vet Availability | MFC Pet Life</title>
-<link rel="stylesheet" href="{% static 'css/clients/vet_availability.css' %}">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vet Availability | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/clients/client_shell.css' %}?v=client-shell-1">
 </head>
 <body>
+    {% include 'clients/_sidebar.html' with active_page='schedule' %}
 
-<div class="container">
+    <main class="client-shell">
+        <section class="client-page-header">
+            <div>
+                <p class="eyebrow">Available Schedule</p>
+                <h1>{{ current_month|date:"F Y" }}</h1>
+                <p class="header-copy">Pick an available clinic day to continue booking your pet's visit.</p>
+            </div>
+            <a href="{% url 'book_appointment' %}" class="client-primary">Book Appointment</a>
+        </section>
 
-<a href="{% url 'homepage' %}" class="back-btn">← Back to Home</a>
-<h1>{{ current_month|date:"F Y" }}</h1>
+        <section class="client-panel">
+            <div class="calendar-grid">
+                <div class="day-header">Mon</div>
+                <div class="day-header">Tue</div>
+                <div class="day-header">Wed</div>
+                <div class="day-header">Thu</div>
+                <div class="day-header">Fri</div>
+                <div class="day-header">Sat</div>
+                <div class="day-header">Sun</div>
 
-<div class="calendar">
+                {% for _ in empty_days_start %}
+                    <div class="day-card empty-day"></div>
+                {% endfor %}
 
-    
-    <div class="day-header">Mon</div>
-    <div class="day-header">Tue</div>
-    <div class="day-header">Wed</div>
-    <div class="day-header">Thu</div>
-    <div class="day-header">Fri</div>
-    <div class="day-header">Sat</div>
-    <div class="day-header">Sun</div>
+                {% for day_info in month_days %}
+                    {% if day_info.status != 'closed' %}
+                        <div class="day-card {% if day_info.date < today %}past-day{% endif %}"
+                             onclick="window.location.href='{% url 'book_appointment' %}?date={{ day_info.date|date:'Y-m-d' }}'">
+                    {% else %}
+                        <div class="day-card non-working">
+                    {% endif %}
+                            {{ day_info.date|date:"d M Y" }}
+                            <span class="status-badge
+                                {% if day_info.status == 'whole' %}whole
+                                {% elif day_info.status == 'half' %}half
+                                {% else %}closed{% endif %}">
+                                {% if day_info.status == 'whole' %}Whole Day
+                                {% elif day_info.status == 'half' %}Half Day
+                                {% else %}Closed{% endif %}
+                            </span>
+                        </div>
+                {% endfor %}
 
-    
-    {% for _ in empty_days_start %}
-        <div class="day-card empty-day"></div>
-    {% endfor %}
-
-   
-    {% for day_info in month_days %}
-        {% if day_info.status != 'closed' %}
-            <div class="day-card {% if day_info.date < today %}past-day{% endif %}"
-                 onclick="window.location.href='{% url 'book_appointment' %}?date={{ day_info.date|date:'Y-m-d' }}'">
-        {% else %}
-            <div class="day-card non-working">
-        {% endif %}
-
-            {{ day_info.date|date:"d M Y" }}
-
-            <span class="status-badge
-                {% if day_info.status == 'whole' %}whole
-                {% elif day_info.status == 'half' %}half
-                {% else %}closed{% endif %}">
-                {% if day_info.status == 'whole' %}Whole Day
-                {% elif day_info.status == 'half' %}Half Day
-                {% else %}Closed{% endif %}
-            </span>
-        </div>
-    {% endfor %}
-
-   
-    {% for _ in empty_days_end %}
-        <div class="day-card empty-day"></div>
-    {% endfor %}
-
-</div>
-
-</div>
+                {% for _ in empty_days_end %}
+                    <div class="day-card empty-day"></div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
 </body>
 </html>

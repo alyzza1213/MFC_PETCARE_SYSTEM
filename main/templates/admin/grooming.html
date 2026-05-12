@@ -3,89 +3,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard | MFC Pet Life</title>
-
-    <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <title>Grooming History | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/admin/clients_pets.css' %}?v=admin-remodel-5">
+    <link rel="stylesheet" href="{% static 'css/admin/grooming.css' %}?v=admin-remodel-5">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
+    <aside class="sidebar">
         <div>
             <h2>🐾 MFC Pet Life</h2>
-
-            <div class="nav-links">
-                <a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a>
+            <nav class="nav-links">
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
                 <a href="{% url 'clients_pets' %}" class="active">Clients & Pets</a>
                 <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
                 <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
                 <a href="{% url 'payments_admin' %}">Payments</a>
-                <a href="{% url 'service_list' %}">Service List</a>
-                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
-                <a href="{% url 'email_notification' %}">Email Notifications</a>
-                <a href="{% url 'reports_admin' %}">Reports</a>
-                
-            </div>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </nav>
         </div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Log Out</button>
+        </form>
+    </aside>
 
+    <main class="main-content">
+        <a href="{% url 'pet_detail_admin' pet.id %}" class="back-link">← Back to Pet Details</a>
+        <h1>Grooming History</h1>
+        <h3>{{ pet.name }} • {{ pet.species }}</h3>
 
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">Log Out</button>
-            </form>
-        </div>
-    </div>
-
-<div class="main-content">
-    <h1>Grooming History</h1>
-    <h3>{{ pet.name }} • {{ pet.species }}</h3>
-
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Appointment Date</th>     
-                    <th>Groomer</th>
-                    <th>Notes</th>
-                    <th>Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if groomings %}
-                    {% for g in groomings %}
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ g.date|date:"d/m/Y H:i" }}</td>
-                        <td>
-                            {% if g.service_details %}
-                                <ul>
-                                    {% for service in g.service_details %}
-                                        <li>{{ service }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                Basic Grooming
-                            {% endif %}
-                        </td>
-                        <td>{{ g.staff_name|default:"-" }}</td>
+                        <th>Date</th>
+                        <th>Service</th>
+                        <th>Staff</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for g in grooming %}
+                    <tr>
+                        <td>{{ g.date|date:"M d, Y" }}</td>
+                        <td>{{ g.service_type|default:"Grooming" }}</td>
+                        <td>{{ g.staff.username|default:"-" }}</td>
                         <td>{{ g.notes|default:"-" }}</td>
-                        <td><span class="badge-grooming">Grooming</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="empty-state">No grooming history yet.</td>
                     </tr>
                     {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="5" style="text-align:center;color:#777;padding:25px;">
-                            No grooming history yet.
-                        </td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
+                </tbody>
+            </table>
+        </div>
+    </main>
 </body>
 </html>

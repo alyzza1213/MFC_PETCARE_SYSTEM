@@ -2,86 +2,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>🐾 Book Appointment</title>
-<link rel="stylesheet" href="{% static 'css/clients/booking.css' %}">
-<style>
-    .concern-box { margin-top: 8px; display: none; }
-    .concern-box textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/clients/client_shell.css' %}?v=client-shell-1">
+    <style>
+        .concern-box { margin-top: 12px; display: none; }
+    </style>
 </head>
 <body>
-<header>
-    <h1>🐾 Book Appointment</h1>
-    <nav>
-        <a href="{% url 'homepage' %}">Home</a>
-        <a href="{% url 'pet_profile' %}">My Pets</a>
-        <a href="{% url 'vet_availability' %}">Vet Availability</a>
-        <a href="{% url 'logout' %}">Logout</a>
-    </nav>
-</header>
+    {% include 'clients/_sidebar.html' with active_page='book' %}
 
-<div class="appointment-section">
-<h2>Schedule Your Pet's Appointment</h2>
-{% if messages %}
-    {% for message in messages %}
-    <p class="form-message">{{ message }}</p>
-    {% endfor %}
-{% endif %}
-<form method="POST">
-    {% csrf_token %}
-    {% if pets %}
-        {% for pet in pets %}
-        <div class="pet-service-row">
-            <div class="pet-info">
-                <input type="checkbox" name="selected_pets" value="{{ pet.id }}" id="pet_{{ pet.id }}">
-                <label for="pet_{{ pet.id }}">{{ pet.name }} ({{ pet.species }})</label>
-            </div>
+    <main class="client-shell">
+        <section class="client-page-header">
             <div>
-                <label for="service_{{ pet.id }}">Select Service:</label>
-                <select name="service_{{ pet.id }}" id="service_{{ pet.id }}" class="service-dropdown" data-pet="{{ pet.id }}">
-                    <option value="Consultation">Consultation</option>
-                    <option value="Check-up">Check-up</option>
-                    <option value="Vaccination">Vaccination</option>
-                    <option value="Grooming">Grooming</option>
-                </select>
-                <div class="concern-box" id="concern_box_{{ pet.id }}">
-                    <label>Concern / Reason for Visit:</label>
-                    <textarea name="concern_{{ pet.id }}" placeholder="Describe your pet's health concern..."></textarea>
+                <p class="eyebrow">Appointment Booking</p>
+                <h1>Book Appointment</h1>
+                <p class="header-copy">Select your pet, service, and available clinic slot.</p>
+            </div>
+        </section>
+
+        <section class="client-panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Schedule Your Pet's Appointment</h2>
+                    <p class="muted">Available slots are based on the vet schedule for your selected date.</p>
                 </div>
             </div>
-        </div>
-        {% endfor %}
-    {% else %}
-        <p>No pets available. <a href="{% url 'add_pet' %}">Add a pet first</a>.</p>
-    {% endif %}
 
-<label for="slot">Select Vet Slot:</label>
-<select name="slot" id="slot" {% if not pets or not available_slots %}disabled{% else %}required{% endif %}>
-    {% if available_slots %}
-        {% for slot in available_slots %}
-            <option value="{{ slot|time:'H:i' }}">{{ slot|time:'h:i A' }}</option>
-        {% endfor %}
-    {% else %}
-        <option disabled>No available slots. Check back later.</option>
-    {% endif %}
-</select>
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="form-message">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
 
-<label for="notes">Notes (optional):</label>
-<textarea name="notes" id="notes" placeholder="Any special requests..."></textarea>
+            <form method="POST" class="pet-form">
+                {% csrf_token %}
+                {% if pets %}
+                    {% for pet in pets %}
+                        <div class="pet-service-row">
+                            <div class="pet-info">
+                                <input type="checkbox" name="selected_pets" value="{{ pet.id }}" id="pet_{{ pet.id }}">
+                                <label for="pet_{{ pet.id }}">{{ pet.name }} ({{ pet.species }})</label>
+                            </div>
+                            <div>
+                                <label for="service_{{ pet.id }}">Select Service</label>
+                                <select name="service_{{ pet.id }}" id="service_{{ pet.id }}" class="service-dropdown" data-pet="{{ pet.id }}">
+                                    <option value="Consultation">Consultation</option>
+                                    <option value="Check-up">Check-up</option>
+                                    <option value="Vaccination">Vaccination</option>
+                                    <option value="Grooming">Grooming</option>
+                                </select>
+                                <div class="concern-box" id="concern_box_{{ pet.id }}">
+                                    <label>Concern / Reason for Visit</label>
+                                    <textarea name="concern_{{ pet.id }}" placeholder="Describe your pet's health concern..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-panel">
+                        <p class="empty-copy">No pets available yet. Add a pet first before booking.</p>
+                        <a href="{% url 'add_pet' %}" class="client-primary">Add a Pet</a>
+                    </div>
+                {% endif %}
 
-<button type="submit" {% if not pets or not available_slots %}disabled{% endif %}>Book Appointment</button>
-</form>
+                <label for="slot">Select Vet Slot</label>
+                <select name="slot" id="slot" {% if not pets or not available_slots %}disabled{% else %}required{% endif %}>
+                    {% if available_slots %}
+                        {% for slot in available_slots %}
+                            <option value="{{ slot|time:'H:i' }}">{{ slot|time:'h:i A' }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option disabled>No available slots. Check back later.</option>
+                    {% endif %}
+                </select>
 
-<script>
-document.querySelectorAll(".service-dropdown").forEach(select => {
-    select.addEventListener("change", function() {
-        let petId = this.getAttribute("data-pet");
-        let concernBox = document.getElementById("concern_box_" + petId);
-        concernBox.style.display = (this.value === "Check-up" || this.value === "Consultation") ? "block" : "none";
+                <label for="notes">Notes (optional)</label>
+                <textarea name="notes" id="notes" placeholder="Any special requests..."></textarea>
+
+                <button type="submit" class="client-primary" {% if not pets or not available_slots %}disabled{% endif %}>Book Appointment</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+    document.querySelectorAll(".service-dropdown").forEach(select => {
+        select.addEventListener("change", function() {
+            const petId = this.getAttribute("data-pet");
+            const concernBox = document.getElementById("concern_box_" + petId);
+            concernBox.style.display = (this.value === "Check-up" || this.value === "Consultation") ? "block" : "none";
+        });
     });
-});
-</script>
-</div>
+    </script>
 </body>
 </html>

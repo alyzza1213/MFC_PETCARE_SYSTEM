@@ -3,58 +3,74 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>🐾 My Pets - Vaccines</title>
-    <link rel="stylesheet" href="{% static 'css/clients/vaccine_records.css' %}">
-  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccination History | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/clients/client_shell.css' %}?v=client-shell-1">
 </head>
 <body>
+    {% include 'clients/_sidebar.html' with active_page='vaccines' %}
 
-    <a href="{% url 'homepage' %}" class="back-btn">← Back to Home</a>
-
-    <h2>My Pets - Vaccine Records</h2>
-
-    {% if pets %}
-        {% for pet in pets %}
-            <div class="card">
-                <h3>{{ pet.name }} ({{ pet.species }})</h3>
-
-                {% if pet.vaccines.exists %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date Given</th>
-                                <th>Next Due</th>
-                                <th>Weight</th>
-                                <th>Vaccine</th>
-                                <th>Manufacturer</th>
-                                <th>Veterinarian</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for v in pet.vaccines.all %}
-                            <tr>
-                                <td>{{ v.date_given|date:"M d, Y" }}</td>
-                                <td>{{ v.next_due_date|date:"M d, Y" }}</td>
-                                <td>{{ v.weight }} kg</td>
-                                <td>{{ v.vaccine_name }}</td>
-                                <td>{{ v.manufacturer }}</td>
-                                <td>{{ v.veterinarian }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="no-data">
-                        <p>No vaccine records found for this pet.</p>
-                    </div>
-                {% endif %}
+    <main class="client-shell">
+        <section class="client-page-header">
+            <div>
+                <p class="eyebrow">Vaccination History</p>
+                <h1>My Pets - Vaccine Records</h1>
+                <p class="header-copy">Review read-only vaccine records added by the clinic.</p>
             </div>
-        {% endfor %}
-    {% else %}
-        <div class="no-data">
-            <p>No pets found. Please add your pet first.</p>
-        </div>
-    {% endif %}
+        </section>
 
+        {% if pets %}
+            {% for pet in pets %}
+                <section class="client-panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>{{ pet.name }} ({{ pet.species }})</h2>
+                            <p class="muted">Vaccination timeline for this pet.</p>
+                        </div>
+                    </div>
+
+                    {% if pet.vaccine_records.exists %}
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date Given</th>
+                                        <th>Next Due</th>
+                                        <th>Weight</th>
+                                        <th>Vaccine</th>
+                                        <th>Manufacturer</th>
+                                        <th>Veterinarian</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for v in pet.vaccine_records.all %}
+                                        <tr>
+                                            <td>{{ v.date_given|date:"M d, Y" }}</td>
+                                            <td>{{ v.next_due|date:"M d, Y" }}</td>
+                                            <td>{{ v.weight }} kg</td>
+                                            <td>{{ v.vaccine_name }}</td>
+                                            <td>{{ v.manufacturer }}</td>
+                                            <td>{{ v.veterinarian }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="empty-panel">
+                            <p class="empty-copy">No vaccine records found for this pet.</p>
+                        </div>
+                    {% endif %}
+                </section>
+            {% endfor %}
+        {% else %}
+            <section class="client-panel">
+                <div class="empty-panel">
+                    <p class="empty-copy">No pets found. Please add your pet first.</p>
+                    <a href="{% url 'add_pet' %}" class="client-primary">Add Pet</a>
+                </div>
+            </section>
+        {% endif %}
+    </main>
 </body>
 </html>

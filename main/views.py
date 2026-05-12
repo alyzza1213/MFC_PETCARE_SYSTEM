@@ -48,9 +48,7 @@ def landing_page(request):
     return render(request, 'main/landing_page.html')
 
 def homepage(request):
-    print("USER:", request.user)
-    print("AUTH:", request.user.is_authenticated)
-    return render(request, 'main/homepage.html')
+    return redirect('home')
 
 # RESISTER
 def register(request):
@@ -99,7 +97,7 @@ def login_view(request):
             if user.is_staff:
                 return redirect('admin_dashboard')
             else:
-                return redirect('client_dashboard')  # IMPORTANT FIX
+                return redirect('home')
 
         else:
             messages.error(request, 'Invalid username or password.')
@@ -123,7 +121,7 @@ def logout_view(request):
 
 #----------------USER PET VIEWS SA CLIENT SIDE NI------------------
 
-def client_dashboard(request):
+def client_dashboard_legacy(request):
     return render(request, 'clients/client_dashboard.html')
 
 
@@ -219,11 +217,14 @@ def pet_detail(request, pet_id):
         pet=pet
     ).select_related('vet').order_by('-date')
 
+    grooming_records = pet.grooming_records.all().order_by('-date')
+
     # Pass everything to template
     return render(request, 'clients/pet_detail.html', {
         'pet': pet,
         'vaccines': vaccines,
         'medical_records': medical_records,  # ✅ correctly defined
+        'grooming_records': grooming_records,
     })
 
 #------------------------DRI KAY MAG ADD OG PET TAS IMAGE SA PET PROFILE (CLIENTS SIDE NI)---------------------------
@@ -254,8 +255,9 @@ def pet_records_user(request):
     return render(request, 'clients/pet_records.html', {'pets': pets})
 
 def vaccine_records(request):
+    pets = Pet.objects.filter(owner=request.user).prefetch_related('vaccine_records')
     records = Vaccination.objects.filter(pet__owner=request.user)
-    return render(request, 'clients/vaccine_records.html', {'records': records})
+    return render(request, 'clients/vaccine_records.html', {'pets': pets, 'records': records})
 
 def vaccine_detail(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id, owner=request.user)
@@ -267,8 +269,55 @@ def vaccine_detail(request, pet_id):
 #-----------------------BOOKING APPOINTMENT NI SIYA SA CLIENT SIDE LANG NI----------------------- 
 
 @login_required(login_url='login')
-def client_dashboard(request):
-    return render(request, 'clients/client_dashboard.html')
+def home(request):
+    today = timezone.localdate()
+    pets = list(Pet.objects.filter(owner=request.user, is_active=True).order_by('name'))
+    upcoming_appointments = list(
+        Appointment.objects.filter(user=request.user, date__gte=today)
+        .select_related('pet')
+        .order_by('date', 'time')[:5]
+    )
+    recent_appointments = list(
+        Appointment.objects.filter(user=request.user)
+        .select_related('pet')
+        .order_by('-date', '-time')[:4]
+    )
+    recent_vaccinations = list(
+        Vaccination.objects.filter(pet__owner=request.user, pet__is_active=True)
+        .select_related('pet')
+        .order_by('-date_given')[:5]
+    )
+    pending_payments = list(
+        Payment.objects.filter(appointment__user=request.user, status='pending')
+        .select_related('appointment__pet')
+        .order_by('-created_at')[:3]
+    )
+
+    for pet in pets[:3]:
+        pet.display_age = pet.calculate_age() if pet.birthday else pet.age
+
+    next_due_count = Vaccine.objects.filter(
+        pet__owner=request.user,
+        pet__is_active=True,
+        next_due__isnull=False,
+        next_due__gte=today,
+    ).count()
+
+    context = {
+        'today': today,
+        'pets': pets[:3],
+        'total_pets': len(pets),
+        'upcoming_appointments': upcoming_appointments,
+        'upcoming_count': len(upcoming_appointments),
+        'recent_appointments': recent_appointments,
+        'recent_vaccinations': recent_vaccinations,
+        'vaccination_count': len(recent_vaccinations),
+        'next_due_count': next_due_count,
+        'pending_payments': pending_payments,
+        'pending_payment_count': len(pending_payments),
+        'next_appointment': upcoming_appointments[0] if upcoming_appointments else None,
+    }
+    return render(request, 'clients/client_dashboard.html', context)
 
 @login_required(login_url='/login/')
 def my_appointments(request):
@@ -716,33 +765,68 @@ def is_admin(user):
 
 
 def admin_dashboard(request):
-    # Existing totals
-    total_users = User.objects.count()
+    total_users = User.objects.filter(is_staff=False).count()
     total_pets = Pet.objects.filter(is_active=True).count()
-    total_vaccines = Vaccine.objects.count()
-    total_appointments = Appointment.objects.count()
-    total_vets = VetAvailability.objects.count()
+    pending_appointments_count = Appointment.objects.filter(status='Pending').count()
+    completed_appointments_count = Appointment.objects.filter(status='Approved').count()
+    pending_payments_count = Payment.objects.filter(status='pending').count()
+    paid_payments_count = Payment.objects.filter(status='verified').count()
 
-    # Notifications: show latest 3 pending appointments + 3 recent vet updates
-    pending_appointments = Appointment.objects.filter(status='pending').order_by('-created_at')[:3]
-    recent_vets = VetAvailability.objects.order_by('-updated_at')[:3]
+    clients_preview = User.objects.filter(is_staff=False).annotate(pet_count=Count('pet')).order_by('-date_joined')[:4]
+    pending_appointments = Appointment.objects.select_related('user', 'pet').filter(status='Pending').order_by('date', 'time')[:4]
+    services_preview = Service.objects.prefetch_related('images').order_by('name')[:5]
+
+    today = date.today()
+    week_start = today - timedelta(days=today.weekday())
+    week_days = [week_start + timedelta(days=offset) for offset in range(7)]
+    working_days = {item.date: item for item in WorkingDay.objects.filter(date__range=(week_days[0], week_days[-1]))}
+    weekly_schedule = []
+
+    for day in week_days:
+        working_day = working_days.get(day)
+        if day.weekday() == 6 or (working_day and not working_day.is_active):
+            hours = "Closed"
+            status = "closed"
+        elif working_day and working_day.morning_open and working_day.afternoon_open:
+            hours = "7:30 AM – 5:00 PM"
+            status = "whole"
+        elif working_day and working_day.morning_open:
+            hours = "7:30 AM – 11:30 AM"
+            status = "half"
+        elif working_day and working_day.afternoon_open:
+            hours = "1:00 PM – 5:00 PM"
+            status = "half"
+        else:
+            hours = "Not Set"
+            status = "not_set"
+
+        weekly_schedule.append({
+            "date": day,
+            "hours": hours,
+            "status": status,
+        })
 
     notifications = []
 
     for a in pending_appointments:
-        notifications.append(f"New appointment request from {a.client.name}")
-
-    for v in recent_vets:
-        notifications.append(f"Vet schedule updated for {v.vet.name}")
+        pet_name = a.pet.name if a.pet else "Deleted pet"
+        notifications.append(f"Pending appointment: {pet_name} on {a.date:%b %d} at {a.time:%I:%M %p}")
 
     context = {
         'total_users': total_users,
         'total_pets': total_pets,
-        'total_vaccines': total_vaccines,
-        'total_appointments': total_appointments,
-        'total_vets': total_vets,
+        'pending_appointments_count': pending_appointments_count,
+        'completed_appointments_count': completed_appointments_count,
+        'pending_payments_count': pending_payments_count,
+        'paid_payments_count': paid_payments_count,
+        'clients_preview': clients_preview,
+        'pending_appointments': pending_appointments,
+        'services_preview': services_preview,
+        'weekly_schedule': weekly_schedule,
+        'week_start': week_days[0],
+        'week_end': week_days[-1],
         'notif_count': len(notifications),
-        'notifications': notifications[:3],  # show top 3
+        'notifications': notifications[:3],
     }
 
     return render(request, 'admin/admin_dashboard.html', context)
@@ -834,9 +918,10 @@ def client_detail(request, client_id):
 def pet_detail_admin(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
 
-    # Get vaccinations and appointments safely
-    vaccinations = pet.vaccine_records.all()  # matches related_name in Vaccine
-    appointments = pet.appointments.all()     # matches related_name in Appointment
+    vaccinations = pet.vaccine_records.all()
+    appointments = pet.appointments.all()
+    medical_records = pet.medical_records.all().order_by('-date')
+    grooming_records = pet.grooming_records.all().order_by('-date')
 
     if request.method == "POST":
         # Update pet fields safely
@@ -856,7 +941,9 @@ def pet_detail_admin(request, pet_id):
                 return render(request, 'admin/pet_detail_admin.html', {
                     'pet': pet,
                     'vaccinations': vaccinations,
-                    'appointments': appointments
+                    'appointments': appointments,
+                    'medical_records': medical_records,
+                    'grooming_records': grooming_records,
                 })
 
         try:
@@ -868,13 +955,17 @@ def pet_detail_admin(request, pet_id):
             return render(request, 'admin/pet_detail_admin.html', {
                 'pet': pet,
                 'vaccinations': vaccinations,
-                'appointments': appointments
+                'appointments': appointments,
+                'medical_records': medical_records,
+                'grooming_records': grooming_records,
             })
 
     return render(request, 'admin/pet_detail_admin.html', {
         'pet': pet,
         'vaccinations': vaccinations,
-        'appointments': appointments
+        'appointments': appointments,
+        'medical_records': medical_records,
+        'grooming_records': grooming_records,
     })
 
 # -------CLIENTS & PETS ------------
@@ -1151,6 +1242,7 @@ def appointment_requests(request):
     total_users = User.objects.filter(is_staff=False).count()
     total_pets = Pet.objects.count()
     total_appointments = appointments.count()
+    pending_appointments_total = Appointment.objects.filter(status='Pending').count()
     pending_appointments = Appointment.objects.filter(status='Pending').order_by('-created_at')[:3]
 
     notifications = [
@@ -1164,6 +1256,7 @@ def appointment_requests(request):
         'total_users': total_users,
         'total_pets': total_pets,
         'total_appointments': total_appointments,
+        'pending_appointments_total': pending_appointments_total,
         'notif_count': len(notifications),
         'notifications': notifications,
     }
@@ -1194,8 +1287,14 @@ def toggle_working_day(request, day_id):
 def vet_availability_admin(request):
 
     today = date.today()
-    year = today.year
-    month = today.month
+    try:
+        year = int(request.GET.get("year", today.year))
+        month = int(request.GET.get("month", today.month))
+        current_month = date(year, month, 1)
+    except ValueError:
+        current_month = date(today.year, today.month, 1)
+        year = current_month.year
+        month = current_month.month
 
     # =========================
     # SAVE MODAL FORM
@@ -1212,7 +1311,7 @@ def vet_availability_admin(request):
         obj.afternoon_open = afternoon
         obj.save()
 
-        return redirect("vet_availability_admin")
+        return redirect(f"{request.path}?year={day_obj.year}&month={day_obj.month}")
 
     # =========================
     # CALENDAR BUILD
@@ -1293,9 +1392,14 @@ def vet_availability_admin(request):
             "status": status,
         })
 
+    previous_month = date(year - 1, 12, 1) if month == 1 else date(year, month - 1, 1)
+    next_month = date(year + 1, 1, 1) if month == 12 else date(year, month + 1, 1)
+
     return render(request, "admin/vet_availability_admin.html", {
         "month_days": month_days,
-        "current_month": today,
+        "current_month": current_month,
+        "previous_month": previous_month,
+        "next_month": next_month,
         "empty_days_start": empty_days_start,
         "empty_days_end": empty_days_end,
     })
@@ -1580,10 +1684,10 @@ def add_service(request):
                 image=image
             )
 
-        return redirect("service_list")
+        return redirect("payments_admin")
 
     # IMPORTANT: handle GET request
-    return redirect("service_list")
+    return redirect("payments_admin")
 
 def add_service_legacy(request):
     if request.method == "POST":
@@ -1598,7 +1702,7 @@ def add_service_legacy(request):
 def delete_service(request, service_id):
     service = Service.objects.get(id=service_id)
     service.delete()
-    return redirect("service_list")
+    return redirect("payments_admin")
 
 def update_services(request):
     if request.method == "POST":
@@ -1608,7 +1712,7 @@ def update_services(request):
             service.price = request.POST.get(f"price_{service.id}")
             service.save()
 
-    return redirect('service_list')
+    return redirect('payments_admin')
 
 #-------------NOTIFICATIONS-----------------------
 
@@ -1618,9 +1722,29 @@ def update_services(request):
 
 def payments_admin(request):
     payments = Payment.objects.all().order_by('-created_at')
+    services = Service.objects.prefetch_related('images').all().order_by('name')
+    qr = GcashQR.objects.first()
+
+    if request.method == "POST":
+        image = request.FILES.get("image")
+        instructions = request.POST.get("instructions", "")
+
+        if qr:
+            if image:
+                qr.image = image
+            qr.instructions = instructions
+            qr.save()
+        elif image:
+            qr = GcashQR.objects.create(image=image, instructions=instructions)
+
+        return redirect("payments_admin")
 
     return render(request, "admin/payments_admin.html", {
-        "payments": payments
+        "payments": payments,
+        "services": services,
+        "qr": qr,
+        "pending_payments": Payment.objects.filter(status="pending").count(),
+        "paid_payments": Payment.objects.filter(status="verified").count(),
     })
 
 def verify_payment(request, payment_id):
@@ -1693,28 +1817,46 @@ def reports_admin(request):
     # 📌 Appointment Stats
     total_appointments = Appointment.objects.count()
     pending_appointments = Appointment.objects.filter(status="Pending").count()
-    completed_appointments = Appointment.objects.filter(status="Completed").count()
-
-    # 📌 Payment Stats
-    total_payments = Payment.objects.count()
-    paid_payments = Payment.objects.filter(status="Paid").count()
-    pending_payments = Payment.objects.filter(status="Pending").count()
+    completed_appointments = Appointment.objects.filter(status="Approved").count()
 
     # 📌 Clients & Pets
-    total_clients = User.objects.count()
-    total_pets = Pet.objects.count()
+    total_clients = User.objects.filter(is_staff=False).count()
+    total_pets = Pet.objects.filter(is_active=True).count()
 
     context = {
         "total_appointments": total_appointments,
         "pending_appointments": pending_appointments,
         "completed_appointments": completed_appointments,
-
-        "total_payments": total_payments,
-        "paid_payments": paid_payments,
-        "pending_payments": pending_payments,
-
         "total_clients": total_clients,
         "total_pets": total_pets,
     }
 
     return render(request, "admin/reports_admin.html", context)
+
+
+def settings_admin(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
+
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False
+        )
+
+        messages.success(request, "Email notification sent.")
+        return redirect("settings_admin")
+
+    context = {
+        "total_appointments": Appointment.objects.count(),
+        "pending_appointments": Appointment.objects.filter(status="Pending").count(),
+        "completed_appointments": Appointment.objects.filter(status="Approved").count(),
+        "total_clients": User.objects.filter(is_staff=False).count(),
+        "total_pets": Pet.objects.filter(is_active=True).count(),
+    }
+
+    return render(request, "admin/settings_admin.html", context)

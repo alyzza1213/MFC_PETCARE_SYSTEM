@@ -3,59 +3,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pet Records | MFC Pet Life</title>
-    <link rel="stylesheet" href="{% static 'css/clients/pet_records.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
- 
+    <link rel="stylesheet" href="{% static 'css/clients/client_shell.css' %}?v=client-shell-1">
 </head>
 <body>
-    <div class="container">
-        <h1>Pet Records</h1>
+    {% include 'clients/_sidebar.html' with active_page='pets' %}
 
-        {% if user.is_staff %}
-            <a href="{% url 'add_pet_admin' %}" class="add-btn">+ Add New Pet</a>
-        {% else %}
-            <a href="{% url 'add_pet_user' %}" class="add-btn">+ Add Your Pet</a>
-        {% endif %}
+    <main class="client-shell">
+        <section class="client-page-header">
+            <div>
+                <p class="eyebrow">Pet Records</p>
+                <h1>Pet Records</h1>
+                <p class="header-copy">View your pets and open their profile details.</p>
+            </div>
+            <a href="{% url 'add_pet_user' %}" class="client-primary">+ Add Your Pet</a>
+        </section>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Owner</th>
-                    <th>Species</th>
-                    <th>Breed</th>
-                    <th>Age</th>
-                    <th>Weight</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pet in pets %}
-                <tr>
-                    <td>{{ pet.name }}</td>
-                    <td>{{ pet.owner.get_full_name }}</td>
-                    <td>{{ pet.species }}</td>
-                    <td>{{ pet.breed }}</td>
-                    <td>{{ pet.age }}</td>
-                    <td>{{ pet.weight }} kg</td>
-                    <td class="actions">
-                        <a href="{% url 'view_pet' pet.id %}"><button class="edit-btn">View</button></a>
-                        {% if user.is_staff %}
-                            <a href="{% url 'edit_pet_admin' pet.id %}"><button class="edit-btn">Edit</button></a>
-                            <a href="{% url 'delete_pet_admin' pet.id %}"><button class="delete-btn">Delete</button></a>
-                        {% elif pet.owner == user %}
-                            <a href="{% url 'edit_pet_user' pet.id %}"><button class="edit-btn">Edit</button></a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7" style="text-align:center;">No pet records found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <section class="client-panel">
+            {% if pets %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Owner</th>
+                                <th>Species</th>
+                                <th>Breed</th>
+                                <th>Age</th>
+                                <th>Weight</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pet in pets %}
+                                <tr>
+                                    <td>{{ pet.name }}</td>
+                                    <td>{{ pet.owner.get_full_name|default:pet.owner.username }}</td>
+                                    <td>{{ pet.species }}</td>
+                                    <td>{{ pet.breed|default:"-" }}</td>
+                                    <td>{{ pet.age }}</td>
+                                    <td>{{ pet.weight|default:"-" }} kg</td>
+                                    <td>
+                                        <a href="{% url 'pet_detail' pet.id %}" class="client-secondary">View</a>
+                                        {% if pet.owner == user %}
+                                            <a href="{% url 'add_or_edit_pet_user' pet.id %}" class="client-primary">Edit</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-panel">
+                    <p class="empty-copy">No pet records found.</p>
+                    <a href="{% url 'add_pet_user' %}" class="client-primary">Add Your Pet</a>
+                </div>
+            {% endif %}
+        </section>
+    </main>
 </body>
 </html>

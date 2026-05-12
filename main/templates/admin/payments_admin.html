@@ -4,131 +4,181 @@
 <head>
     <meta charset="UTF-8">
     <title>Payments | MFC Pet Life</title>
-
-    <link rel="stylesheet" href="{% static 'css/admin/payments_admin.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="{% static 'css/admin/payments_admin.css' %}?v=admin-remodel-5">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<!-- SIDEBAR -->
-    <div class="sidebar">
+    <aside class="sidebar">
         <div>
             <h2>🐾 MFC Pet Life</h2>
-
-            <div class="nav-links">
+            <nav class="nav-links">
                 <a href="{% url 'admin_dashboard' %}">Dashboard</a>
                 <a href="{% url 'clients_pets' %}">Clients & Pets</a>
                 <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
                 <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
                 <a href="{% url 'payments_admin' %}" class="active">Payments</a>
-                <a href="{% url 'service_list' %}">Service List</a>
-                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
-                <a href="{% url 'email_notification' %}">Email Notifications</a>
-                <a href="{% url 'reports_admin' %}">Reports</a>
-                
-            </div>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </nav>
         </div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Log Out</button>
+        </form>
+    </aside>
 
-
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">Log Out</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
+    <main class="main-content">
         <header class="topnav-box">
             <div class="topnav-left">
-                <h1>Welcome back, Admin! </h1>
-                <p>Here’s what’s happening in your clinic today.</p>
+                <h1>Welcome back, Admin!</h1>
+                <p>Manage payment proof, services, and the active GCash QR code in one place.</p>
             </div>
             <div class="topnav-right">
-                <div class="date">
-                    {% now "F d, Y | l, h:i A" %}
-                </div>
-                <div class="notifications">
-                    <button class="notif-btn">
-                        🔔 <span class="notif-count">{{ notif_count }}</span>
-                    </button>
-                    <div class="notif-dropdown">
-                        <ul>
-                            {% for notif in notifications %}
-                                <li>{{ notif }}</li>
-                            {% empty %}
-                                <li>No new notifications</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="user-profile">
-                    Admin
-                </div>
+                <div class="date">{% now "F d, Y | l, h:i A" %}</div>
+                <div class="user-profile">Admin</div>
             </div>
         </header>
 
-        <h1>💳 Payments</h1>
+        <section class="page-heading">
+            <div>
+                <p class="eyebrow">Payments & Billing</p>
+                <h1>Payments</h1>
+            </div>
+        </section>
 
-        <table class="table">
+        <section class="payment-summary">
+            <div>
+                <span>Pending Payments</span>
+                <strong>{{ pending_payments }}</strong>
+            </div>
+            <div>
+                <span>Paid Payments</span>
+                <strong>{{ paid_payments }}</strong>
+            </div>
+        </section>
 
-            <tr>
-                <th>Pet</th>
-                <th>Ref No</th>
-                <th>Amount</th>
-                <th>Screenshot</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Payment Verification</h2>
+                <span>{{ payments|length }} payment{{ payments|length|pluralize }}</span>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Pet</th>
+                        <th>Ref No</th>
+                        <th>Amount</th>
+                        <th>Screenshot</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in payments %}
+                    <tr>
+                        <td>{{ p.appointment.pet.name|default:"Deleted pet" }}</td>
+                        <td>{{ p.gcash_ref_no }}</td>
+                        <td>₱{{ p.amount }}</td>
+                        <td>
+                            {% if p.screenshot %}
+                                <img src="{{ p.screenshot.url }}" onclick="openModal(this.src)" alt="Payment screenshot">
+                            {% else %}
+                                <span>No screenshot</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge {{ p.status }}">{{ p.status|title }}</span></td>
+                        <td>
+                            {% if p.status == "pending" %}
+                                <a href="{% url 'verify_payment' p.id %}" class="btn verify">Verify</a>
+                                <a href="{% url 'reject_payment' p.id %}" class="btn reject">Reject</a>
+                            {% else %}
+                                <span class="muted">Reviewed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="empty-state">No payment submissions yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
 
-            {% for p in payments %}
-            <tr>
-                <td>
-                    {% if p.appointment.pet %}
-                        {{ p.appointment.pet.name }}
+        <section class="billing-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>Service List</h2>
+                    <span>Shown to clients during booking and payment.</span>
+                </div>
+                <form method="POST" action="{% url 'add_service' %}" class="add-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="text" name="name" placeholder="Service Name" required>
+                    <input type="text" name="description" placeholder="Description">
+                    <input type="number" step="0.01" name="price" placeholder="Price" required>
+                    <input type="file" name="image">
+                    <button type="submit">Add Service</button>
+                </form>
+
+                <form method="POST" action="{% url 'update_services' %}">
+                    {% csrf_token %}
+                    <table class="table service-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Image</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for service in services %}
+                            <tr>
+                                <td><input type="text" name="name_{{ service.id }}" value="{{ service.name }}"></td>
+                                <td><input type="text" name="description_{{ service.id }}" value="{{ service.description }}"></td>
+                                <td><input type="number" step="0.01" name="price_{{ service.id }}" value="{{ service.price }}"></td>
+                                <td>
+                                    {% for img in service.images.all %}
+                                        {% if img.image %}<img src="{{ img.image.url }}" alt="{{ service.name }}">{% endif %}
+                                    {% empty %}
+                                        <span>No image</span>
+                                    {% endfor %}
+                                </td>
+                                <td><a href="{% url 'delete_service' service.id %}" class="danger-link">Delete</a></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="empty-state">No services yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <button type="submit" class="save-btn">Save Service Updates</button>
+                </form>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>GCash QR Code</h2>
+                    <span>Clients use this for MVP payment uploads.</span>
+                </div>
+                <div class="qr-preview">
+                    {% if qr and qr.image %}
+                        <img src="{{ qr.image.url }}" alt="GCash QR">
                     {% else %}
-                        Deleted pet
+                        <div>No QR code uploaded yet.</div>
                     {% endif %}
-                </td>
-                <td>{{ p.gcash_ref_no }}</td>
-                <td>₱{{ p.amount }}</td>
+                </div>
+                <form class="qr-form" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <label>Upload New QR Code</label>
+                    <input type="file" name="image">
+                    <label>Instructions</label>
+                    <textarea name="instructions" rows="4">{{ qr.instructions }}</textarea>
+                    <button type="submit" class="save-btn">Save QR Code</button>
+                </form>
+            </article>
+        </section>
+    </main>
 
-                <td>
-                    {% if p.screenshot %}
-                        <img src="{{ p.screenshot.url }}" onclick="openModal(this.src)">
-                    {% else %}
-                        <span>No screenshot</span>
-                    {% endif %}
-                </td>
-
-                <td>
-                    {% if p.status == "pending" %}
-                        <span class="badge pending">Pending</span>
-                    {% elif p.status == "verified" %}
-                        <span class="badge verified">Verified</span>
-                    {% else %}
-                        <span class="badge rejected">Rejected</span>
-                    {% endif %}
-                </td>
-
-                <td>
-                    {% if p.status == "pending" %}
-                        <a href="{% url 'verify_payment' p.id %}" class="btn verify">Verify</a>
-                        <a href="{% url 'reject_payment' p.id %}" class="btn reject">Reject</a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-
-        </table>
-
-    </div>
-
-    <!-- IMAGE MODAL -->
     <div id="imgModal" class="modal">
-        <img id="modalImg">
+        <img id="modalImg" alt="Payment screenshot preview">
     </div>
 
     <script>
@@ -141,6 +191,5 @@
         this.style.display = "none";
     }
     </script>
-
 </body>
 </html>
