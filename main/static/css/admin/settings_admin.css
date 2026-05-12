@@ -59,8 +59,182 @@
     cursor: pointer;
 }
 
+.settings-action-card,
+.reminder-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #f8fbfb 0%, #eef7f5 100%);
+    margin-bottom: 18px;
+}
+
+.settings-action-card strong {
+    display: block;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.settings-action-card p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.settings-action-card a,
+.settings-link,
+.remind-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 12px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.settings-action-card a,
+.settings-link {
+    padding: 11px 14px;
+}
+
+.message-stack {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.message-card,
+.smtp-warning {
+    padding: 14px 16px;
+    border-radius: 16px;
+    font-weight: 700;
+}
+
+.message-card.success {
+    background: #dcf7e7;
+    color: #207647;
+}
+
+.message-card.error,
+.smtp-warning {
+    background: #fff0df;
+    color: #a15d09;
+}
+
+.smtp-warning {
+    margin-bottom: 18px;
+}
+
+.reminder-metrics {
+    margin-bottom: 22px;
+}
+
+.reminder-list {
+    display: grid;
+    gap: 14px;
+}
+
+.reminder-card {
+    margin-bottom: 0;
+    background: #fff;
+}
+
+.reminder-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 320px;
+}
+
+.reminder-avatar {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    background: #cfeee6;
+    color: var(--primary);
+    font-size: 1.25rem;
+    font-weight: 900;
+}
+
+.reminder-main h3,
+.reminder-main p,
+.reminder-details span,
+.reminder-details small {
+    margin: 0;
+}
+
+.reminder-main p,
+.reminder-details span,
+.reminder-details small {
+    color: var(--muted);
+}
+
+.reminder-details {
+    display: grid;
+    gap: 5px;
+    min-width: 230px;
+}
+
+.due-badge {
+    display: inline-flex;
+    width: fit-content;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.due-badge.overdue {
+    background: #ffe3e3;
+    color: #be3434;
+}
+
+.due-badge.today {
+    background: #fff1ca;
+    color: #a56b00;
+}
+
+.due-badge.soon {
+    background: #dff5e8;
+    color: #237a4f;
+}
+
+.remind-btn {
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+.remind-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.empty-reminders {
+    padding: 30px;
+    border: 1px dashed var(--line);
+    border-radius: 18px;
+    text-align: center;
+}
+
+.empty-reminders p {
+    color: var(--muted);
+}
+
 @media (max-width: 1000px) {
     .settings-grid {
         grid-template-columns: 1fr;
+    }
+
+    .settings-action-card,
+    .reminder-card {
+        align-items: flex-start;
+        flex-direction: column;
     }
 }

@@ -77,6 +77,31 @@ class Vaccine(models.Model):
     manufacturer = models.CharField(max_length=100, blank=True)
     veterinarian = models.CharField(max_length=100, blank=True)
 
+
+class VaccinationReminderLog(models.Model):
+    vaccine = models.ForeignKey(
+        Vaccine,
+        on_delete=models.CASCADE,
+        related_name='reminder_logs'
+    )
+    sent_to = models.EmailField()
+    sent_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sent_vaccination_reminders'
+    )
+    sent_at = models.DateTimeField(default=timezone.now)
+    subject = models.CharField(max_length=255)
+
+    class Meta:
+        ordering = ['-sent_at']
+
+    def __str__(self):
+        pet_name = self.vaccine.pet.name if self.vaccine and self.vaccine.pet else "Unknown pet"
+        return f"Reminder for {pet_name} sent to {self.sent_to}"
+
 class VaccineRecord(models.Model):
     pet = models.ForeignKey(
         Pet,

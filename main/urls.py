@@ -279,6 +279,8 @@ urlpatterns = [
                 path('reports-admin/', views.reports_admin, name='reports_admin'),
 
                 path('settings-admin/', views.settings_admin, name='settings_admin'),
+                path('vaccination-reminders/', views.vaccination_reminders_admin, name='vaccination_reminders_admin'),
+                path('vaccination-reminders/<int:vaccine_id>/send/', views.send_vaccination_reminder, name='send_vaccination_reminder'),
 
                
 

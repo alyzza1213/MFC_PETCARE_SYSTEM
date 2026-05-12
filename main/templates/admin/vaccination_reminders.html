@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vaccination Reminders | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}?v=admin-remodel-5">
+    <link rel="stylesheet" href="{% static 'css/admin/settings_admin.css' %}?v=admin-remodel-6">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+            <nav class="nav-links">
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'settings_admin' %}" class="active">Settings</a>
+            </nav>
+        </div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Log Out</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <header class="topnav-box">
+            <div class="topnav-left">
+                <h1>Vaccination Reminders</h1>
+                <p>Review upcoming due dates and manually send client reminders.</p>
+            </div>
+            <div class="topnav-right">
+                <div class="date">{% now "F d, Y | l, h:i A" %}</div>
+                <div class="user-profile">Admin</div>
+            </div>
+        </header>
+
+        {% if messages %}
+            <div class="message-stack">
+                {% for message in messages %}
+                    <div class="message-card {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <section class="page-heading">
+            <div>
+                <p class="eyebrow">Manual Reminder Center</p>
+                <h1>Vaccines Due Within {{ reminder_days }} Days</h1>
+                <p>Only records with a pet, owner, email address, and next due date are shown.</p>
+            </div>
+            <a href="{% url 'settings_admin' %}" class="settings-link">← Back to Settings</a>
+        </section>
+
+        {% if not smtp_ready %}
+            <div class="smtp-warning">
+                SMTP credentials are not configured yet. Add <strong>EMAIL_HOST_USER</strong> and <strong>EMAIL_HOST_PASSWORD</strong> before sending reminders.
+            </div>
+        {% endif %}
+
+        <section class="settings-metrics reminder-metrics">
+            <div><strong>{{ overdue_count }}</strong><span>Overdue</span></div>
+            <div><strong>{{ due_today_count }}</strong><span>Due Today</span></div>
+            <div><strong>{{ due_soon_count }}</strong><span>Due Soon</span></div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Reminder Queue</h2>
+                <span>{{ vaccines|length }} eligible record{{ vaccines|length|pluralize }}</span>
+            </div>
+
+            {% if vaccines %}
+                <div class="reminder-list">
+                    {% for vaccine in vaccines %}
+                        <article class="reminder-card">
+                            <div class="reminder-main">
+                                <span class="reminder-avatar">{{ vaccine.pet.name|first|upper }}</span>
+                                <div>
+                                    <h3>{{ vaccine.pet.name }}</h3>
+                                    <p>{{ vaccine.pet.species|default:"Pet" }}{% if vaccine.pet.breed %} • {{ vaccine.pet.breed }}{% endif %}</p>
+                                    <p>Owner: <strong>{{ vaccine.pet.owner.get_full_name|default:vaccine.pet.owner.username }}</strong> • {{ vaccine.pet.owner.email }}</p>
+                                </div>
+                            </div>
+
+                            <div class="reminder-details">
+                                <span class="due-badge {{ vaccine.due_class }}">{{ vaccine.due_label }}</span>
+                                <strong>{{ vaccine.vaccine_name }}</strong>
+                                <span>Next due: {{ vaccine.next_due|date:"M d, Y" }}</span>
+                                {% if vaccine.last_reminder %}
+                                    <small>Last reminded {{ vaccine.last_reminder.sent_at|date:"M d, Y h:i A" }} by {{ vaccine.last_reminder.sent_by|default:"staff" }}</small>
+                                {% else %}
+                                    <small>No reminder sent yet.</small>
+                                {% endif %}
+                            </div>
+
+                            <form method="post" action="{% url 'send_vaccination_reminder' vaccine.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="remind-btn" {% if not smtp_ready %}disabled{% endif %}>Remind for Vaccination</button>
+                            </form>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-reminders">
+                    <h3>No vaccination reminders needed right now.</h3>
+                    <p>Records will appear here when a pet has a vaccine due within {{ reminder_days }} days or overdue.</p>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

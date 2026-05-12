@@ -13,7 +13,7 @@ from .models import (
     WorkingDay, Appointment, VetAvailability,
     History, Vaccination, VaccineRecord,
     Vaccine, Grooming, MedicalRecord, ServiceImage, Payment, 
-    GcashQR, ClinicSettings
+    GcashQR, ClinicSettings, VaccinationReminderLog
 )
 from .notifications import (
     send_registration_email,
@@ -37,6 +37,7 @@ from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.core.mail import send_mail
+from django.views.decorators.http import require_POST
    
 
 
@@ -1860,3 +1861,115 @@ def settings_admin(request):
     }
 
     return render(request, "admin/settings_admin.html", context)
+
+
+@login_required(login_url='login')
+def vaccination_reminders_admin(request):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Staff access only.")
+
+    today = timezone.localdate()
+    reminder_days = 30
+    due_until = today + timedelta(days=reminder_days)
+
+    vaccines = list(
+        Vaccine.objects.filter(
+            next_due__isnull=False,
+            pet__isnull=False,
+            pet__owner__is_staff=False,
+            next_due__lte=due_until,
+        )
+        .exclude(pet__owner__email="")
+        .select_related('pet', 'pet__owner')
+        .prefetch_related('reminder_logs')
+        .order_by('next_due', 'pet__name')
+    )
+
+    overdue_count = 0
+    due_today_count = 0
+    due_soon_count = 0
+
+    for vaccine in vaccines:
+        reminder_logs = list(vaccine.reminder_logs.all())
+        vaccine.days_until_due = (vaccine.next_due - today).days
+        vaccine.last_reminder = reminder_logs[0] if reminder_logs else None
+
+        if vaccine.days_until_due < 0:
+            vaccine.due_label = "Overdue"
+            vaccine.due_class = "overdue"
+            overdue_count += 1
+        elif vaccine.days_until_due == 0:
+            vaccine.due_label = "Due today"
+            vaccine.due_class = "today"
+            due_today_count += 1
+        else:
+            vaccine.due_label = f"Due in {vaccine.days_until_due} day{'s' if vaccine.days_until_due != 1 else ''}"
+            vaccine.due_class = "soon"
+            due_soon_count += 1
+
+    context = {
+        "vaccines": vaccines,
+        "reminder_days": reminder_days,
+        "overdue_count": overdue_count,
+        "due_today_count": due_today_count,
+        "due_soon_count": due_soon_count,
+        "smtp_ready": bool(settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD),
+    }
+    return render(request, "admin/vaccination_reminders.html", context)
+
+
+@require_POST
+@login_required(login_url='login')
+def send_vaccination_reminder(request, vaccine_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Staff access only.")
+
+    vaccine = get_object_or_404(
+        Vaccine.objects.select_related('pet', 'pet__owner'),
+        id=vaccine_id,
+        pet__isnull=False,
+    )
+    owner = vaccine.pet.owner
+
+    if not owner.email:
+        messages.error(request, f"{owner.username} has no email address on file.")
+        return redirect("vaccination_reminders_admin")
+
+    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+        messages.error(request, "SMTP credentials are missing. Add EMAIL_HOST_USER and EMAIL_HOST_PASSWORD before sending reminders.")
+        return redirect("vaccination_reminders_admin")
+
+    subject = f"Vaccination Reminder for {vaccine.pet.name}"
+    due_date = vaccine.next_due.strftime("%B %d, %Y") if vaccine.next_due else "soon"
+    message = f"""Hi {owner.get_full_name() or owner.username},
+
+This is a friendly reminder from MFC Pet Life Veterinary Clinic.
+
+{vaccine.pet.name}'s {vaccine.vaccine_name} vaccination is due on {due_date}.
+
+Please contact the clinic or log in to your account to arrange the next visit.
+
+Thank you,
+MFC Pet Life Veterinary Clinic
+"""
+
+    try:
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [owner.email],
+            fail_silently=False
+        )
+    except Exception as error:
+        messages.error(request, f"Reminder could not be sent: {error}")
+        return redirect("vaccination_reminders_admin")
+
+    VaccinationReminderLog.objects.create(
+        vaccine=vaccine,
+        sent_to=owner.email,
+        sent_by=request.user,
+        subject=subject,
+    )
+    messages.success(request, f"Vaccination reminder sent to {owner.email}.")
+    return redirect("vaccination_reminders_admin")
