@@ -3,113 +3,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard | MFC Pet Life</title>
-
-    <link rel="stylesheet" href="{% static 'css/admin/medical_history.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <title>Medical History | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/admin/clients_pets.css' %}?v=admin-remodel-5">
+    <link rel="stylesheet" href="{% static 'css/admin/medical_history.css' %}?v=admin-remodel-5">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
+    <aside class="sidebar">
         <div>
             <h2>🐾 MFC Pet Life</h2>
-
-            <div class="nav-links">
-                <a href="{% url 'admin_dashboard' %}" >Dashboard</a>
-                <a href="{% url 'clients_pets' %}"class="active">Clients & Pets</a>
+            <nav class="nav-links">
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a href="{% url 'clients_pets' %}" class="active">Clients & Pets</a>
                 <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
                 <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
                 <a href="{% url 'payments_admin' %}">Payments</a>
-                <a href="{% url 'service_list' %}">Service List</a>
-                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
-                <a href="{% url 'email_notification' %}">Email Notifications</a>
-                <a href="{% url 'reports_admin' %}">Reports</a>
-                
-            </div>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </nav>
         </div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Log Out</button>
+        </form>
+    </aside>
 
+    <main class="main-content">
+        <a href="{% url 'pet_detail_admin' pet.id %}" class="back-link">← Back to Pet Details</a>
+        <h1>Medical History</h1>
+        <h3>{{ pet.name }} • {{ pet.species }}</h3>
 
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">Log Out</button>
-            </form>
-        </div>
-    </div>
-
-<div class="main-content">
-    <h1>Medical History</h1>
-    <h3>{{ pet.name }} • {{ pet.species }}</h3>
-
-    {% if user.is_staff %}
-    <form method="post" class="add-checkup">
-        {% csrf_token %}
-        {{ form.weight }}
-        {{ form.findings }}
-        {{ form.treatment }}
-        {{ form.record_type }}
-
-        <button type="submit" {% if not has_appointment %}disabled{% endif %}>
-            ➕ Add Medical Record
-        </button>
-
-        {% if not has_appointment %}
-            <small style="color:#f44336;">
-                ⚠ No approved appointment for this pet.
-            </small>
+        {% if user.is_staff %}
+        <form method="post" class="add-checkup">
+            {% csrf_token %}
+            <input type="number" step="0.01" name="weight" placeholder="Weight">
+            <textarea name="findings" placeholder="Findings"></textarea>
+            <textarea name="treatment" placeholder="Treatment"></textarea>
+            <select name="record_type">
+                <option value="Check-Up">Check-Up</option>
+                <option value="Consultation">Consultation</option>
+                <option value="Follow-Up">Follow-Up</option>
+                <option value="Emergency">Emergency</option>
+            </select>
+            <button type="submit">➕ Add Medical Record</button>
+        </form>
         {% endif %}
-    </form>
-    {% endif %}
 
-    {% if records %}
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Appointment</th>
-                    <th>Recorded</th>
-                    <th>Weight</th>
-                    <th>Findings</th>
-                    <th>Treatment</th>
-                    <th>Type</th>
-                    {% if user.is_staff %}<th>Actions</th>{% endif %}
-                </tr>
-            </thead>
-            <tbody>
-            {% for r in records %}
-                <tr>
-                    <td>{{ r.appointment.date|date:"d/m/Y H:i"|default:"-" }}</td>
-                    <td>{{ r.date|date:"d/m/Y H:i" }}</td>
-                    <td>{{ r.weight|default:"-" }}</td>
-                    <td>{{ r.findings|default:"-" }}</td>
-                    <td>{{ r.treatment|default:"-" }}</td>
-                    <td>
-                        <span class="badge
-                        {% if r.reason_for_visit == 'Check-Up' %}badge-checkup
-                        {% elif r.reason_for_visit == 'Consultation' %}badge-consultation
-                        {% else %}badge-emergency{% endif %}">
-                        {{ r.reason_for_visit }}
-                        </span>
-                    </td>
-                    {% if user.is_staff %}
-                    <td>
-                        <a href="{% url 'edit_checkup' pet.id r.id %}" class="btn btn-update">Edit</a>
-                        <a href="{% url 'delete_checkup' r.id %}" class="btn btn-delete"
-                           onclick="return confirm('Delete this record?');">
-                           Delete
-                        </a>
-                    </td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-        <p style="text-align:center;color:#777;">No records found.</p>
-    {% endif %}
-</div>
-
+        {% if records %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Appointment</th>
+                        <th>Recorded</th>
+                        <th>Weight</th>
+                        <th>Findings</th>
+                        <th>Treatment</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for r in records %}
+                    <tr>
+                        <td>{{ r.appointment.date|date:"M d, Y"|default:"-" }}</td>
+                        <td>{{ r.date|date:"M d, Y h:i A" }}</td>
+                        <td>{{ r.weight|default:"-" }}</td>
+                        <td>{{ r.findings|default:"-" }}</td>
+                        <td>{{ r.treatment|default:"-" }}</td>
+                        <td><span class="badge-checkup">{{ r.reason_for_visit }}</span></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p class="empty-state">No medical records found.</p>
+        {% endif %}
+    </main>
 </body>
 </html>

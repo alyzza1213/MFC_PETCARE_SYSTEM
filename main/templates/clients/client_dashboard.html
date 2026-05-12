@@ -4,107 +4,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage | MFC Pet Life Clinic</title>
-
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif;
-            background-color: #f9f9fb;
-            color: #333;
-            display: flex;
-        }
-
-        /* ------ SIDEBAR ------ */
-        .sidebar {
-            width: 240px;
-            background-color: #4CAF50;
-            height: 100vh;
-            padding: 20px;
-            color: white;
-            position: fixed;
-            left: 0;
-            top: 0;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        }
-
-        .sidebar h2 {
-            margin: 0 0 20px;
-            font-size: 1.4rem;
-            text-align: center;
-        }
-
-        .sidebar a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 12px;
-            margin: 8px 0;
-            background-color: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            font-weight: 500;
-            transition: 0.3s;
-        }
-
-        .sidebar a:hover {
-            background-color: #45a049;
-        }
-
-        /* ------ MAIN CONTENT ------ */
-        .main-content {
-            margin-left: 260px;
-            padding: 40px;
-            width: calc(100% - 260px);
-            text-align: center;
-        }
-
-        section {
-            background: white;
-            padding: 40px 60px;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            display: inline-block;
-        }
-
-        h2 {
-            color: #4CAF50;
-        }
-
-        footer {
-            margin-top: 40px;
-            color: #777;
-            font-size: 0.9rem;
-        }
-    </style>
+    <title>Client Dashboard | MFC Pet Life Clinic</title>
+    <link rel="stylesheet" href="{% static 'css/clients/client_dashboard.css' %}">
 </head>
-
 <body>
+    <aside class="sidebar">
+        <div class="sidebar-art" aria-hidden="true">
+            <img src="{% static 'images/sidebar background.png' %}" alt="" class="sidebar-art-image">
+        </div>
+        <div class="sidebar-shell">
+            <div class="brand-block">
+                <span class="brand-mark">MFC</span>
+                <div>
+                    <h1>MFC Pet Life</h1>
+                    <p>Client Care Portal</p>
+                </div>
+            </div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <h2>🐾 MFC Pet Life</h2>
+            <nav class="nav-links">
+                <a href="{% url 'home' %}" class="active">Dashboard</a>
+                <a href="{% url 'pet_profile' %}">My Pets</a>
+                <a href="{% url 'vet_availability' %}">Available Schedule</a>
+                <a href="{% url 'book_appointment' %}">Book Appointment</a>
+                <a href="{% url 'my_appointments' %}">My Appointments</a>
+                <a href="{% url 'vaccine_records' %}">Vaccination History</a>
+                <a href="{% url 'logout' %}">Log Out</a>
+            </nav>
 
-        <a href="{% url 'homepage' %}">Home</a>
-        <a href="{% url 'pet_profile' %}">View Pet Profile</a>
-        <a href="{% url 'vet_availability' %}">View Vet Availability</a>
-       
-        <a href="{% url 'my_appointments' %}">My Appointment</a>
-        <a href="{% url 'logout' %}">Log Out</a>
-    </div>
+            <div class="sidebar-note">
+                <strong>Need help?</strong>
+                <p>Track bookings, payments, and pet health updates in one place.</p>
+            </div>
+        </div>
+    </aside>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content">
-        <section>
-            <h2>Hello, {{ user.username }}!</h2>
-            <p>Welcome back! Explore your pet’s health, appointments, and vaccination records with ease.</p>
+    <main class="dashboard-shell">
+        <header class="hero-card">
+            <div>
+                <p class="eyebrow">Pet wellness overview</p>
+                <h2>Hello, {{ user.username }}!</h2>
+                <p class="hero-copy">Stay on top of your pets’ appointments, payment updates, and vaccination timeline from one dashboard.</p>
+                <div class="hero-actions">
+                    <a href="{% url 'book_appointment' %}" class="hero-button primary">Book Appointment</a>
+                    <a href="{% url 'pet_profile' %}" class="hero-button secondary">Manage Pets</a>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <span class="today-chip">{{ today|date:"F d, Y" }}</span>
+                {% if next_appointment %}
+                    <div class="hero-next">
+                        <span>Next visit</span>
+                        <strong>{{ next_appointment.date|date:"M d" }} • {{ next_appointment.time|time:"h:i A" }}</strong>
+                        <small>{{ next_appointment.pet.name }} • {{ next_appointment.appointment_type }}</small>
+                    </div>
+                {% else %}
+                    <div class="hero-next">
+                        <span>Next visit</span>
+                        <strong>No upcoming appointment</strong>
+                        <small>Book your next clinic visit anytime.</small>
+                    </div>
+                {% endif %}
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <article class="stat-card blue">
+                <span class="stat-label">My Pets</span>
+                <strong>{{ total_pets }}</strong>
+                <p>{{ total_pets|pluralize:"Pet,Pets" }} on file</p>
+            </article>
+            <article class="stat-card gold">
+                <span class="stat-label">Upcoming Appointments</span>
+                <strong>{{ upcoming_count }}</strong>
+                <p>Scheduled visits ahead</p>
+            </article>
+            <article class="stat-card coral">
+                <span class="stat-label">Pending Payments</span>
+                <strong>{{ pending_payment_count }}</strong>
+                <p>Waiting for payment review</p>
+            </article>
+            <article class="stat-card mint">
+                <span class="stat-label">Vaccination Updates</span>
+                <strong>{{ next_due_count }}</strong>
+                <p>Upcoming due reminders</p>
+            </article>
         </section>
 
-        <footer>
-            <p>&copy; 2025 MFC Pet Life Veterinary Clinic — All Rights Reserved</p>
-        </footer>
-    </div>
+        <section class="content-grid">
+            <article class="panel panel-pets">
+                <div class="panel-head">
+                    <h3>My Pets</h3>
+                    <a href="{% url 'pet_profile' %}">View all</a>
+                </div>
+                <div class="pet-stack">
+                    {% for pet in pets %}
+                        <div class="pet-row">
+                            {% if pet.image %}
+                                <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                            {% else %}
+                                <div class="pet-avatar">{{ pet.name|first|upper }}</div>
+                            {% endif %}
+                            <div>
+                                <strong>{{ pet.name }}</strong>
+                                <p>{{ pet.breed|default:pet.species }} • {{ pet.gender }}</p>
+                                <small>{{ pet.display_age }} year{{ pet.display_age|pluralize }}</small>
+                            </div>
+                            <a href="{% url 'pet_detail' pet.id %}" class="mini-link">Profile</a>
+                        </div>
+                    {% empty %}
+                        <div class="empty-panel">
+                            <p>No pets added yet.</p>
+                            <a href="{% url 'add_pet' %}" class="mini-button">Add your first pet</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </article>
 
+            <article class="panel panel-highlight">
+                <div class="panel-head">
+                    <h3>Upcoming Appointment</h3>
+                    <a href="{% url 'my_appointments' %}">See all</a>
+                </div>
+                {% if next_appointment %}
+                    <div class="highlight-card">
+                        <div class="highlight-main">
+                            <span class="calendar-mark">{{ next_appointment.date|date:"d" }}</span>
+                            <div>
+                                <strong>{{ next_appointment.date|date:"F d, Y" }}</strong>
+                                <p>{{ next_appointment.time|time:"h:i A" }} • {{ next_appointment.pet.name }}</p>
+                            </div>
+                        </div>
+                        <div class="tag-row">
+                            <span class="soft-tag">{{ next_appointment.appointment_type }}</span>
+                            <span class="soft-tag status">{{ next_appointment.status }}</span>
+                        </div>
+                        <p class="note-copy">{{ next_appointment.notes|default:"No notes added for this visit yet." }}</p>
+                    </div>
+                {% else %}
+                    <div class="empty-panel">
+                        <p>You do not have an upcoming appointment yet.</p>
+                        <a href="{% url 'vet_availability' %}" class="mini-button">Browse schedule</a>
+                    </div>
+                {% endif %}
+            </article>
+
+            <article class="panel panel-actions">
+                <div class="panel-head">
+                    <h3>Care Actions</h3>
+                    <span class="panel-caption">Quick next steps</span>
+                </div>
+                <div class="action-stack">
+                    {% if total_pets == 0 %}
+                        <a href="{% url 'add_pet' %}" class="action-card">
+                            <strong>Add your first pet</strong>
+                            <p>Start building your pet care profile and records.</p>
+                        </a>
+                    {% elif total_pets == 1 %}
+                        <a href="{% url 'add_pet' %}" class="action-card">
+                            <strong>Add another pet</strong>
+                            <p>Keep all household pets in one account.</p>
+                        </a>
+                    {% endif %}
+
+                    {% if upcoming_count == 0 %}
+                        <a href="{% url 'vet_availability' %}" class="action-card">
+                            <strong>Book a clinic visit</strong>
+                            <p>Choose a time slot from the available schedule.</p>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'my_appointments' %}" class="action-card">
+                            <strong>Review your appointments</strong>
+                            <p>Check visit details, payment status, and notes.</p>
+                        </a>
+                    {% endif %}
+
+                    {% if vaccination_count == 0 %}
+                        <a href="{% url 'vaccine_records' %}" class="action-card">
+                            <strong>Track vaccination history</strong>
+                            <p>Your records will appear here once the clinic adds them.</p>
+                        </a>
+                    {% endif %}
+                </div>
+            </article>
+
+            <article class="panel panel-list">
+                <div class="panel-head">
+                    <h3>Appointment Timeline</h3>
+                    <a href="{% url 'my_appointments' %}">Open list</a>
+                </div>
+                <div class="timeline">
+                    {% for appointment in recent_appointments %}
+                        <div class="timeline-row">
+                            <div class="timeline-dot {{ appointment.status|lower }}"></div>
+                            <div>
+                                <strong>{{ appointment.date|date:"M d, Y" }} • {{ appointment.time|time:"h:i A" }}</strong>
+                                <p>{{ appointment.pet.name }} • {{ appointment.appointment_type }}</p>
+                            </div>
+                            <span class="line-status">{{ appointment.status }}</span>
+                        </div>
+                    {% empty %}
+                        <p class="empty-copy">No appointment history yet.</p>
+                    {% endfor %}
+                </div>
+            </article>
+
+            <article class="panel panel-table">
+                <div class="panel-head">
+                    <h3>Vaccination History</h3>
+                    <a href="{% url 'vaccine_records' %}">View history</a>
+                </div>
+                {% if recent_vaccinations %}
+                    <div class="mini-table">
+                        <div class="mini-table-head">
+                            <span>Pet</span>
+                            <span>Vaccine</span>
+                            <span>Date Given</span>
+                        </div>
+                        {% for record in recent_vaccinations %}
+                            <div class="mini-table-row">
+                                <span>{{ record.pet.name }}</span>
+                                <span>{{ record.vaccine_name }}</span>
+                                <span>{{ record.date_given|date:"M d, Y" }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-panel compact left-align">
+                        <strong>No vaccination records yet</strong>
+                        <p>The clinic will add vaccine history after a recorded visit. Once available, this section will show the date given and next due schedule.</p>
+                    </div>
+                {% endif %}
+            </article>
+
+            <article class="panel panel-payments">
+                <div class="panel-head">
+                    <h3>Payment Snapshot</h3>
+                    <a href="{% url 'my_appointments' %}">Manage</a>
+                </div>
+                {% if pending_payments %}
+                    {% for payment in pending_payments %}
+                        <div class="payment-item">
+                            <div>
+                                <strong>{{ payment.appointment.pet.name }}</strong>
+                                <p>{{ payment.appointment.date|date:"M d, Y" }} • Ref {{ payment.gcash_ref_no }}</p>
+                            </div>
+                            <span class="payment-badge">{{ payment.status|title }}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-panel compact left-align">
+                        <strong>No pending payments</strong>
+                        <p>You are all caught up. If the clinic requests payment for a future appointment, the action will appear in your appointments list.</p>
+                    </div>
+                {% endif %}
+            </article>
+
+            <article class="panel panel-summary">
+                <div class="panel-head">
+                    <h3>This Week</h3>
+                    <span class="panel-caption">At a glance</span>
+                </div>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="summary-label">Pets on file</span>
+                        <strong>{{ total_pets }}</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Upcoming visits</span>
+                        <strong>{{ upcoming_count }}</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Payment reviews</span>
+                        <strong>{{ pending_payment_count }}</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Vaccine reminders</span>
+                        <strong>{{ next_due_count }}</strong>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
 </body>
 </html>

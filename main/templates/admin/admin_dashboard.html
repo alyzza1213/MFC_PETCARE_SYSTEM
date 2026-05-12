@@ -4,59 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard | MFC Pet Life</title>
-
-    <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}?v=admin-remodel-5">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
+    <aside class="sidebar">
         <div>
             <h2>🐾 MFC Pet Life</h2>
-
-            <div class="nav-links">
+            <nav class="nav-links">
                 <a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a>
                 <a href="{% url 'clients_pets' %}">Clients & Pets</a>
                 <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
                 <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
                 <a href="{% url 'payments_admin' %}">Payments</a>
-                <a href="{% url 'service_list' %}">Service List</a>
-                <a href="{% url 'gcash_qr' %}">Gcash QR Code</a>
-                <a href="{% url 'email_notification' %}">Email Notifications</a>
-                <a href="{% url 'reports_admin' %}">Reports</a>
-                
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </nav>
         </div>
-    </div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Log Out</button>
+        </form>
+    </aside>
 
-
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">Log Out</button>
-            </form>
-        </div>
-    </div>
-
-<!-- MAIN CONTENT -->
-    <div class="main-content">
-        <!-- TOPNAV inside main-content -->
+    <main class="main-content">
         <header class="topnav-box">
             <div class="topnav-left">
-                <h1>Welcome back, Admin! </h1>
+                <h1>Welcome back, Admin!</h1>
                 <p>Here’s what’s happening in your clinic today.</p>
             </div>
             <div class="topnav-right">
-                <div class="date">
-                    {% now "F d, Y | l, h:i A" %}
-                </div>
+                <div class="date">{% now "F d, Y | l, h:i A" %}</div>
                 <div class="notifications">
-                    <button class="notif-btn">
-                        🔔 <span class="notif-count">{{ notif_count }}</span>
-                    </button>
+                    <button class="notif-btn">🔔 <span class="notif-count">{{ notif_count }}</span></button>
                     <div class="notif-dropdown">
                         <ul>
                             {% for notif in notifications %}
@@ -67,51 +46,176 @@
                         </ul>
                     </div>
                 </div>
-
-                <div class="user-profile">
-                    Admin
-                </div>
+                <div class="user-profile">Admin</div>
             </div>
         </header>
 
-        <div class="dashboard-header">
-            <h1>Admin Dashboard</h1>
-        </div>
+        <section class="page-heading">
+            <div>
+                <p class="eyebrow">Clinic Command Center</p>
+                <h1>Admin Dashboard</h1>
+            </div>
+            <a href="{% url 'appointment_requests' %}" class="primary-action">Review Requests</a>
+        </section>
 
-    <div class="card-container">
-        <a href="{% url 'clients_pets' %}?show=clients" class="card link-card">
-            <h2>{{ total_users }}</h2>
-            <p>Total Clients</p>
-        </a>
+        <section class="metric-grid">
+            <a href="{% url 'clients_pets' %}?show=clients" class="metric-card">
+                <span>Total Clients</span>
+                <strong>{{ total_users }}</strong>
+            </a>
+            <a href="{% url 'clients_pets' %}?show=pets" class="metric-card">
+                <span>Total Pets</span>
+                <strong>{{ total_pets }}</strong>
+            </a>
+            <a href="{% url 'appointment_requests' %}" class="metric-card">
+                <span>Pending Appointments</span>
+                <strong>{{ pending_appointments_count }}</strong>
+            </a>
+            <a href="{% url 'appointment_requests' %}" class="metric-card">
+                <span>Completed</span>
+                <strong>{{ completed_appointments_count }}</strong>
+            </a>
+            <a href="{% url 'payments_admin' %}" class="metric-card">
+                <span>Pending Payments</span>
+                <strong>{{ pending_payments_count }}</strong>
+            </a>
+            <a href="{% url 'payments_admin' %}" class="metric-card">
+                <span>Paid Payments</span>
+                <strong>{{ paid_payments_count }}</strong>
+            </a>
+        </section>
 
-        <a href="{% url 'clients_pets' %}?show=pets" class="card link-card">
-            <h2>{{ total_pets }}</h2>
-            <p>Total Pets</p>
-        </a>
+        <section class="dashboard-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>Clients & Pets</h2>
+                    <a href="{% url 'clients_pets' %}">View All</a>
+                </div>
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Contact</th>
+                            <th>Pets</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in clients_preview %}
+                        <tr>
+                            <td>
+                                <a class="client-cell" href="{% url 'client_detail' client.id %}">
+                                    <span>{{ client.username|slice:":1"|upper }}</span>
+                                    <div>
+                                        <strong>{{ client.username }}</strong>
+                                        <small>{{ client.email|default:"No email" }}</small>
+                                    </div>
+                                </a>
+                            </td>
+                            <td>{{ client.email|default:"-" }}</td>
+                            <td>🐾 {{ client.pet_count }}</td>
+                            <td><a class="table-link" href="{% url 'client_detail' client.id %}">Open</a></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="empty-row">No clients yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </article>
 
-        <a href="{% url 'clients_pets' %}" class="card link-card">
-            <h2>{{ total_vaccines }}</h2>
-            <p>Vaccine Records</p>
-        </a>
+            <article class="panel panel-wide">
+                <div class="panel-header">
+                    <h2>Vet Availability <span>({{ week_start|date:"M d" }} - {{ week_end|date:"M d, Y" }})</span></h2>
+                    <a href="{% url 'vet_availability_admin' %}">View Schedule</a>
+                </div>
+                <table class="preview-table schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Schedule</th>
+                            {% for day in weekly_schedule %}
+                                <th>{{ day.date|date:"D" }}<small>{{ day.date|date:"d" }}</small></th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <strong>Clinic Hours</strong>
+                                <small>Working day setup</small>
+                            </td>
+                            {% for day in weekly_schedule %}
+                                <td><span class="status-pill {{ day.status }}">{{ day.hours }}</span></td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
 
-        <a href="{% url 'appointment_requests' %}" class="card link-card">
-            <h2>{{ total_appointments }}</h2>
-            <p>Appointments</p>
-        </a>
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>Appointment Requests</h2>
+                    <a href="{% url 'appointment_requests' %}">View All</a>
+                </div>
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Pet</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in pending_appointments %}
+                        <tr>
+                            <td>{{ appointment.user.username }}</td>
+                            <td>{{ appointment.pet.name|default:"Deleted pet" }}</td>
+                            <td>{{ appointment.date|date:"M d, Y" }}<br>{{ appointment.time|time:"h:i A" }}</td>
+                            <td><span class="badge pending">{{ appointment.status }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="empty-row">No pending appointments.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'appointment_requests' %}" class="panel-button">Manage Requests</a>
+            </article>
 
-        <a href="{% url 'vet_availability_admin' %}" class="card link-card">
-            <h2>{{ total_vets }}</h2>
-            <p>Vet Schedules</p>
-        </a>
-    </div>
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>Service List</h2>
+                    <a href="{% url 'payments_admin' %}">View All</a>
+                </div>
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in services_preview %}
+                        <tr>
+                            <td>
+                                <div class="service-cell">
+                                    <span>🐾</span>
+                                    <strong>{{ service.name }}</strong>
+                                </div>
+                            </td>
+                            <td>{{ service.description|default:"-"|truncatechars:48 }}</td>
+                            <td>₱{{ service.price }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="3" class="empty-row">No services yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'payments_admin' %}" class="panel-button">Manage Services</a>
+            </article>
+        </section>
 
-    <div class="chart-container">
-        <h2>Calendar Overview</h2>
-        <div id="calendar"></div>
-    </div>
-
-</div>
-
-<script src="{% static 'js/admin/admin_dashboard.js' %}"></script>
+        <footer class="admin-footer">© 2026 MFC Pet Life Veterinary Clinic. All rights reserved.</footer>
+    </main>
 </body>
 </html>

@@ -3,60 +3,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Appointments</title>
-    <link rel="stylesheet" href="{% static 'css/clients/my_appointment.css' %}">
-   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Appointments | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/clients/client_shell.css' %}?v=client-shell-1">
 </head>
 <body>
-    <a href="{% url 'homepage' %}" class="back-button">← Back</a>
+    {% include 'clients/_sidebar.html' with active_page='appointments' %}
 
-    <h2>My Appointments</h2>
+    <main class="client-shell">
+        <section class="client-page-header">
+            <div>
+                <p class="eyebrow">Appointment Timeline</p>
+                <h1>My Appointments</h1>
+                <p class="header-copy">Review visit details, clinic status, and payment submissions.</p>
+            </div>
+            <a href="{% url 'vet_availability' %}" class="client-secondary">View Schedule</a>
+        </section>
 
-    {% if appointments %}
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Pet</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Status</th>
-                        <th>Payment</th>
-                        <th>Notes</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for app in appointments %}
-                    <tr>
-                        <td>{{ app.pet.name }}</td>
-                        <td>{{ app.date|date:"F d, Y" }}</td>
-                        <td>{{ app.time|time:"h:i A" }}</td>
-                        <td><span class="status-{{ app.status }}">{{ app.status }}</span></td>
-                        <td>
-                            {% if app.payment_record %}
-                                <span class="payment-status payment-{{ app.payment_record.status }}">{{ app.payment_record.status|title }}</span>
-                            {% else %}
-                                <span class="payment-status payment-none">Not submitted</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ app.notes|default:"-" }}</td>
-                        <td>
-                            {% if app.payment_record and app.payment_record.status == "verified" %}
-                                <span class="action-label">Complete</span>
-                            {% else %}
-                                <a href="{% url 'submit_payment' app.id %}" class="pay-button">
-                                    {% if app.payment_record %}Update Payment{% else %}Pay Now{% endif %}
-                                </a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        <p>You have no appointments yet.</p>
-    {% endif %}
+        <section class="client-panel">
+            <div class="panel-head">
+                <h2>Appointment List</h2>
+                <span class="client-chip">{{ appointments|length }} total</span>
+            </div>
+
+            {% if appointments %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pet</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Notes</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in appointments %}
+                                <tr>
+                                    <td>{{ app.pet.name }}</td>
+                                    <td>{{ app.date|date:"F d, Y" }}</td>
+                                    <td>{{ app.time|time:"h:i A" }}</td>
+                                    <td><span class="status-{{ app.status|lower }}">{{ app.status|title }}</span></td>
+                                    <td>
+                                        {% if app.payment_record %}
+                                            <span class="payment-status payment-{{ app.payment_record.status }}">{{ app.payment_record.status|title }}</span>
+                                        {% else %}
+                                            <span class="payment-status payment-none">Not submitted</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ app.notes|default:"-" }}</td>
+                                    <td>
+                                        {% if app.payment_record and app.payment_record.status == "verified" %}
+                                            <span class="action-label status-approved">Complete</span>
+                                        {% else %}
+                                            <a href="{% url 'submit_payment' app.id %}" class="client-primary">
+                                                {% if app.payment_record %}Update Payment{% else %}Pay Now{% endif %}
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-panel">
+                    <p class="empty-copy">You have no appointments yet.</p>
+                    <a href="{% url 'vet_availability' %}" class="client-primary">Find a Schedule</a>
+                </div>
+            {% endif %}
+        </section>
+    </main>
 </body>
 </html>

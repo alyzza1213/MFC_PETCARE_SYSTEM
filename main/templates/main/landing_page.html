@@ -4,120 +4,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MFC PetCare Veterinary Clinic</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    /* RESET */
-    * { margin:0; padding:0; box-sizing:border-box; font-family: 'Roboto', sans-serif; }
-
-    body {
-      background: #f7f9fc;
-      color: #333;
-    }
-
-    /* CONTAINER */
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 20px;
-      text-align: center;
-    }
-
-    /* HEADER */
-    header {
-      padding: 40px 20px;
-    }
-
-    header img {
-      max-width: 200px;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      margin: 20px 0 10px;
-      color: #2c3e50;
-    }
-
-    header p {
-      font-size: 1.2rem;
-      color: #555;
-    }
-
-    /* BUTTONS */
-    .btn {
-      display: inline-block;
-      padding: 12px 25px;
-      margin: 10px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .btn-login { background-color: #2ecc71; color: white; }
-    .btn-login:hover { background-color: #27ae60; }
-
-    .btn-book { background-color: #3498db; color: white; }
-    .btn-book:hover { background-color: #2980b9; }
-
-    .btn-about { background-color: #e67e22; color: white; }
-    .btn-about:hover { background-color: #d35400; }
-
-    .btn-contact { background-color: #9b59b6; color: white; }
-    .btn-contact:hover { background-color: #8e44ad; }
-
-    .btn-services { background-color: #f1c40f; color: white; }
-    .btn-services:hover { background-color: #d4ac0d; }
-
-    /* HERO IMAGE */
-    .hero {
-      margin-top: 30px;
-    }
-
-    .hero img {
-      max-width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-
-    /* FOOTER */
-    footer {
-      margin-top: 50px;
-      padding: 20px;
-      color: #777;
-      font-size: 0.9rem;
-    }
-
-    @media(max-width:768px){
-      header h1 { font-size: 2rem; }
-      header p { font-size: 1rem; }
-      .btn { width: 80%; margin: 10px 0; }
-    }
-  </style>
+  <title>MFC Pet Life Veterinary Clinic</title>
+  <link rel="stylesheet" href="{% static 'css/main/landing_page.css' %}?v=public-landing-1">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <img src="{% static 'images/image1.png' %}" alt="MFC PetCare Logo">
-      <h1>Welcome to MFC PetCare Veterinary Clinic</h1>
-      <p>Your trusted partner for pet health and happiness</p>
-    </header>
+  <header class="site-header">
+    <a href="{% url 'landing_page' %}" class="brand">
+      <span>🐾</span>
+      <strong>MFC Pet Life</strong>
+    </a>
+    <nav class="nav-links" aria-label="Public navigation">
+      <a href="#services">Services</a>
+      <a href="#about">About Us</a>
+      <a href="#contact">Contact</a>
+      <a href="{% url 'login' %}" class="nav-login">Login</a>
+    </nav>
+  </header>
 
-    <div class="hero">
-      <img src="{% static 'images/clinic_hero.jpg' %}" alt="Happy Pets">
-    </div>
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Trusted Veterinary Care</p>
+        <h1>Compassionate care for every paw, purr, and wag.</h1>
+        <p class="hero-text">
+          MFC Pet Life helps pet owners manage clinic visits, vaccinations, grooming, and payment updates in one simple system.
+        </p>
+        <div class="hero-actions">
+          <a href="{% url 'login' %}" class="btn btn-primary">Login to Book</a>
+          <a href="{% url 'register' %}" class="btn btn-secondary">Create Account</a>
+          <a href="#services" class="btn btn-ghost">View Services</a>
+        </div>
+        <p class="login-note">Appointments are booked after login so we can connect the visit to your pet profile.</p>
+      </div>
 
-    <div class="buttons">
-      <a href="{% url 'login' %}" class="btn btn-login">Login</a>
-      <a href="#" class="btn btn-book">Book Appointment</a>
-      <a href="#" class="btn btn-about">About Us</a>
-      <a href="#" class="btn btn-contact">Contact Us</a>
-      <a href="#" class="btn btn-services">Services</a>
-    </div>
+      <div class="hero-card" aria-label="Dog and cat illustration">
+        <img src="{% static 'images/sidebar background.png' %}" alt="Dog and cat illustration">
+        <div class="hero-badge">
+          <strong>Open for care</strong>
+          <span>Check schedules, request visits, and track pet health online.</span>
+        </div>
+      </div>
+    </section>
 
-    <footer>
-      &copy; {{ year }} MFC PetCare Veterinary Clinic. All rights reserved.
-    </footer>
-  </div>
+    <section class="quick-info" aria-label="Clinic highlights">
+      <div>
+        <strong>Online Booking</strong>
+        <span>Request visits once signed in</span>
+      </div>
+      <div>
+        <strong>Pet Records</strong>
+        <span>Vaccination and medical history</span>
+      </div>
+      <div>
+        <strong>GCash MVP</strong>
+        <span>Upload payment references safely</span>
+      </div>
+    </section>
+
+    <section id="services" class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Services</p>
+        <h2>Clinic services for everyday pet care</h2>
+      </div>
+      <div class="service-grid">
+        <article>
+          <span>🩺</span>
+          <h3>Check-ups</h3>
+          <p>Routine wellness exams and consultation support for common pet concerns.</p>
+        </article>
+        <article>
+          <span>💉</span>
+          <h3>Vaccination</h3>
+          <p>Track vaccine history and upcoming due dates through your pet profile.</p>
+        </article>
+        <article>
+          <span>✂️</span>
+          <h3>Grooming</h3>
+          <p>Book grooming visits and keep grooming history organized per pet.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="about" class="split-section">
+      <div>
+        <p class="eyebrow">About Us</p>
+        <h2>A friendlier clinic experience for pets and owners.</h2>
+      </div>
+      <p>
+        This portal is designed to make clinic coordination easier: clients can manage pets and requests, while staff can review appointments, payments, schedules, and health records from one place.
+      </p>
+    </section>
+
+    <section id="contact" class="contact-card">
+      <div>
+        <p class="eyebrow">Contact Us</p>
+        <h2>Need help before signing in?</h2>
+        <p>Reach out to the clinic for service questions, schedule concerns, or account assistance.</p>
+      </div>
+      <a href="{% url 'login' %}" class="btn btn-primary">Login to Continue</a>
+    </section>
+  </main>
+
+  <footer>
+    <span>© {% now "Y" %} MFC Pet Life Veterinary Clinic. All rights reserved.</span>
+  </footer>
 </body>
 </html>

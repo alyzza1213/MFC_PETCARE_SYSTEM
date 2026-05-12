@@ -2,120 +2,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>{% if pet %}{{ pet.name }}{% else %}Add Pet{% endif %} - Profile</title>
- <link rel="stylesheet" href="{% static 'css/clients/add_edit_pet.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if pet %}{{ pet.name }}{% else %}Add Pet{% endif %} | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/clients/client_shell.css' %}?v=client-shell-1">
 </head>
 <body>
+    {% include 'clients/_sidebar.html' with active_page='pets' %}
 
-<div class="profile-container">
-  <h2>{% if pet %}{{ pet.name }}{% else %}New Pet{% endif %}</h2>
+    <main class="client-shell">
+        <section class="client-page-header">
+            <div>
+                <p class="eyebrow">Pet Management</p>
+                <h1>{% if pet %}{{ pet.name }}{% else %}Add New Pet{% endif %}</h1>
+                <p class="header-copy">{% if pet %}Review your pet's profile details.{% else %}Add your pet so appointments and records can be linked correctly.{% endif %}</p>
+            </div>
+            <a href="{% url 'pet_profile' %}" class="client-secondary">← Back to My Pets</a>
+        </section>
 
+        <section class="client-panel">
+            {% if pet %}
+                <div class="pet-card">
+                    {% if pet.image %}
+                        <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                    {% else %}
+                        <div class="pet-avatar">{{ pet.name|first|upper }}</div>
+                    {% endif %}
+                    <input type="file" id="petImageInput" name="image" accept="image/*" style="display:none;">
+                    <div>
+                        <h3>{{ pet.name }}</h3>
+                        <p class="pet-meta"><strong>Species:</strong> {{ pet.species|default:"Not set" }}</p>
+                        <p class="pet-meta"><strong>Breed:</strong> {{ pet.breed|default:"Not set" }}</p>
+                        <p class="pet-meta"><strong>Gender:</strong> {{ pet.gender|default:"Not set" }}</p>
+                        <p class="pet-meta"><strong>Birthday:</strong> {% if pet.birthday %}{{ pet.birthday|date:"F d, Y" }}{% else %}Not set{% endif %}</p>
+                        <p class="pet-meta"><strong>Age:</strong> {% if pet.birthday %}{{ pet.calculate_age }}{% else %}{{ pet.age }}{% endif %}</p>
+                        <p class="pet-meta"><strong>Weight:</strong> {{ pet.weight|default:"Not set" }}</p>
+                    </div>
+                </div>
+            {% else %}
+                <form method="POST" enctype="multipart/form-data" class="pet-form">
+                    {% csrf_token %}
+                    <label for="name">Pet Name</label>
+                    <input id="name" type="text" name="name" placeholder="Pet Name" required>
 
-  <label for="petImageInput">
-    {% if pet and pet.image %}
-      <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
-    {% else %}
-      <img id="petImage" src="{% static 'images/default_pet.png' %}" alt="Default Pet">
-    {% endif %}
-  </label>
-  <input type="file" id="petImageInput" name="image" accept="image/*">
+                    <label for="species">Species</label>
+                    <input id="species" type="text" name="species" placeholder="Dog, Cat, etc." required>
 
-  {% if pet %}
-    <p><strong>Species:</strong> 
-        {{ pet.species|default:"Not set" }}
-    </p>
+                    <label for="breed">Breed</label>
+                    <input id="breed" type="text" name="breed" placeholder="Breed">
 
-    <p><strong>Breed:</strong> 
-        {{ pet.breed|default:"Not set" }}
-    </p>
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
 
-    <p><strong>Gender:</strong> 
-        {{ pet.gender|default:"Not set" }}
-    </p>
+                    <label for="birthday">Birthday</label>
+                    <input id="birthday" type="date" name="birthday" required>
 
-    <p><strong>Birthday:</strong> 
-        {% if pet.birthday %}{{ pet.birthday|date:"F d, Y" }}
-        {% else %}Not set{% endif %}
-    </p>
+                    {% if user.is_staff %}
+                        <label for="weight">Weight (kg)</label>
+                        <input id="weight" type="number" step="0.01" name="weight" placeholder="Weight (kg)">
+                    {% endif %}
 
-    <p><strong>Age:</strong> 
-        {% if pet.birthday %}{{ pet.calculate_age }}
-        {% else %}{{ pet.age }}{% endif %}
-    </p>
+                    <label for="image">Pet Photo</label>
+                    <input id="image" type="file" name="image" accept="image/*">
 
-    <p><strong>Weight (kg):</strong> 
-        {% if pet.weight %}{{ pet.weight }}
-        {% else %}Not set{% endif %}
-    </p>
+                    <button type="submit" class="client-primary">Add Pet</button>
+                </form>
+            {% endif %}
+        </section>
+    </main>
 
-    <p><strong>Owner Contact:</strong> 
-        {% if pet.owner.ownerprofile %}
-        {{ pet.owner.ownerprofile.contact|default:"Not set" }}
-        {% else %}Not set{% endif %}
-    </p>
+    {% if pet %}
+    <script>
+    const petImageInput = document.getElementById('petImageInput');
+    const petImage = document.getElementById('petImage');
 
-    <p><strong>Address:</strong> 
-        {% if pet.owner.ownerprofile %}
-        {{ pet.owner.ownerprofile.address|default:"Not set" }}
-        {% else %}Not set{% endif %}
-    </p>
+    if (petImage && petImageInput) {
+        petImage.addEventListener('click', () => petImageInput.click());
+        petImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => petImage.src = event.target.result;
+                reader.readAsDataURL(file);
 
-  {% else %}
-   
-    <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="text" name="name" placeholder="Pet Name" required>
-      <input type="text" name="species" placeholder="Species" required>
-      <input type="text" name="breed" placeholder="Breed">
-      <select name="gender" required>
-        <option value="">Select Gender</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-      </select>
-      <input type="date" name="birthday" required>
-
-      {% if user.is_staff %}
-       
-        <input type="number" step="0.01" name="weight" placeholder="Weight (kg)">
-      {% endif %}
-
-      <input type="file" name="image" accept="image/*">
-      <button type="submit">Add Pet</button>
-    </form>
-  {% endif %}
-</div>
-
-{% if pet %}
-<script>
-const petImageInput = document.getElementById('petImageInput');
-const petImage = document.getElementById('petImage');
-
-petImage.addEventListener('click', () => petImageInput.click());
-
-petImageInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => petImage.src = e.target.result;
-        reader.readAsDataURL(file);
-
-        const formData = new FormData();
-        formData.append("image", file);
-        fetch("{% url 'update_pet_image' pet.id %}", {
-            method: "POST",
-            headers: { "X-CSRFToken": "{{ csrf_token }}" },
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.status === 'success') console.log("Image updated!");
-            else alert("Failed to update image.");
+                const formData = new FormData();
+                formData.append("image", file);
+                fetch("{% url 'update_pet_image' pet.id %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'success') alert("Failed to update image.");
+                });
+            }
         });
     }
-});
-</script>
-{% endif %}
-
+    </script>
+    {% endif %}
 </body>
 </html>

@@ -12,8 +12,9 @@ urlpatterns = [
         #LANDING PAGE
         path('', views.landing_page, name='landing_page'),
 
-        #HOMEPAGE
+        # HOME
             path('homepage/', views.homepage, name='homepage'),
+            path('home/', views.home, name='home'),
 
          #LOGIN/REGISTER/LOGOUT   
             path('login/', views.login_view, name='login'),
@@ -66,7 +67,7 @@ urlpatterns = [
                     path('pet/<int:pet_id>/update-image/', views.update_pet_image, name='update_pet_image'),
 
               #------------------------------      
-                    path('client-dashboard/', views.client_dashboard, name='client_dashboard'),
+                    path('client-dashboard/', views.home, name='client_dashboard'),
                     
              
              # BACK BUTTON
@@ -276,6 +277,8 @@ urlpatterns = [
                 path('email-notification/', views.email_notification, name='email_notification'),
 
                 path('reports-admin/', views.reports_admin, name='reports_admin'),
+
+                path('settings-admin/', views.settings_admin, name='settings_admin'),
 
                
 

@@ -2,214 +2,235 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>{{ pet.name }} - Profile</title>
- <link rel="stylesheet" href="{% static 'css/clients/pet_detail.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pet.name }} | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/clients/client_shell.css' %}?v=client-shell-1">
 </head>
 <body>
+    {% include 'clients/_sidebar.html' with active_page='pets' %}
 
-<div class="container">
-    <a href="{% url 'pet_profile' %}" class="back-btn">← Back</a>
+    <main class="client-shell">
+        <section class="client-page-header">
+            <div>
+                <p class="eyebrow">Pet Profile</p>
+                <h1>{{ pet.name }}</h1>
+                <p class="header-copy">{{ pet.species|default:"Pet" }}{% if pet.breed %} • {{ pet.breed }}{% endif %}</p>
+            </div>
+            <a href="{% url 'pet_profile' %}" class="client-secondary">← Back to My Pets</a>
+        </section>
 
-  
-  <div class="card flex">
+        <section class="client-panel">
+            <div class="pet-card">
+                {% if not user.is_staff %}
+                    <label for="petImageInput" aria-label="Update pet photo">
+                        {% if pet.image %}
+                            <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                        {% else %}
+                            <div class="pet-avatar">{{ pet.name|first|upper }}</div>
+                        {% endif %}
+                    </label>
+                    <input type="file" id="petImageInput" accept="image/*" style="display:none;">
+                {% else %}
+                    {% if pet.image %}
+                        <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                    {% else %}
+                        <div class="pet-avatar">{{ pet.name|first|upper }}</div>
+                    {% endif %}
+                {% endif %}
 
-   
-    <div style="flex:1; min-width:250px;">
-      {% if not user.is_staff %}
-        <label for="petImageInput" style="cursor:pointer;">
-          {% if pet.image %}
-            <img id="petImage" src="{{ pet.image.url }}" alt="{{ pet.name }}">
-          {% else %}
-            <img id="petImage" src="{% static 'images/default_pet.png' %}" alt="{{ pet.name }}">
-          {% endif %}
-        </label>
-        <input type="file" id="petImageInput" accept="image/*" style="display:none;">
-      {% else %}
-        {% if pet.image %}
-          <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
-        {% else %}
-          <img src="{% static 'images/default_pet.png' %}" alt="{{ pet.name }}">
-        {% endif %}
-        <p class="notice" style="margin-top:10px; font-size:13px; color:#555;">Admin cannot change user-uploaded image</p>
-      {% endif %}
-    </div>
+                <div>
+                    <h3>{{ pet.name }}</h3>
+                    <p class="pet-meta"><strong>Species:</strong> {{ pet.species|default:"Not set" }}</p>
+                    <p class="pet-meta"><strong>Breed:</strong> {{ pet.breed|default:"Not set" }}</p>
+                    <p class="pet-meta"><strong>Gender:</strong> {{ pet.gender|default:"Not set" }}</p>
+                    <p class="pet-meta"><strong>Birthday:</strong> {{ pet.birthday|default:"Not set" }}</p>
+                    <p class="pet-meta"><strong>Weight:</strong> {{ pet.weight|default:"Not set" }}</p>
+                    <p class="pet-meta"><strong>Owner Contact:</strong> {{ pet.owner.ownerprofile.contact|default:"Not set" }}</p>
+                    <p class="pet-meta"><strong>Address:</strong> {{ pet.owner.ownerprofile.address|default:"Not set" }}</p>
+                </div>
+            </div>
+        </section>
 
-    
-    <div class="info-list">
-      <h2>{{ pet.name }}</h2>
-      <p><strong>Species:</strong> {{ pet.species }}</p>
-      <p><strong>Breed:</strong> {{ pet.breed }}</p>
-      <p><strong>Gender:</strong> {{ pet.gender }}</p>
-      <p><strong>Birthday:</strong> {{ pet.birthday }}</p>
-      <p><strong>Weight:</strong>
-        {% if user.is_staff %}
-          <form method="POST" action="{% url 'add_or_edit_pet_admin' pet.id %}" style="display:inline;">
-            {% csrf_token %}
-            <input type="number" step="0.01" name="weight" value="{{ pet.weight|default:'' }}" style="padding:5px; width:80px; border-radius:5px; border:1px solid #ccc;">
-            <button type="submit" class="btn-update" style="margin-left:5px;">Update</button>
-          </form>
-        {% else %}
-          {{ pet.weight|default:"Not set" }}
-        {% endif %}
-      </p>
-      <p><strong>Owner Contact:</strong> {{ pet.owner.ownerprofile.contact }}</p>
-      <p><strong>Address:</strong> {{ pet.owner.ownerprofile.address }}</p>
-    </div>
+        <section class="records-tabs">
+            <button type="button" class="record-card active" data-target="vaccine-section">
+                <h3>💉 Vaccine Records</h3>
+                <p>{{ vaccines|length }} records on file.</p>
+            </button>
+            <button type="button" class="record-card" data-target="medical-section">
+                <h3>🩺 Medical Records</h3>
+                <p>{{ medical_records|length }} records on file.</p>
+            </button>
+            <button type="button" class="record-card" data-target="grooming-section">
+                <h3>✂️ Grooming Records</h3>
+                <p>{{ grooming_records|length }} records on file.</p>
+            </button>
+        </section>
 
-  </div>
+        <section class="client-panel" id="records-display">
+            <div id="vaccine-section" class="record-section">
+                <div class="panel-head">
+                    <h2>Vaccine Records</h2>
+                </div>
+                {% if vaccines %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date Given</th>
+                                    <th>Next Due</th>
+                                    <th>Vaccine</th>
+                                    <th>Manufacturer</th>
+                                    <th>Veterinarian</th>
+                                    {% if user.is_staff %}<th>Action</th>{% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in vaccines %}
+                                    <tr>
+                                        <td>{{ record.date_given|date:"Y-m-d" }}</td>
+                                        <td>{{ record.next_due|date:"Y-m-d" }}</td>
+                                        <td>{{ record.vaccine_name }}</td>
+                                        <td>{{ record.manufacturer }}</td>
+                                        <td>{{ record.veterinarian }}</td>
+                                        {% if user.is_staff %}
+                                            <td>
+                                                <form method="POST" action="{% url 'update_vaccine' record.id %}" style="display:inline;">{% csrf_token %}
+                                                    <button class="client-secondary">Update</button>
+                                                </form>
+                                                <form method="POST" action="{% url 'delete_vaccine' record.id %}" style="display:inline;">{% csrf_token %}
+                                                    <button class="client-danger" onclick="return confirm('Delete this record?')">Delete</button>
+                                                </form>
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-panel"><p class="empty-copy">No vaccine records found.</p></div>
+                {% endif %}
+            </div>
 
+            <div id="medical-section" class="record-section" style="display:none;">
+                <div class="panel-head">
+                    <h2>Medical Records</h2>
+                </div>
+                {% if medical_records %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Concern / Notes</th>
+                                    <th>Vet</th>
+                                    {% if user.is_staff %}<th>Actions</th>{% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in medical_records %}
+                                    <tr>
+                                        <td>{{ record.date|date:"M d, Y" }}</td>
+                                        <td>{{ record.reason_for_visit }}</td>
+                                        <td>
+                                            {{ record.findings|default:"N/A" }}
+                                            {% if record.treatment %}<br><small>{{ record.treatment }}</small>{% endif %}
+                                        </td>
+                                        <td>
+                                            {% if record.vet %}
+                                                {{ record.vet.get_full_name|default:record.vet.username }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </td>
+                                        {% if user.is_staff %}
+                                            <td>
+                                                <a href="{% url 'update_medical_record' record.id %}" class="client-secondary">Update</a>
+                                                <a href="{% url 'delete_medical_record' record.id %}" class="client-danger" onclick="return confirm('Delete this record?')">Delete</a>
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-panel"><p class="empty-copy">No medical records found.</p></div>
+                {% endif %}
+            </div>
 
-  <div class="records-menu">
-    <div class="record-card vaccine active" data-target="vaccine-section">💉 Vaccine Records</div>
-    <div class="record-card medical" data-target="medical-section">🩺 Medical Records</div>
-    <div class="record-card grooming" data-target="grooming-section">✂️ Grooming Records</div>
-  </div>
+            <div id="grooming-section" class="record-section" style="display:none;">
+                <div class="panel-head">
+                    <h2>Grooming Records</h2>
+                </div>
+                {% if grooming_records %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Notes</th>
+                                    <th>Groomer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in grooming_records %}
+                                    <tr>
+                                        <td>{{ record.date }}</td>
+                                        <td>{{ record.service_type }}</td>
+                                        <td>{{ record.notes }}</td>
+                                        <td>{{ record.staff|default:"—" }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-panel"><p class="empty-copy">No grooming records found.</p></div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
 
-
-  <div class="card" id="records-display">
-
-    <div id="vaccine-section" class="record-section">
-      <div class="table-card">
-        {% if vaccines %}
-        <table>
-          <tr>
-            <th>Date Given</th><th>Next Due</th><th>Vaccine</th><th>Manufacturer</th><th>Veterinarian</th>
-            {% if user.is_staff %}<th>Action</th>{% endif %}
-          </tr>
-          {% for record in vaccines %}
-          <tr>
-            <td>{{ record.date_given|date:"Y-m-d" }}</td>
-            <td>{{ record.next_due|date:"Y-m-d" }}</td>
-            <td>{{ record.vaccine_name }}</td>
-            <td>{{ record.manufacturer }}</td>
-            <td>{{ record.veterinarian }}</td>
-            {% if user.is_staff %}
-            <td>
-              <form method="POST" action="{% url 'update_vaccine' record.id %}" style="display:inline;">{% csrf_token %}
-                <button class="btn-update">Update</button>
-              </form>
-              <form method="POST" action="{% url 'delete_vaccine' record.id %}" style="display:inline;">{% csrf_token %}
-                <button class="btn-delete" onclick="return confirm('Delete this record?')">Delete</button>
-              </form>
-            </td>
-            {% endif %}
-          </tr>
-          {% endfor %}
-        </table>
-        {% else %}<p>No vaccine records found.</p>{% endif %}
-      </div>
-    </div>
-
-  
-    <div id="medical-section" class="record-section">
-  <div class="table-card">
-
-    {% if medical_records %}
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Type</th>
-          <th>Concern / Notes</th>
-          <th>Vet</th>
-          {% if user.is_staff %}
-          <th>Actions</th>
-          {% endif %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for record in medical_records %}
-        <tr>
-          <td>{{ record.date|date:"M d, Y" }}</td>
-          <td>{{ record.record_type }}</td>
-          <td>
-            {{ record.concern|default:"N/A" }}
-            {% if record.notes %}
-              <br><small>{{ record.notes }}</small>
-            {% endif %}
-          </td>
-          <td>
-            {% if record.vet %}
-              {{ record.vet.get_full_name|default:record.vet.username }}
-            {% else %}
-              —
-            {% endif %}
-          </td>
-          {% if user.is_staff %}
-          <td>
-            <a href="{% url 'update_medical_record' record.id %}" class="btn-update">Update</a>
-            <a href="{% url 'delete_medical_record' record.id %}" class="btn-delete" onclick="return confirm('Delete this record?')">Delete</a>
-          </td>
-          {% endif %}
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-      <p>No medical records found.</p>
+    <script>
+    {% if not user.is_staff %}
+    const imageInput = document.getElementById("petImageInput");
+    const petImage = document.getElementById("petImage");
+    if (imageInput && petImage) {
+        imageInput.addEventListener("change", function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) { petImage.src = event.target.result; };
+                reader.readAsDataURL(file);
+                const formData = new FormData();
+                formData.append("image", file);
+                fetch("{% url 'update_pet_image' pet.id %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => { if (data.status !== 'success') alert("Failed to update image."); });
+            }
+        });
+    }
     {% endif %}
 
-  </div>
-</div>
+    const cards = document.querySelectorAll(".records-tabs .record-card");
+    const sections = document.querySelectorAll(".record-section");
 
-
-
-    <div id="grooming-section" class="record-section" style="display:none;">
-      <div class="table-card">
-        {% if grooming_records %}
-        <table>
-          <tr><th>Date</th><th>Type</th><th>Notes</th><th>Groomer</th></tr>
-          {% for record in grooming_records %}
-          <tr>
-            <td>{{ record.date }}</td>
-            <td>{{ record.groom_type }}</td>
-            <td>{{ record.notes }}</td>
-          </tr>
-          {% endfor %}
-        </table>
-        {% else %}<p>No grooming records found.</p>{% endif %}
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<script>
-
-{% if not user.is_staff %}
-document.getElementById("petImageInput").addEventListener("change", function(){
-    const file = this.files[0];
-    if(file){
-        const reader = new FileReader();
-        reader.onload = function(e){ document.getElementById("petImage").src = e.target.result; }
-        reader.readAsDataURL(file);
-        const formData = new FormData();
-        formData.append("image", file);
-        fetch("{% url 'update_pet_image' pet.id %}", {
-            method: "POST",
-            headers: { "X-CSRFToken": "{{ csrf_token }}" },
-            body: formData
-        }).then(res => res.json())
-          .then(data => { if(data.status !== 'success') alert("Failed to update image."); });
-    }
-});
-{% endif %}
-
-
-const cards = document.querySelectorAll(".record-card");
-const sections = document.querySelectorAll(".record-section");
-
-cards.forEach(card => {
-  card.addEventListener("click", () => {
-    const target = card.getAttribute("data-target");
-    sections.forEach(section => section.style.display = (section.id === target) ? "block" : "none");
-
-    cards.forEach(c => c.classList.remove("active"));
-    card.classList.add("active");
-  });
-});
-</script>
-
+    cards.forEach(card => {
+        card.addEventListener("click", () => {
+            const target = card.getAttribute("data-target");
+            sections.forEach(section => section.style.display = (section.id === target) ? "block" : "none");
+            cards.forEach(item => item.classList.remove("active"));
+            card.classList.add("active");
+        });
+    });
+    </script>
 </body>
 </html>

@@ -2,38 +2,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>🐾 My Pets</title>
-<link rel="stylesheet" href="{% static 'css/clients/pet_profile.css' %}">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Pets | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/clients/client_shell.css' %}?v=client-shell-1">
 </head>
 <body>
-    <header>🐾 My Pets</header>
+    {% include 'clients/_sidebar.html' with active_page='pets' %}
 
-    <div class="container">
-        <a href="{% url 'add_pet' %}" class="add-btn">➕ Add New Pet</a>
+    <main class="client-shell">
+        <section class="client-page-header">
+            <div>
+                <p class="eyebrow">Pet Management</p>
+                <h1>My Pets</h1>
+                <p class="header-copy">Manage your pets and open their health records in one place.</p>
+            </div>
+            <a href="{% url 'add_pet' %}" class="client-primary">+ Add New Pet</a>
+        </section>
 
+        <section class="client-panel">
+            <div class="panel-head">
+                <div>
+                    <h2>Pet Directory</h2>
+                    <p class="muted">Choose a pet to view profile details, vaccination records, and history.</p>
+                </div>
+            </div>
 
-        <div class="pet-list">
-    {% for pet in pets %}
-        <a href="{% url 'pet_detail' pet_id=pet.id %}" class="pet-card">
-            {% if pet.image %}
-                <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+            {% if pets %}
+                <div class="pet-card-grid">
+                    {% for pet in pets %}
+                        <a href="{% url 'pet_detail' pet_id=pet.id %}" class="pet-card">
+                            {% if pet.image %}
+                                <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                            {% else %}
+                                <div class="pet-avatar">{{ pet.name|first|upper }}</div>
+                            {% endif %}
+                            <div>
+                                <h3>{{ pet.name }}</h3>
+                                <p class="pet-meta">{{ pet.species|default:"Pet" }}{% if pet.breed %} • {{ pet.breed }}{% endif %}</p>
+                                {% if pet.gender or pet.age %}
+                                    <p class="pet-meta">{{ pet.gender|default:"Gender not set" }}{% if pet.age %} • {{ pet.age }} years{% endif %}</p>
+                                {% endif %}
+                            </div>
+                            <span class="client-secondary">View Profile</span>
+                        </a>
+                    {% endfor %}
+                </div>
             {% else %}
-                <img src="{% static 'images/default_pet.png' %}" alt="{{ pet.name }}">
+                <div class="empty-panel">
+                    <p class="empty-copy">No pets added yet. Add your first pet to start tracking appointments and records.</p>
+                    <a href="{% url 'add_pet' %}" class="client-primary">Add Pet</a>
+                </div>
             {% endif %}
-            <h3>{{ pet.name }}</h3>
-        </a>
-    {% empty %}
-        <p style="text-align:center; color:#555;">No pets added yet. 🐶🐱</p>
-    {% endfor %}
-</div>
-
-        <a href="{% url 'homepage' %}" class="back-btn">⬅ Back to Home</a>
-    </div>
-
-    <footer>
-        © {{ year|default:2025 }} MFC Pet Life Veterinary Clinic | All Rights Reserved
-    </footer>
+        </section>
+    </main>
 </body>
 </html>

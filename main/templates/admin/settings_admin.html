@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}?v=admin-remodel-5">
+    <link rel="stylesheet" href="{% static 'css/admin/settings_admin.css' %}?v=admin-remodel-5">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+            <nav class="nav-links">
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'settings_admin' %}" class="active">Settings</a>
+            </nav>
+        </div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Log Out</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <header class="topnav-box">
+            <div class="topnav-left">
+                <h1>Welcome back, Admin!</h1>
+                <p>Reports and admin-only tools live here so the sidebar stays clean.</p>
+            </div>
+            <div class="topnav-right">
+                <div class="date">{% now "F d, Y | l, h:i A" %}</div>
+                <div class="user-profile">Admin</div>
+            </div>
+        </header>
+
+        <section class="page-heading">
+            <div>
+                <p class="eyebrow">Admin Settings</p>
+                <h1>Settings</h1>
+            </div>
+        </section>
+
+        <section class="settings-grid">
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>System Reports</h2>
+                    <span>Payment totals were removed per company feedback.</span>
+                </div>
+                <div class="settings-metrics">
+                    <div><strong>{{ total_appointments }}</strong><span>Total Appointments</span></div>
+                    <div><strong>{{ pending_appointments }}</strong><span>Pending Appointments</span></div>
+                    <div><strong>{{ completed_appointments }}</strong><span>Completed</span></div>
+                    <div><strong>{{ total_clients }}</strong><span>Total Clients</span></div>
+                    <div><strong>{{ total_pets }}</strong><span>Total Pets</span></div>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <h2>Email Notifications</h2>
+                    <span>Manual email tool for one-off clinic announcements.</span>
+                </div>
+                <form method="POST" class="settings-form">
+                    {% csrf_token %}
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                    <label>Subject</label>
+                    <input type="text" name="subject" required>
+                    <label>Message</label>
+                    <textarea name="message" rows="6" required></textarea>
+                    <button type="submit">Send Email</button>
+                </form>
+            </article>
+        </section>
+    </main>
+</body>
+</html>
