@@ -23,6 +23,11 @@
 
 <div class="appointment-section">
 <h2>Schedule Your Pet's Appointment</h2>
+{% if messages %}
+    {% for message in messages %}
+    <p class="form-message">{{ message }}</p>
+    {% endfor %}
+{% endif %}
 <form method="POST">
     {% csrf_token %}
     {% if pets %}
@@ -52,7 +57,7 @@
     {% endif %}
 
 <label for="slot">Select Vet Slot:</label>
-<select name="slot" id="slot" required>
+<select name="slot" id="slot" {% if not pets or not available_slots %}disabled{% else %}required{% endif %}>
     {% if available_slots %}
         {% for slot in available_slots %}
             <option value="{{ slot|time:'H:i' }}">{{ slot|time:'h:i A' }}</option>
@@ -65,7 +70,7 @@
 <label for="notes">Notes (optional):</label>
 <textarea name="notes" id="notes" placeholder="Any special requests..."></textarea>
 
-<button type="submit">Book Appointment</button>
+<button type="submit" {% if not pets or not available_slots %}disabled{% endif %}>Book Appointment</button>
 </form>
 
 <script>

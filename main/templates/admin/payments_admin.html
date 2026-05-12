@@ -85,12 +85,22 @@
 
             {% for p in payments %}
             <tr>
-                <td>{{ p.appointment.pet_name }}</td>
+                <td>
+                    {% if p.appointment.pet %}
+                        {{ p.appointment.pet.name }}
+                    {% else %}
+                        Deleted pet
+                    {% endif %}
+                </td>
                 <td>{{ p.gcash_ref_no }}</td>
                 <td>₱{{ p.amount }}</td>
 
                 <td>
-                    <img src="{{ p.screenshot.url }}" onclick="openModal(this.src)">
+                    {% if p.screenshot %}
+                        <img src="{{ p.screenshot.url }}" onclick="openModal(this.src)">
+                    {% else %}
+                        <span>No screenshot</span>
+                    {% endif %}
                 </td>
 
                 <td>

@@ -262,7 +262,7 @@ class ServiceImage(models.Model):
 class Payment(models.Model):
     appointment = models.ForeignKey('Appointment', on_delete=models.CASCADE)
     gcash_ref_no = models.CharField(max_length=100)
-    screenshot = models.ImageField(upload_to='payments/')
+    screenshot = models.ImageField(upload_to='payments/', blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, default='pending')
 

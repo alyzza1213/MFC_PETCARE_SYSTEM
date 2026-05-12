@@ -21,7 +21,9 @@
                         <th>Date</th>
                         <th>Time</th>
                         <th>Status</th>
+                        <th>Payment</th>
                         <th>Notes</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -31,7 +33,23 @@
                         <td>{{ app.date|date:"F d, Y" }}</td>
                         <td>{{ app.time|time:"h:i A" }}</td>
                         <td><span class="status-{{ app.status }}">{{ app.status }}</span></td>
+                        <td>
+                            {% if app.payment_record %}
+                                <span class="payment-status payment-{{ app.payment_record.status }}">{{ app.payment_record.status|title }}</span>
+                            {% else %}
+                                <span class="payment-status payment-none">Not submitted</span>
+                            {% endif %}
+                        </td>
                         <td>{{ app.notes|default:"-" }}</td>
+                        <td>
+                            {% if app.payment_record and app.payment_record.status == "verified" %}
+                                <span class="action-label">Complete</span>
+                            {% else %}
+                                <a href="{% url 'submit_payment' app.id %}" class="pay-button">
+                                    {% if app.payment_record %}Update Payment{% else %}Pay Now{% endif %}
+                                </a>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

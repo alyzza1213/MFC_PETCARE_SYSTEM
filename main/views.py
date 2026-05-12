@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import JsonResponse
+from django.http import HttpResponseForbidden
 from django.utils import timezone
 
 from .forms import PetForm, VaccinationForm, VaccineForm
@@ -269,11 +270,19 @@ def client_dashboard(request):
 
 @login_required(login_url='/login/')
 def my_appointments(request):
-    appointments = Appointment.objects.filter(user=request.user).order_by('date', 'time')
-    return render(request, 'clients/my_appointments.html', {'appointments': appointments})
+    appointments = list(Appointment.objects.filter(user=request.user).order_by('date', 'time'))
+    payments_by_appointment = {
+        payment.appointment_id: payment
+        for payment in Payment.objects.filter(appointment__user=request.user).select_related('appointment')
+    }
+    for appointment in appointments:
+        appointment.payment_record = payments_by_appointment.get(appointment.id)
+    return render(request, 'clients/my_appointments.html', {
+        'appointments': appointments,
+    })
 
 def vet_availability(request):
-    today = date.today()
+    today = timezone.localdate()
     year = today.year
     month = today.month
 
@@ -353,6 +362,11 @@ SERVICE_DURATION = {
     "Grooming": 60,
 }
 
+
+def get_service_amount(appointment_type):
+    service = Service.objects.filter(name__iexact=appointment_type).first()
+    return service.price if service else Decimal("0.00")
+
 def get_available_slots(target_date, service_type="Check-up"):
     duration = timedelta(minutes=SERVICE_DURATION.get(service_type, 30))
 
@@ -406,9 +420,9 @@ def book_appointment(request):
     # Get target date from GET params
     target_date_str = request.GET.get("date")
     try:
-        target_date = datetime.strptime(target_date_str, "%Y-%m-%d").date() if target_date_str else date.today()
+        target_date = datetime.strptime(target_date_str, "%Y-%m-%d").date() if target_date_str else timezone.localdate()
     except ValueError:
-        target_date = date.today()
+        target_date = timezone.localdate()
 
     # ✅ FIXED: no more service_1
     available_slots = get_available_slots(target_date)
@@ -467,20 +481,100 @@ def book_appointment(request):
     return render(request, "clients/book_appointment.html", context)
 
 
+@login_required(login_url='login')
+def submit_payment(request, appointment_id):
+    appointment = get_object_or_404(
+        Appointment.objects.select_related('pet'),
+        id=appointment_id,
+        user=request.user,
+    )
+    qr = GcashQR.objects.first()
+    payment = Payment.objects.filter(appointment=appointment).first()
+    amount = get_service_amount(appointment.appointment_type)
+
+    if request.method == "POST":
+        if payment and payment.status == "verified":
+            messages.info(request, "This appointment payment is already verified.")
+            return redirect('submit_payment', appointment_id=appointment.id)
+
+        gcash_ref_no = request.POST.get("gcash_ref_no", "").strip()
+        screenshot = request.FILES.get("screenshot")
+
+        if not gcash_ref_no:
+            messages.error(request, "Please enter your GCash reference number.")
+        else:
+            if payment is None:
+                payment = Payment.objects.create(
+                    appointment=appointment,
+                    gcash_ref_no=gcash_ref_no,
+                    screenshot=screenshot,
+                    amount=amount,
+                    status="pending",
+                )
+            else:
+                payment.gcash_ref_no = gcash_ref_no
+                payment.amount = amount
+                payment.status = "pending"
+                if screenshot:
+                    payment.screenshot = screenshot
+                payment.save()
+
+            appointment.payment_status = "Unpaid"
+            appointment.save(update_fields=["payment_status"])
+            messages.success(request, "Payment proof submitted. Please wait for verification.")
+            return redirect('my_appointments')
+
+    context = {
+        "appointment": appointment,
+        "payment": payment,
+        "qr": qr,
+        "amount": amount,
+    }
+    return render(request, "clients/payment_submission.html", context)
+
+
+@login_required(login_url='login')
 def approve_appointment(request, appointment_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Staff access only.")
+
     appointment = get_object_or_404(Appointment, id=appointment_id)
 
-    if appointment.appointment_type in ['Check-up', 'Consultation']:
+    if request.method != "POST":
+        return redirect('appointment_requests')
+
+    if (
+        appointment.pet
+        and appointment.appointment_type in ['Check-up', 'Consultation']
+        and not MedicalRecord.objects.filter(appointment=appointment).exists()
+    ):
         MedicalRecord.objects.create(
             pet=appointment.pet,
-            record_type=appointment.appointment_type,
-            concern=appointment.notes,
-            vet=request.user  # admin vet
+            findings=appointment.notes or "",
+            reason_for_visit=appointment.appointment_type,
+            vet=request.user,
+            appointment=appointment,
         )
 
     appointment.status = 'Approved'
-    appointment.save()
-    return redirect('appointment_list') 
+    appointment.save(update_fields=['status'])
+    messages.success(request, "Appointment approved successfully.")
+    return redirect('appointment_requests')
+
+
+@login_required(login_url='login')
+def cancel_appointment(request, appointment_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Staff access only.")
+
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+
+    if request.method == "POST":
+        appointment.status = 'Rejected'
+        appointment.save(update_fields=['status'])
+        messages.success(request, "Appointment cancelled successfully.")
+
+    return redirect('appointment_requests')
 
 
 # CALENDAR NI NA PART
@@ -904,7 +998,7 @@ SERVICE_DURATION = {
     "Grooming": 60,
 }
 
-def get_available_slots(target_date, service_type="Check-up"):
+def get_available_slots_legacy(target_date, service_type="Check-up"):
     duration = timedelta(minutes=SERVICE_DURATION.get(service_type, 30))
     slots = []
 
@@ -985,69 +1079,6 @@ def send_payment_email(appointment):
     email.send()
 
 
-@login_required(login_url='login')
-def book_appointment(request):
-    pets = Pet.objects.filter(owner=request.user)
-    target_date = timezone.now().date()  # Or let client choose date
-
-    if request.method == "POST":
-        selected_pets = request.POST.getlist('selected_pets')
-        slot_str = request.POST.get('slot')
-        notes = request.POST.get('notes', '')
-
-        if not selected_pets or not slot_str:
-            return render(request, 'booking.html', {
-                'pets': pets,
-                'available_slots': get_available_slots(target_date),
-                'error': "Please select pet(s) and slot."
-            })
-
-        slot_time = datetime.strptime(slot_str, "%H:%M").time()
-        service_type = request.POST.get(f'service_{selected_pets[0]}', "Check-up")
-        available_slots = get_available_slots(target_date, service_type)
-
-        if slot_time not in available_slots:
-            return render(request, 'booking.html', {
-                'pets': pets,
-                'available_slots': available_slots,
-                'error': "Slot already booked. Please select another."
-            })
-
-        # Create pending appointments
-        for pet_id in selected_pets:
-            service = request.POST.get(f'service_{pet_id}', "Check-up")
-            concern = request.POST.get(f'concern_{pet_id}', '')
-            pet = Pet.objects.get(id=pet_id)
-            appointment = Appointment.objects.create(
-                client=request.user,
-                pet=pet,
-                service=service,
-                concern=concern,
-                slot=slot_time,
-                status='pending'
-            )
-
-            # Generate QR code URL (your function)
-            qr_code_url = generate_qr_code_url(appointment)
-            appointment.qr_code_url = qr_code_url
-            appointment.save()
-
-            # Send email
-            send_payment_email(appointment)
-
-        return redirect('booking_success')
-
-    # GET request
-    default_service = "Check-up"
-    available_slots = get_available_slots(target_date, default_service)
-    return render(request, 'clients/book_appointment.html', {
-        'pets': pets,
-        'available_slots': available_slots
-    })
-
-
-
-
     #-------UPDATE APPOINTMENT STATUS -----
 
 def appointment_update_status(request, appointment_id):
@@ -1112,18 +1143,33 @@ def book_multi_pet_appointment(request):
             return render(request, 'booking_page.html', {'pets': user_pets})
 
 def appointment_requests(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Staff access only.")
+
     # Select related foreign keys
     appointments = Appointment.objects.select_related('user', 'pet').all().order_by('-date', 'time')
 
     total_users = User.objects.filter(is_staff=False).count()
     total_pets = Pet.objects.count()
     total_appointments = appointments.count()
+    pending_appointments = Appointment.objects.filter(status='Pending').order_by('-created_at')[:3]
+
+    notifications = [
+        f"Pending appointment for {appointment.pet.name} on {appointment.date} at {appointment.time.strftime('%I:%M %p')}"
+        for appointment in pending_appointments
+        if appointment.pet and appointment.time
+    ]
 
     context = {
         'appointments': appointments,
         'total_users': total_users,
         'total_pets': total_pets,
-        'total_appointments': total_appointments
+        'total_appointments': total_appointments,
+        'notif_count': len(notifications),
+        'notifications': notifications,
     }
 
     return render(request, 'admin/appointment_requests.html', context)
@@ -1585,13 +1631,11 @@ def verify_payment(request, payment_id):
     payment = get_object_or_404(Payment, id=payment_id)
 
     payment.status = "verified"
-    payment.verified_at = datetime.now()
     payment.save()
 
-    # link to appointment
     appointment = payment.appointment
-    appointment.is_paid = True
-    appointment.save()
+    appointment.payment_status = "Paid"
+    appointment.save(update_fields=["payment_status"])
 
     return redirect("payments_admin")
 
@@ -1600,6 +1644,10 @@ def reject_payment(request, payment_id):
 
     payment.status = "rejected"
     payment.save()
+
+    appointment = payment.appointment
+    appointment.payment_status = "Unpaid"
+    appointment.save(update_fields=["payment_status"])
 
     return redirect("payments_admin")
 
@@ -1674,4 +1722,3 @@ def reports_admin(request):
     }
 
     return render(request, "admin/reports_admin.html", context)
-

@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submit Payment</title>
+    <link rel="stylesheet" href="{% static 'css/clients/payment_submission.css' %}">
+</head>
+<body>
+    <a href="{% url 'my_appointments' %}" class="back-button">← Back to Appointments</a>
+
+    <div class="payment-page">
+        <section class="summary-card">
+            <h1>Submit GCash Payment</h1>
+            <p>Upload your payment details so the clinic can verify this appointment.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {{ message.tags|default:'info' }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="appointment-grid">
+                <div>
+                    <span class="label">Pet</span>
+                    <strong>{{ appointment.pet.name }}</strong>
+                </div>
+                <div>
+                    <span class="label">Service</span>
+                    <strong>{{ appointment.appointment_type }}</strong>
+                </div>
+                <div>
+                    <span class="label">Schedule</span>
+                    <strong>{{ appointment.date|date:"F d, Y" }} at {{ appointment.time|time:"h:i A" }}</strong>
+                </div>
+                <div>
+                    <span class="label">Amount</span>
+                    <strong>₱{{ amount }}</strong>
+                </div>
+            </div>
+
+            {% if payment %}
+                <div class="current-status">
+                    Current payment status:
+                    <span class="status status-{{ payment.status }}">{{ payment.status|title }}</span>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="payment-card">
+            <div class="qr-panel">
+                <h2>GCash QR Code</h2>
+                {% if qr and qr.image %}
+                    <img src="{{ qr.image.url }}" alt="GCash QR Code" class="qr-image">
+                    {% if qr.instructions %}
+                        <p class="instructions">{{ qr.instructions }}</p>
+                    {% endif %}
+                {% else %}
+                    <p class="empty-note">No GCash QR code is available yet. Please contact the clinic before submitting payment.</p>
+                {% endif %}
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="payment-form">
+                {% csrf_token %}
+                <label for="gcash_ref_no">GCash Reference Number</label>
+                <input
+                    type="text"
+                    id="gcash_ref_no"
+                    name="gcash_ref_no"
+                    value="{% if payment %}{{ payment.gcash_ref_no }}{% endif %}"
+                    placeholder="Enter the GCash receipt/reference number"
+                    required
+                >
+
+                <label for="screenshot">Screenshot (optional)</label>
+                <input type="file" id="screenshot" name="screenshot" accept="image/*">
+
+                {% if payment and payment.screenshot %}
+                    <p class="file-note">Current screenshot on file:</p>
+                    <img src="{{ payment.screenshot.url }}" alt="Uploaded proof of payment" class="proof-preview">
+                {% endif %}
+
+                <button type="submit">
+                    {% if payment %}Update Payment Proof{% else %}Submit Payment Proof{% endif %}
+                </button>
+            </form>
+        </section>
+    </div>
+</body>
+</html>

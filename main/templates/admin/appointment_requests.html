@@ -6,6 +6,7 @@
     <title> Appointment Requests | MFC Pet Life</title>
 
     <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin/appointment_list.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 </head>
@@ -94,7 +95,16 @@
 
   
     <div class="table-container">
-        <h2>📅 Appointment List</h2>
+        <div class="table-header">
+            <div>
+                <h2>Appointment List</h2>
+                <p>Review schedule details before approving, rescheduling, or canceling.</p>
+            </div>
+            <div class="table-meta">
+                <span class="meta-chip">Sorted by latest date</span>
+                <span class="meta-chip">{{ total_appointments }} total</span>
+            </div>
+        </div>
 
         <table class="data-table">
             <thead>
@@ -113,13 +123,27 @@
             {% for a in appointments %}
                 <tr>
                     <td>
-                        <strong>{{ a.user.first_name }} {{ a.user.last_name }}</strong><br>
-                        <small>{{ a.user.username }}</small>
+                        <strong>
+                            {% if a.user.first_name or a.user.last_name %}
+                                {{ a.user.first_name }} {{ a.user.last_name }}
+                            {% else %}
+                                {{ a.user.username }}
+                            {% endif %}
+                        </strong><br>
+                        <small>@{{ a.user.username }}</small>
                     </td>
-                    <td>{{ a.pet.name }}</td>
+                    <td>
+                        {% if a.pet %}
+                            <span class="pet-name">{{ a.pet.name }}</span>
+                        {% else %}
+                            <span class="muted">Deleted pet</span>
+                        {% endif %}
+                    </td>
                     <td>{{ a.appointment_type }}</td>  
                     <td>{{ a.date|date:"M d, Y" }}</td>
-                    <td>{{ a.time|time:"h:i a" }}</td>
+                    <td>
+                        <span class="time-pill">{{ a.time|time:"h:i A" }}</span>
+                    </td>
                     <td>
                         <span class="status {{ a.status|lower }}">
                             {{ a.status }}
@@ -147,7 +171,7 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="7" style="text-align:center;">
+                    <td colspan="7" class="empty-state">
                         No appointment requests found.
                     </td>
                 </tr>
