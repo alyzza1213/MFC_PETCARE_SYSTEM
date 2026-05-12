@@ -66,6 +66,13 @@
                     <h2>Email Notifications</h2>
                     <span>Manual email tool for one-off clinic announcements.</span>
                 </div>
+                <div class="settings-action-card">
+                    <div>
+                        <strong>Vaccination Reminders</strong>
+                        <p>Send due-date reminders for pets with upcoming or overdue vaccinations.</p>
+                    </div>
+                    <a href="{% url 'vaccination_reminders_admin' %}">Open reminders</a>
+                </div>
                 <form method="POST" class="settings-form">
                     {% csrf_token %}
                     <label>Email</label>
