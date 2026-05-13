@@ -333,6 +333,73 @@ def my_appointments(request):
         'appointments': appointments,
     })
 
+
+def get_working_day_status(day_date, working_day=None):
+    if day_date.weekday() == 6:
+        return "closed"
+
+    if working_day is None:
+        return "not_set"
+
+    if not working_day.is_active:
+        return "closed"
+
+    if working_day.morning_open and working_day.afternoon_open:
+        return "whole"
+
+    if working_day.morning_open or working_day.afternoon_open:
+        return "half"
+
+    return "closed"
+
+
+def get_schedule_choice(day_date, working_day=None):
+    if day_date.weekday() == 6:
+        return "closed"
+
+    if working_day is None:
+        return "not_set"
+
+    if not working_day.is_active:
+        return "closed"
+
+    if working_day.morning_open and working_day.afternoon_open:
+        return "whole"
+
+    if working_day.morning_open:
+        return "morning"
+
+    if working_day.afternoon_open:
+        return "afternoon"
+
+    return "closed"
+
+
+def build_available_times(day_date, working_day, interval_minutes=30):
+    status = get_working_day_status(day_date, working_day)
+    if status in ["closed", "not_set"]:
+        return []
+
+    appointments = Appointment.objects.filter(date=day_date)
+    available_times = []
+
+    sessions = []
+    if working_day.morning_open:
+        sessions.append((time(7, 30), time(11, 30)))
+    if working_day.afternoon_open:
+        sessions.append((time(13, 0), time(17, 0)))
+
+    for start_time, end_time in sessions:
+        slot = datetime.combine(day_date, start_time)
+        end = datetime.combine(day_date, end_time)
+        while slot <= end:
+            if not appointments.filter(time=slot.time()).exists():
+                available_times.append(slot.time())
+            slot += timedelta(minutes=interval_minutes)
+
+    return available_times
+
+
 def vet_availability(request):
     today = timezone.localdate()
     year = today.year
@@ -346,49 +413,24 @@ def vet_availability(request):
     num_days = monthrange(year, month)[1]
     month_days = []
 
+    working_days = {
+        item.date: item
+        for item in WorkingDay.objects.filter(date__range=(first_day, date(year, month, num_days)))
+    }
+
     for day_num in range(1, num_days + 1):
         day_date = date(year, month, day_num)
-
-        # ❌ DO NOT SKIP PAST DAYS (important for alignment)
-        working_day, _ = WorkingDay.objects.get_or_create(date=day_date)
-
-        available_times = []
-
-        # Disable booking for past dates
-        if day_date >= today:
-            appointments = Appointment.objects.filter(date=day_date)
-
-            # Morning
-            if working_day.morning_open:
-                slot = datetime.combine(day_date, time(7, 30))
-                end = datetime.combine(day_date, time(11, 30))
-                while slot <= end:
-                    if not appointments.filter(time=slot.time()).exists():
-                        available_times.append(slot.time())
-                    slot += timedelta(minutes=30)
-
-            # Afternoon
-            if working_day.afternoon_open:
-                slot = datetime.combine(day_date, time(13, 0))
-                end = datetime.combine(day_date, time(17, 0))
-                while slot <= end:
-                    if not appointments.filter(time=slot.time()).exists():
-                        available_times.append(slot.time())
-                    slot += timedelta(minutes=30)
-
-        # Status
-        if working_day.morning_open and working_day.afternoon_open:
-            status = 'whole'
-        elif working_day.morning_open or working_day.afternoon_open:
-            status = 'half'
-        else:
-            status = 'closed'
+        working_day = working_days.get(day_date)
+        status = get_working_day_status(day_date, working_day)
+        available_times = build_available_times(day_date, working_day) if day_date >= today else []
+        is_bookable = day_date >= today and status in ["whole", "half"] and bool(available_times)
 
         month_days.append({
             'date': day_date,
             'available_times': available_times,
             'status': status,
-            'is_past': day_date < today
+            'is_past': day_date < today,
+            'is_bookable': is_bookable,
         })
 
     # optional: fill last row
@@ -400,6 +442,7 @@ def vet_availability(request):
         'current_month': today,
         'empty_days_start': empty_days_start,
         'empty_days_end': empty_days_end,
+        'today': today,
     }
 
     return render(request, "clients/vet_availability.html", context)
@@ -423,9 +466,8 @@ def get_available_slots(target_date, service_type="Check-up"):
     duration = timedelta(minutes=SERVICE_DURATION.get(service_type, 30))
 
     # Get working day
-    try:
-        day = WorkingDay.objects.get(date=target_date)
-    except WorkingDay.DoesNotExist:
+    day = WorkingDay.objects.filter(date=target_date).first()
+    if get_working_day_status(target_date, day) in ["closed", "not_set"]:
         return []
 
     slots = []
@@ -441,7 +483,7 @@ def get_available_slots(target_date, service_type="Check-up"):
         return not overlapping.exists()
 
     # Morning slots
-    if day.morning_open:
+    if day and day.morning_open:
         current = datetime.combine(target_date, time(7, 30))
         end = datetime.combine(target_date, time(11, 30))
         while current + duration <= end:
@@ -450,7 +492,7 @@ def get_available_slots(target_date, service_type="Check-up"):
             current += timedelta(minutes=10)
 
     # Afternoon slots
-    if day.afternoon_open:
+    if day and day.afternoon_open:
         current = datetime.combine(target_date, time(13, 0))
         end = datetime.combine(target_date, time(17, 0))
         while current + duration <= end:
@@ -1302,14 +1344,31 @@ def vet_availability_admin(request):
     # =========================
     if request.method == "POST":
         day_date = request.POST.get("day_date")
-        morning = request.POST.get("morning_open") == "on"
-        afternoon = request.POST.get("afternoon_open") == "on"
+        schedule_status = request.POST.get("schedule_status", "not_set")
 
         day_obj = datetime.strptime(day_date, "%Y-%m-%d").date()
 
+        if schedule_status == "not_set" and day_obj.weekday() != 6:
+            WorkingDay.objects.filter(date=day_obj).delete()
+            return redirect(f"{request.path}?year={day_obj.year}&month={day_obj.month}")
+
         obj, created = WorkingDay.objects.get_or_create(date=day_obj)
-        obj.morning_open = morning
-        obj.afternoon_open = afternoon
+        if day_obj.weekday() == 6 or schedule_status == "closed":
+            obj.is_active = False
+            obj.morning_open = False
+            obj.afternoon_open = False
+        elif schedule_status == "morning":
+            obj.is_active = True
+            obj.morning_open = True
+            obj.afternoon_open = False
+        elif schedule_status == "afternoon":
+            obj.is_active = True
+            obj.morning_open = False
+            obj.afternoon_open = True
+        else:
+            obj.is_active = True
+            obj.morning_open = True
+            obj.afternoon_open = True
         obj.save()
 
         return redirect(f"{request.path}?year={day_obj.year}&month={day_obj.month}")
@@ -1332,58 +1391,10 @@ def vet_availability_admin(request):
     for day_num in range(1, num_days + 1):
         day_date = date(year, month, day_num)
 
-        appointments = Appointment.objects.filter(date=day_date).order_by('time')
-        available_times = []
-
         working_day = WorkingDay.objects.filter(date=day_date).first()
-
-        # =========================
-        # DEFAULT STATUS
-        # =========================
-        status = "not_set"
-
-        # =========================
-        # SUNDAY RULE
-        # =========================
-        if day_date.weekday() == 6:
-            status = "closed"
-
-        # =========================
-        # ONLY IF SET BY ADMIN
-        # =========================
-        elif working_day:
-
-            # MORNING SLOT
-            if working_day.morning_open:
-                start = datetime.combine(day_date, time(7, 30))
-                end = datetime.combine(day_date, time(11, 30))
-
-                slot = start
-                while slot <= end:
-                    if not appointments.filter(time=slot.time()).exists():
-                        available_times.append(slot.time())
-                    slot += timedelta(minutes=30)
-
-            # AFTERNOON SLOT
-            if working_day.afternoon_open:
-                start = datetime.combine(day_date, time(13, 0))
-                end = datetime.combine(day_date, time(17, 0))
-
-                slot = start
-                while slot <= end:
-                    if not appointments.filter(time=slot.time()).exists():
-                        available_times.append(slot.time())
-                    slot += timedelta(minutes=30)
-
-            # =========================
-            # STATUS LOGIC (FIXED CLEAN)
-            # =========================
-            if working_day.morning_open and working_day.afternoon_open:
-                status = "whole"
-            elif working_day.morning_open or working_day.afternoon_open:
-                status = "half"
-            else:
-                status = "not_set"
+        appointments = Appointment.objects.filter(date=day_date).order_by('time')
+        status = get_working_day_status(day_date, working_day)
+        available_times = build_available_times(day_date, working_day)
 
         # FINAL OUTPUT
         month_days.append({
@@ -1391,6 +1402,8 @@ def vet_availability_admin(request):
             "appointments": appointments,
             "available_times": available_times,
             "status": status,
+            "schedule_choice": get_schedule_choice(day_date, working_day),
+            "is_sunday": day_date.weekday() == 6,
         })
 
     previous_month = date(year - 1, 12, 1) if month == 1 else date(year, month - 1, 1)
@@ -1403,6 +1416,23 @@ def vet_availability_admin(request):
         "next_month": next_month,
         "empty_days_start": empty_days_start,
         "empty_days_end": empty_days_end,
+    })
+
+
+def vet_availability_get(request, day_date):
+    try:
+        parsed_date = datetime.strptime(day_date, "%Y-%m-%d").date()
+    except ValueError:
+        return JsonResponse({"error": "Invalid date"}, status=400)
+
+    working_day = WorkingDay.objects.filter(date=parsed_date).first()
+    status = get_working_day_status(parsed_date, working_day)
+    return JsonResponse({
+        "status": status,
+        "schedule_status": get_schedule_choice(parsed_date, working_day),
+        "morning_open": bool(status in ["whole", "half"] and working_day and working_day.morning_open),
+        "afternoon_open": bool(status in ["whole", "half"] and working_day and working_day.afternoon_open),
+        "is_sunday": parsed_date.weekday() == 6,
     })
 
     # AVAILABLE TIME

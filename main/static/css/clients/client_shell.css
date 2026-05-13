@@ -494,6 +494,12 @@ tr:last-child td {
     cursor: default;
 }
 
+.day-card.unavailable {
+    background: #f3f7f8;
+    color: #657980;
+    cursor: default;
+}
+
 .day-card.past-day {
     opacity: 0.6;
 }
@@ -520,6 +526,11 @@ tr:last-child td {
 .status-badge.closed {
     background: #ffc9ce;
     color: #c92d36;
+}
+
+.status-badge.not-set {
+    background: #e2eaec;
+    color: #657980;
 }
 
 .form-message,

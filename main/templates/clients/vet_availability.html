@@ -35,20 +35,24 @@
                 {% endfor %}
 
                 {% for day_info in month_days %}
-                    {% if day_info.status != 'closed' %}
+                    {% if day_info.is_bookable %}
                         <div class="day-card {% if day_info.date < today %}past-day{% endif %}"
                              onclick="window.location.href='{% url 'book_appointment' %}?date={{ day_info.date|date:'Y-m-d' }}'">
-                    {% else %}
+                    {% elif day_info.status == 'closed' %}
                         <div class="day-card non-working">
+                    {% else %}
+                        <div class="day-card unavailable">
                     {% endif %}
                             {{ day_info.date|date:"d M Y" }}
                             <span class="status-badge
                                 {% if day_info.status == 'whole' %}whole
                                 {% elif day_info.status == 'half' %}half
-                                {% else %}closed{% endif %}">
+                                {% elif day_info.status == 'closed' %}closed
+                                {% else %}not-set{% endif %}">
                                 {% if day_info.status == 'whole' %}Whole Day
                                 {% elif day_info.status == 'half' %}Half Day
-                                {% else %}Closed{% endif %}
+                                {% elif day_info.status == 'closed' %}Closed
+                                {% else %}Unavailable{% endif %}
                             </span>
                         </div>
                 {% endfor %}

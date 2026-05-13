@@ -137,15 +137,24 @@
 
             <div class="slot-group">
                 <label>
-                    <input type="checkbox" name="morning_open" id="morning">
-                    Morning (7:30 AM – 11:30 AM)
+                    <input type="radio" name="schedule_status" value="whole">
+                    Whole Day (7:30 AM – 5:00 PM)
                 </label>
-            </div>
-
-            <div class="slot-group">
                 <label>
-                    <input type="checkbox" name="afternoon_open" id="afternoon">
-                    Afternoon (1:00 PM – 5:00 PM)
+                    <input type="radio" name="schedule_status" value="morning">
+                    Morning Only (7:30 AM – 11:30 AM)
+                </label>
+                <label>
+                    <input type="radio" name="schedule_status" value="afternoon">
+                    Afternoon Only (1:00 PM – 5:00 PM)
+                </label>
+                <label>
+                    <input type="radio" name="schedule_status" value="closed">
+                    Closed
+                </label>
+                <label id="notSetOption">
+                    <input type="radio" name="schedule_status" value="not_set">
+                    Not Set
                 </label>
             </div>
 
@@ -162,17 +171,32 @@
         document.getElementById("selectedDate").innerText = date;
         document.getElementById("dayInput").value = date;
 
-        document.getElementById("morning").checked = false;
-        document.getElementById("afternoon").checked = false;
+        document.querySelectorAll("input[name='schedule_status']").forEach(input => {
+            input.checked = false;
+            input.disabled = false;
+        });
 
         fetch(`/vet-availability-get/${date}/`)
             .then(res => res.json())
             .then(data => {
-                document.getElementById("morning").checked = data.morning_open;
-                document.getElementById("afternoon").checked = data.afternoon_open;
+                const selectedStatus = data.schedule_status || "not_set";
+                const selectedInput = document.querySelector(`input[name='schedule_status'][value='${selectedStatus}']`);
+                if (selectedInput) selectedInput.checked = true;
+
+                const notSetOption = document.getElementById("notSetOption");
+                notSetOption.style.display = data.is_sunday ? "none" : "block";
+
+                if (data.is_sunday) {
+                    document.querySelectorAll("input[name='schedule_status']").forEach(input => {
+                        input.disabled = input.value !== "closed";
+                    });
+                    document.querySelector("input[name='schedule_status'][value='closed']").checked = true;
+                }
             })
             .catch(err => {
                 console.log("No data yet (OK ra ni):", err);
+                const fallbackInput = document.querySelector("input[name='schedule_status'][value='not_set']");
+                if (fallbackInput) fallbackInput.checked = true;
             });
     }
 

@@ -254,6 +254,7 @@ urlpatterns = [
     
              #VET AVAILABILITY
                 path('vet-availability-admin/', views.vet_availability_admin, name='vet_availability_admin'),
+                path('vet-availability-get/<str:day_date>/', views.vet_availability_get, name='vet_availability_get'),
                 
                 path('vet-service-list/', views.service_list, name='service_list'),
                 path('service-list/', views.service_list, name='service_list'),
