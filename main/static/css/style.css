@@ -1,0 +1,18 @@
+:root {
+  --mfc-primary: #1f7a73;
+  --mfc-accent: #39c7a8;
+  --mfc-page: #f3f7f8;
+  --mfc-text: #263238;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--mfc-text);
+}
+
+img {
+  max-width: 100%;
+}
