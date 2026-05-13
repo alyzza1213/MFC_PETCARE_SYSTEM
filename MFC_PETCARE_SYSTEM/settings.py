@@ -16,8 +16,8 @@ Django settings for MFC_PETCARE_SYSTEM project.
 
 from pathlib import Path
 import os
-import cloudinary
 from dotenv import load_dotenv
+from urllib.parse import unquote, urlparse
 ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
 
 
@@ -26,7 +26,33 @@ ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 CLOUDINARY_URL = os.getenv("CLOUDINARY_URL")
-USE_CLOUDINARY = bool(CLOUDINARY_URL)
+CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME")
+CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")
+CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
+
+if CLOUDINARY_URL:
+    parsed_cloudinary_url = urlparse(CLOUDINARY_URL)
+    CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": parsed_cloudinary_url.hostname or "",
+        "API_KEY": unquote(parsed_cloudinary_url.username or ""),
+        "API_SECRET": unquote(parsed_cloudinary_url.password or ""),
+        "SECURE": True,
+    }
+elif CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": CLOUDINARY_CLOUD_NAME,
+        "API_KEY": CLOUDINARY_API_KEY,
+        "API_SECRET": CLOUDINARY_API_SECRET,
+        "SECURE": True,
+    }
+else:
+    CLOUDINARY_STORAGE = {}
+
+USE_CLOUDINARY = bool(
+    CLOUDINARY_STORAGE.get("CLOUD_NAME")
+    and CLOUDINARY_STORAGE.get("API_KEY")
+    and CLOUDINARY_STORAGE.get("API_SECRET")
+)
 
 
 # Quick-start development settings - unsuitable for production
@@ -148,7 +174,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 if USE_CLOUDINARY:
-    cloudinary.config(cloudinary_url=CLOUDINARY_URL, secure=True)
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     STORAGES = {
         "default": {
