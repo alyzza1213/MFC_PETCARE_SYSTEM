@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reschedule Appointment | MFC Pet Life</title>
+    <link rel="stylesheet" href="{% static 'css/admin/admin_dashboard.css' %}?v=admin-remodel-7">
+    <link rel="stylesheet" href="{% static 'css/admin/appointment_list.css' %}?v=admin-remodel-7">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div>
+            <h2>🐾 MFC Pet Life</h2>
+            <nav class="nav-links">
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a href="{% url 'clients_pets' %}">Clients & Pets</a>
+                <a href="{% url 'vet_availability_admin' %}">Vet Availability</a>
+                <a href="{% url 'appointment_requests' %}" class="active">Appointment Requests</a>
+                <a href="{% url 'payments_admin' %}">Payments</a>
+                <a href="{% url 'settings_admin' %}">Settings</a>
+            </nav>
+        </div>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Log Out</button>
+        </form>
+    </aside>
+
+    <main class="main-content">
+        <header class="topnav-box">
+            <div class="topnav-left">
+                <h1>Reschedule Appointment</h1>
+                <p>Update the visit date and time, then save changes.</p>
+            </div>
+            <div class="topnav-right">
+                <a href="{% url 'appointment_requests' %}" class="primary-action">Back to Requests</a>
+            </div>
+        </header>
+
+        {% if messages %}
+            <div class="table-container">
+                {% for message in messages %}
+                    <p class="status {{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <section class="table-container">
+            <div class="table-header">
+                <div>
+                    <h2>{{ appointment.pet.name|default:"Deleted pet" }}</h2>
+                    <p>{{ appointment.user.username }} • {{ appointment.appointment_type }}</p>
+                </div>
+                <span class="meta-chip">{{ appointment.status }}</span>
+            </div>
+
+            <form method="post" class="reschedule-form">
+                {% csrf_token %}
+                <label>
+                    Date
+                    <input type="date" name="date" value="{{ appointment.date|date:'Y-m-d' }}" required>
+                </label>
+                <label>
+                    Time
+                    <input type="time" name="time" value="{{ appointment.time|time:'H:i' }}" required>
+                </label>
+                <button type="submit" class="btn approve">Save Reschedule</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
