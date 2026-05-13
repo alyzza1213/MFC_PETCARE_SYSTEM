@@ -1,0 +1,202 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top right, rgba(70, 174, 167, 0.22), transparent 22%),
+        linear-gradient(180deg, #f4f7fb 0%, #ebf2f7 100%);
+    color: #244045;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: #1f7a78;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 10px 20px rgba(31, 122, 120, 0.18);
+}
+
+.payment-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 90px 24px 40px;
+}
+
+.summary-card,
+.payment-card {
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 24px;
+    box-shadow: 0 18px 40px rgba(36, 64, 69, 0.08);
+    padding: 28px;
+}
+
+.summary-card {
+    margin-bottom: 24px;
+}
+
+.summary-card h1 {
+    margin: 0 0 8px;
+    color: #1f6f6a;
+}
+
+.summary-card p {
+    margin: 0 0 22px;
+    color: #62767b;
+}
+
+.appointment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.appointment-grid div {
+    background: #f7fafb;
+    border: 1px solid #e4edef;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 8px;
+    color: #6e8489;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.current-status {
+    margin-top: 18px;
+    font-weight: 600;
+}
+
+.status {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+}
+
+.status-pending {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.status-verified {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-rejected {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.payment-card {
+    display: grid;
+    grid-template-columns: minmax(260px, 340px) 1fr;
+    gap: 24px;
+}
+
+.qr-panel {
+    background: linear-gradient(180deg, #f8fffe 0%, #eef7f6 100%);
+    border-radius: 18px;
+    padding: 22px;
+    text-align: center;
+}
+
+.qr-panel h2 {
+    margin-top: 0;
+    color: #1f6f6a;
+}
+
+.qr-image,
+.proof-preview {
+    width: 100%;
+    border-radius: 18px;
+    object-fit: cover;
+    box-shadow: 0 12px 28px rgba(31, 111, 106, 0.12);
+}
+
+.instructions,
+.empty-note,
+.file-note {
+    color: #62767b;
+    line-height: 1.6;
+}
+
+.payment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.payment-form label {
+    font-weight: 700;
+    color: #244045;
+}
+
+.payment-form input[type="text"],
+.payment-form input[type="file"] {
+    border: 1px solid #d0dde0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 1rem;
+    background: #fff;
+}
+
+.payment-form button {
+    border: none;
+    border-radius: 14px;
+    padding: 15px 18px;
+    background: linear-gradient(135deg, #1f7a78 0%, #4cb7b1 100%);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(31, 122, 120, 0.22);
+}
+
+.message {
+    border-radius: 12px;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    font-weight: 600;
+}
+
+.message.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.message.error {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.message.info {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+@media (max-width: 860px) {
+    .payment-card {
+        grid-template-columns: 1fr;
+    }
+
+    .back-button {
+        position: static;
+        display: inline-block;
+        margin: 24px 24px 0;
+    }
+
+    .payment-page {
+        padding-top: 24px;
+    }
+}
