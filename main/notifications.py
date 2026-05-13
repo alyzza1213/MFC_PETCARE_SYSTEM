@@ -1,9 +1,10 @@
 from django.conf import settings
-from django.core.mail import EmailMessage, get_connection
+from django.core.mail import EmailMessage
 
 def send_registration_email(user):
-    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
-        return False, "SMTP credentials are missing."
+    api_key = (settings.ANYMAIL or {}).get("BREVO_API_KEY")
+    if not api_key:
+        return False, "BREVO_API_KEY is not configured."
 
     subject = "Welcome to MFC Pet Life 🐾"
     body = f"""
@@ -17,13 +18,11 @@ Thank you,
 MFC Pet Life Team
 """
     try:
-        connection = get_connection(timeout=settings.EMAIL_TIMEOUT)
         email = EmailMessage(
             subject,
             body,
             settings.DEFAULT_FROM_EMAIL,
             [user.email],
-            connection=connection,
         )
         email.send()
         return True, None
