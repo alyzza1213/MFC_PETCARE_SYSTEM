@@ -67,7 +67,7 @@ def register(request):
             return render(request, 'main/register.html')
 
         try:
-            User.objects.create_user(
+            user = User.objects.create_user(
                 username=username,
                 email=email,
                 password=password
@@ -76,7 +76,11 @@ def register(request):
             messages.error(request, 'Error creating account.')
             return render(request, 'main/register.html')
 
-        messages.success(request, 'Account created! Check your email.')
+        email_sent, email_error = send_registration_email(user)
+        if email_sent:
+            messages.success(request, 'Account created! Check your email.')
+        else:
+            messages.warning(request, f'Account created, but the welcome email was not sent: {email_error}')
         return redirect('login')
 
     return render(request, 'main/register.html')

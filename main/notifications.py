@@ -1,6 +1,10 @@
-from django.core.mail import EmailMessage
+from django.conf import settings
+from django.core.mail import EmailMessage, get_connection
 
 def send_registration_email(user):
+    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
+        return False, "SMTP credentials are missing."
+
     subject = "Welcome to MFC Pet Life 🐾"
     body = f"""
 Hi {user.username},
@@ -12,11 +16,19 @@ You can now log in using your username and password.
 Thank you,
 MFC Pet Life Team
 """
-    email = EmailMessage(subject, body, to=[user.email])
     try:
+        connection = get_connection(timeout=settings.EMAIL_TIMEOUT)
+        email = EmailMessage(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            connection=connection,
+        )
         email.send()
+        return True, None
     except Exception as e:
-        print("Registration email error:", e)
+        return False, str(e)
 
 
 def send_appointment_approval_email(appointment):
