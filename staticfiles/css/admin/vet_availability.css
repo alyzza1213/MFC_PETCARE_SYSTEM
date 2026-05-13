@@ -40,7 +40,10 @@ body {
 
     padding: 25px 20px;
 
-    background: linear-gradient(180deg, var(--dark), var(--primary));
+    background:
+        linear-gradient(180deg, rgba(8, 58, 44, 0.48) 0%, rgba(8, 58, 44, 0.72) 48%, rgba(8, 58, 44, 0.36) 100%),
+        url("../../images/sidebar background.png") center bottom / cover no-repeat,
+        linear-gradient(180deg, var(--dark), var(--primary));
     color: var(--white);
 
     box-shadow: 2px 0 15px rgba(0,0,0,0.2);
@@ -131,7 +134,20 @@ body {
 }
 
 .slot-group {
-    margin: 10px 0;
+    display: grid;
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.slot-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid #e1ecea;
+    border-radius: 10px;
+    background: #f8fbfb;
+    cursor: pointer;
 }
 
 .submit-btn {
@@ -208,9 +224,25 @@ body {
 
 .month-title {
     text-align: center;
-    margin-bottom: 20px;
     font-size: 24px;
     font-weight: 700;
+}
+
+.schedule-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.schedule-toolbar a {
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #e7f4f2;
+    color: #1f6f6a;
+    font-weight: 700;
+    text-decoration: none;
 }
 
 
@@ -253,5 +285,114 @@ body {
     z-index: 5; 
 }
 
+.topnav-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white);
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
 
+/* Left text */
+.topnav-left h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    color: var(--dark);
+}
 
+.topnav-left p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Right section */
+.topnav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.date {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.notifications {
+    position: relative;
+}
+
+.notif-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    font-size: 1.2rem;
+}
+
+.notif-count {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: var(--danger);
+    color: var(--white);
+    border-radius: 50%;
+    padding: 0 0.5rem;
+    font-size: 0.8rem;
+}
+
+.notif-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 2.5rem;
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    width: 250px;
+    z-index: 1000;
+}
+
+.notifications:hover .notif-dropdown {
+    display: block;
+}
+
+.notif-dropdown ul {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+.notif-dropdown li {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.notif-dropdown li:last-child {
+    border-bottom: none;
+}
+
+/* User profile */
+.user-profile {
+    font-weight: 500;
+    color: var(--dark);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .topnav-box {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .topnav-right {
+        gap: 1rem;
+    }
+}

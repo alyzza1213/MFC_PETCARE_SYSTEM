@@ -95,6 +95,57 @@
             font-weight: bold;
         }
 
+        .payment-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .payment-pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .payment-verified {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .payment-rejected {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .payment-none {
+            background: #eceff1;
+            color: #546e7a;
+        }
+
+        .pay-button,
+        .action-label {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .pay-button {
+            background: #008080;
+            color: #fff;
+        }
+
+        .pay-button:hover {
+            background: #006d6d;
+        }
+
+        .action-label {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
         p {
             text-align: center;
             font-size: 1.1rem;
