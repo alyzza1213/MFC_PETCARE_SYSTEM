@@ -671,6 +671,58 @@ def cancel_appointment(request, appointment_id):
     return redirect('appointment_requests')
 
 
+@login_required(login_url='login')
+def reschedule_appointment(request, appointment_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("Staff access only.")
+
+    appointment = get_object_or_404(
+        Appointment.objects.select_related('user', 'pet'),
+        id=appointment_id
+    )
+
+    if request.method == "POST":
+        date_value = request.POST.get("date")
+        time_value = request.POST.get("time")
+
+        try:
+            new_date = datetime.strptime(date_value, "%Y-%m-%d").date()
+            new_time = datetime.strptime(time_value, "%H:%M").time()
+        except (TypeError, ValueError):
+            messages.error(request, "Please enter a valid date and time.")
+            return redirect('reschedule_appointment', appointment_id=appointment.id)
+
+        working_day = WorkingDay.objects.filter(date=new_date).first()
+        if get_working_day_status(new_date, working_day) in ["closed", "not_set"]:
+            messages.error(request, "That date is not available for appointments.")
+            return redirect('reschedule_appointment', appointment_id=appointment.id)
+
+        new_start = datetime.combine(new_date, new_time)
+        new_end = new_start + appointment.duration
+        has_conflict = False
+
+        for other in Appointment.objects.filter(date=new_date).exclude(id=appointment.id):
+            other_start = datetime.combine(other.date, other.time)
+            other_end = other_start + other.duration
+            if new_start < other_end and new_end > other_start:
+                has_conflict = True
+                break
+
+        if has_conflict:
+            messages.error(request, "That time conflicts with another appointment.")
+            return redirect('reschedule_appointment', appointment_id=appointment.id)
+
+        appointment.date = new_date
+        appointment.time = new_time
+        appointment.save(update_fields=["date", "time"])
+        messages.success(request, "Appointment rescheduled successfully.")
+        return redirect('appointment_requests')
+
+    return render(request, "admin/reschedule_appointment.html", {
+        "appointment": appointment,
+    })
+
+
 # CALENDAR NI NA PART
 
 def client_calendar(request):

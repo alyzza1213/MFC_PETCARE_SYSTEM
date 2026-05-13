@@ -292,3 +292,24 @@ body {
         font-size: 1.8rem;
     }
 }
+
+.reschedule-form {
+    display: grid;
+    gap: 18px;
+    max-width: 520px;
+}
+
+.reschedule-form label {
+    display: grid;
+    gap: 8px;
+    color: #263238;
+    font-weight: 800;
+}
+
+.reschedule-form input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #dfe8ea;
+    border-radius: 12px;
+    font: inherit;
+}

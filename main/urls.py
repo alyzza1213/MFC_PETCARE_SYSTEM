@@ -236,6 +236,7 @@ urlpatterns = [
              # APPOINMENT LIST
                     path('appointment-requests/', views.appointment_requests, name='appointment_requests'),
                     path('appointments/<int:appointment_id>/approve/', views.approve_appointment, name='approve_appointment'),
+                    path('appointments/<int:appointment_id>/reschedule/', views.reschedule_appointment, name='reschedule_appointment'),
                     path('appointments/<int:appointment_id>/cancel/', views.cancel_appointment, name='cancel_appointment'),
 
 
