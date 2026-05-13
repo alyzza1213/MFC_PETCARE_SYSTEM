@@ -36,7 +36,7 @@ from django.db import IntegrityError
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
-from django.core.mail import send_mail
+from django.core.mail import get_connection, send_mail
 from django.views.decorators.http import require_POST
    
 
@@ -2036,15 +2036,17 @@ MFC Pet Life Veterinary Clinic
 """
 
     try:
+        email_connection = get_connection(timeout=settings.EMAIL_TIMEOUT)
         send_mail(
             subject,
             message,
             settings.DEFAULT_FROM_EMAIL,
             [owner.email],
-            fail_silently=False
+            fail_silently=False,
+            connection=email_connection,
         )
     except Exception as error:
-        messages.error(request, f"Reminder could not be sent: {error}")
+        messages.error(request, f"Reminder could not be sent. Please verify SMTP credentials/network access. Details: {error}")
         return redirect("vaccination_reminders_admin")
 
     VaccinationReminderLog.objects.create(
