@@ -1999,7 +1999,7 @@ def vaccination_reminders_admin(request):
         "overdue_count": overdue_count,
         "due_today_count": due_today_count,
         "due_soon_count": due_soon_count,
-        "smtp_ready": bool(settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD),
+        "smtp_ready": bool((settings.ANYMAIL or {}).get("BREVO_API_KEY")),
     }
     return render(request, "admin/vaccination_reminders.html", context)
 
@@ -2021,8 +2021,8 @@ def send_vaccination_reminder(request, vaccine_id):
         messages.error(request, f"{owner.username} has no email address on file.")
         return redirect("vaccination_reminders_admin")
 
-    if not settings.EMAIL_HOST_USER or not settings.EMAIL_HOST_PASSWORD:
-        messages.error(request, "SMTP credentials are missing. Add EMAIL_HOST_USER and EMAIL_HOST_PASSWORD before sending reminders.")
+    if not (settings.ANYMAIL or {}).get("BREVO_API_KEY"):
+        messages.error(request, "BREVO_API_KEY is not configured. Add it to your environment variables before sending reminders.")
         return redirect("vaccination_reminders_admin")
 
     subject = f"Vaccination Reminder for {vaccine.pet.name}"
@@ -2040,17 +2040,15 @@ MFC Pet Life Veterinary Clinic
 """
 
     try:
-        email_connection = get_connection(timeout=settings.EMAIL_TIMEOUT)
         send_mail(
             subject,
             message,
             settings.DEFAULT_FROM_EMAIL,
             [owner.email],
             fail_silently=False,
-            connection=email_connection,
         )
     except Exception as error:
-        messages.error(request, f"Reminder could not be sent. Please verify SMTP credentials/network access. Details: {error}")
+        messages.error(request, f"Reminder could not be sent. Details: {error}")
         return redirect("vaccination_reminders_admin")
 
     VaccinationReminderLog.objects.create(
