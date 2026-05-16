@@ -62,7 +62,7 @@ USE_CLOUDINARY = bool(
 SECRET_KEY = 'django-insecure-ggiae=#*0e66$gzg@r20%h0-&!8^8bns2pfx2i!xe+=z_6lq9i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = ENVIRONMENT = 'production'
+DEBUG = ENVIRONMENT != 'production'
 
 
 ALLOWED_HOSTS = [
